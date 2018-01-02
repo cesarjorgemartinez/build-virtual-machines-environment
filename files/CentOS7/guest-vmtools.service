@@ -1,0 +1,18 @@
+[Unit]
+Description=Manage virtual machine tools for OpenStack or VMware or VirtualBox
+DefaultDependencies=no
+Requires=network.service
+After=network.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/guest-vmtools.sh
+RemainAfterExit=yes
+TimeoutSec=0
+
+# Output needs to appear in instance console output
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target
+
