@@ -11,19 +11,19 @@
 
 - [1. Introduction](#1-introduction)
 - [2. Prepare the CygWin and Git environment](#2-prepare-the-cygwin-and-git-environment)
-- [2.1. Install CygWin 64 bits](#21-install-cygwin-64-bits)
-- [2.2. Disable Windows Python installation](#22-disable-windows-python-installation)
-- [2.3. Install needed packages](#23-install-needed-packages)
-- [2.4. Optionally tasks if need to use sshpass](#24-optionally-tasks-if-need-to-use-sshpass)
-- [2.5. Install Python system pip packages](#25-install-python-system-pip-packages)
-- [2.6. Configure your Git environment to work with github](#26-configure-your-git-environment-to-work-with-github)
+   - [2.1. Install CygWin 64 bits](#21-install-cygwin-64-bits)
+   - [2.2. Disable Windows Python installation](#22-disable-windows-python-installation)
+   - [2.3. Install needed packages](#23-install-needed-packages)
+   - [2.4. Optionally tasks if need to use sshpass](#24-optionally-tasks-if-need-to-use-sshpass)
+   - [2.5. Install Python system pip packages](#25-install-python-system-pip-packages)
+   - [2.6. Configure your Git environment to work with github](#26-configure-your-git-environment-to-work-with-github)
 - [3. Getting stated](#3-getting-stated)
-- [3.1. Clone this repository](#31-clone-this-repository)
-- [3.2. Enter your git root directory](#32-enter-your-git-root-directory)
-- [3.3. Get the base software to work for this project](#33-get-the-base-software-to-work-for-this-project)
-- [3.4. Build the image](#34-build-the-image)
-- [3.5. Convert the image to other formats](#35-convert-the-image-to-other-formats)
-- [3.6. Optionally upload to the OpenStack Image Store](#36-optionally-upload-to-the-openstack-image-store)
+   - [3.1. Clone this repository](#31-clone-this-repository)
+   - [3.2. Enter your git root directory](#32-enter-your-git-root-directory)
+   - [3.3. Get the base software to work for this project](#33-get-the-base-software-to-work-for-this-project)
+   - [3.4. Build the image](#34-build-the-image)
+   - [3.5. Convert the image to other formats](#35-convert-the-image-to-other-formats)
+   - [3.6. Optionally upload to the OpenStack Image Store](#36-optionally-upload-to-the-openstack-image-store)
 - [4. Build other Operationg Systems](#4-build-other-operationg-systems)
 
 <!-- /MDTOC -->
@@ -45,11 +45,11 @@ To work with this software you need **Windows 64 bits** and **CygWin 64 bits** t
 You need to do the following tasks.
 
 
-# 2.1. Install CygWin 64 bits #
+## 2.1. Install CygWin 64 bits ##
 With a browser download <https://cygwin.com/setup-x86_64.exe> and install this software. Use a mininal installation.
 
 
-# 2.2. Disable Windows Python installation #
+## 2.2. Disable Windows Python installation ##
 To prevent that *CygWin* use the *Python* installed in *Windows* (if exist), do the following to disable access to *Windows Python installation*:
 - Enter in a *Cygwin64 session*.
 - Launch this:
@@ -59,7 +59,7 @@ exit
 ```
 
 
-# 2.3. Install needed packages #
+## 2.3. Install needed packages ##
 You need to install the following packages.
 - Enter in a *Cygwin64 session*.
 - Launch this:
@@ -69,7 +69,7 @@ curl https://cygwin.com/setup-x86_64.exe -o setup-x86_64.exe
 ```
 
 
-# 2.4. Optionally tasks if need to use sshpass #
+## 2.4. Optionally tasks if need to use sshpass ##
 Follow the next tasks.
 - Enter in a *Cygwin64 session*.
 - Launch this:
@@ -84,7 +84,7 @@ make && make install
 ```
 
 
-# 2.5. Install Python system pip packages #
+## 2.5. Install Python system pip packages ##
 To work with *Python*, it install *pip*, *setuptools*, *wheel* and *virtualenv* in a system level.
 - Enter in a *Cygwin64 session*.
 - Launch this:
@@ -97,7 +97,7 @@ pip install virtualenv
 ```
 
 
-# 2.6. Configure your Git environment to work with github #
+## 2.6. Configure your Git environment to work with github ##
 To work with <https://github.com> you need to do the next tasks. Example to use *Git* with *SSH*.
 - Get your public and private *SSH keys* of your *github account*.
 - Enter in a *Cygwin64 session*.
@@ -125,28 +125,28 @@ chmod 700 ~/.ssh
 After you have completed the previous sections, follow the next steps.
 
 
-# 3.1. Clone this repository #
+## 3.1. Clone this repository ##
 Clone this repository.
 ```bash
 git clone git@github.com:cesarjorgemartinez/automatevmimages.git
 ```
 
 
-# 3.2. Enter your git root directory #
+## 3.2. Enter your git root directory ##
 To launch commands you need to enter your git root directory.
 ```bash
 cd automatevmimages
 ```
 
 
-# 3.3. Get the base software to work for this project #
+## 3.3. Get the base software to work for this project ##
 This software is *Packer*, *QEMU for Windows*, and the **iso** image of **CentOS 7 minimum**.
 ```bash
 bin/getswandisoCentOS7Minimal.sh
 ```
 
 
-# 3.4. Build the image #
+## 3.4. Build the image ##
 You need enter the username and userpass of the *Linux* admin account what is desired.
 ```bash
 bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass
@@ -154,7 +154,7 @@ bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass
 
 When finished the build then will create three files (**vmdk**, **ovf** and **ova** files) inside the images directory. See the configuration files in [Configuration Directory](conf "Configuration Directory").
 
-The base format of the generated files (and extensions .vmdk or .ovf or .ova) is as follows:
+The base format of the generated files (and extensions **.vmdk** or **.ovf** or **.ova**) is as follows:
 ```bash
 ${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}
 ```
@@ -188,8 +188,8 @@ export SO_CONVERTFIXED_VHD_VHDX_IMAGES="false"
 ```
 
 
-# 3.5. Convert the image to other formats #
-The previous process creates *vmdk*, *ovf* and *ova* files. If you need the image in other formats then launch this converter. The converted images are saved inside the images directory.
+## 3.5. Convert the image to other formats ##
+The previous process creates **vmdk**, **ovf** and **ova** files. If you need the image in other formats (**qcow2**, **vdi**, **vhd** and **vhdx**) then launch this converter. The converted images are saved inside the images directory.
 ```bash
 bin/convertCentOS7Minimal.sh
 ```
@@ -204,7 +204,7 @@ List of formats:
    - **vhdx fixed**: baseformat-fixed.vhdx
 
 
-# 3.6. Optionally upload to the OpenStack Image Store #
+## 3.6. Optionally upload to the OpenStack Image Store ##
 If you have one *OpenStack virtualization environment*, you can upload the **qcow2** image file to the *OpenStack Image Store* (you need one appropiated virtualenv and environment variables defined and be registered in that *OpenStack*). These tasks are not related (TODO).
 ```bash
 bin/uploadqcow2toopenstack.sh
