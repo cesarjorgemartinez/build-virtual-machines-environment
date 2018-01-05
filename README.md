@@ -1,6 +1,10 @@
-<h1><center>Automate Virtual Machine Images</center></h1>
+<h1><center><b>Automate Virtual Machine Images</b></center></h1>
 <br>
-<h4><center>Author: Cesar Jorge Martínez</center></h4>
+
+**Author: Cesar Jorge Martínez**
+<br>
+
+**Site: <https://cesarjorgemartinez.github.io/automatevmimages>**
 <br>
 
 **Read the LICENSE [GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007](LICENSE "GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007")**
@@ -99,7 +103,7 @@ pip install virtualenv
 
 ## 2.6. Configure your Git environment to work with github ##
 To work with <https://github.com> you need to do the next tasks. Example to use *Git* with *SSH*.
-- Get your public and private *SSH keys* of your *github account*.
+- Get your public and private *SSH keys* of your *GitHub account*.
 - Enter in a *Cygwin64 session*.
 ```bash
 mkdir -p ~/.ssh
@@ -118,6 +122,14 @@ Host github.com
 ```bash
 chmod 600 ~/.ssh/*
 chmod 700 ~/.ssh
+```
+- Configure your Git client settings. You need the `user.name` and `user.email` of your *GitHub account*. Enter in a *Cygwin64 session*.
+```bash
+git config --system color.ui "true"
+git config --system alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
+git config --system user.name "<your user.name>"
+git config --system user.email "<your user.email>"
+git config --system http.sslVerify false
 ```
 
 
