@@ -37,7 +37,7 @@ mkdir -p ${HOME_BASEDIR}/isos
 cd ${HOME_BASEDIR}/isos
 
 echo "INFO: Get ${SO_ISOURLIMAGE} if already is not downloaded"
-if [[ ! -f ${SO_ISONAME} ]]
+if [ ! -f ${SO_ISOIMAGENAME} ]
 then
   curl -L -O ${SO_ISOURLIMAGE}
 fi
