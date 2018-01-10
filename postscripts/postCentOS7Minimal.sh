@@ -101,6 +101,9 @@ echo "#Match User ${so_adminuser}
 #  PasswordAuthentication yes
 " >> /etc/ssh/sshd_config
 
+echo "INFO: Configure cloud-init. Set default ssh default_user from cloud-user to ${so_defaultclouduser}"
+sed -r -i 's/^ +name:.+/    name: '${so_defaultclouduser}'/' /etc/cloud/cloud.cfg
+
 echo "INFO: Clean data created by cloud-init and manage users"
 userdel -r cloud-user
 rm -f /etc/sudoers.d/90-cloud-init-users /etc/group- /etc/gshadow- /etc/passwd- /etc/shadow-

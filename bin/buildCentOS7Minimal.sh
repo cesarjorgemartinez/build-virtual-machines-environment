@@ -22,7 +22,8 @@ function help ()
   echo "**************************************************************************"
   echo
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
-  echo "Usage: ${PROGNAME} [--help | (--adminuser adminuser --adminpass adminpass)]"
+  echo "Usage: ${PROGNAME} [--help | (--adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser])]"
+  echo "If the --defaultclouduser parameter is not provided then this user is cloud-user"
   echo
   exit 10
 }
@@ -48,6 +49,12 @@ while [ $# -gt 0 ] ; do
       SO_ADMINPASS="$2"
       shift
       ;;
+    --defaultclouduser)
+      [[ "${DEFAULTCLOUDUSER}" != "" ]] && help "ERROR: Unique parameter"
+      DEFAULTCLOUDUSER="yes"
+      SO_DEFAULTCLOUDUSER="$2"
+      shift
+      ;;
     -*)
       help "ERROR: Unknown option <$1>"
       ;;
@@ -64,9 +71,13 @@ if [ ${#args[@]} -ne 0 ]; then help "ERROR: Many arguments <${args[@]}>"; fi
 [[ "${ADMINUSER}" == "" ]] && help "ERROR: Required parameter --adminuser"
 [[ "${ADMINPASS}" == "" ]] && help "ERROR: Required parameter --adminpass"
 
+# Optional parameters
+[[ "${DEFAULTCLOUDUSER}" == "" ]] && SO_DEFAULTCLOUDUSER=cloud-user
+
 # Required arguments
 [[ "${SO_ADMINUSER}" == "" ]] && help "ERROR: Missing argument of --adminuser"
 [[ "${SO_ADMINPASS}" == "" ]] && help "ERROR: Missing argument of --adminpass"
+[[ "${SO_DEFAULTCLOUDUSER}" == "" ]] && help "ERROR: Missing argument of --defaultclouduser"
 
 echo "INFO: show environment variables"
 env | egrep "^PACKER_|^QEMUIMG_|^SO_" | sort
@@ -99,6 +110,7 @@ echo "INFO: PACKER Run the build"
 ${HOME_BASEDIR}/software/packer.exe build ${PACKERDEBUG} ${MACHINEREADABLEPARAMETER} -force \
 -var so_adminuser=${SO_ADMINUSER} \
 -var so_adminpass=${SO_ADMINPASS} \
+-var so_defaultclouduser=${SO_DEFAULTCLOUDUSER} \
 json/buildCentOS7Minimal.json
 
 echo "INFO: Remove references of -disk001 in generated packer files in ${HOME_BASEDIR}/output-virtualbox-iso"

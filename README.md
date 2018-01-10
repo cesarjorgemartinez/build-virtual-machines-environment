@@ -40,7 +40,7 @@ You can deploy and boot directly these images in these virtualization systems wi
 - **control-cloud-init.service**: By default the cloud-init units are enabled. But if the Virtual Machine boots inside *VirtualBox* or *VMware*, then disable the cloud-init units.
 - **guest-vmtools.service**: If the Virtual Machine boots inside *VirtualBox* then install its *GuestTools* disabling others. Same behavihour for *VMware* and *OpenStack*.
 
-For now you can only build an image of **CentOS 7 minimum**, ideal to work as servers in *Cloud*, *traditional* or *development* environments, and is very useful to work with **Docker**, because the size of the image created is very small. This image is builded with a *Linux* admin account provided as parameter at the time of build. The cloud-init use other account (not created because the cloud-init do this work) that by default is *cloud-user*. In the future this will be changed, provided as a parameter.
+For now you can only build an image of **CentOS 7 minimum**, ideal to work as servers in *Cloud*, *traditional* or *development* environments, and is very useful to work with **Docker**, because the size of the image created is very small. This image is builded with a *Linux* admin account provided as parameter at the time of build. The cloud-init use other account provided as optional parameter at the time of build (not created because the cloud-init do this work at the first boot of the virtual machine) that by default is *cloud-user*.
 
 To work with this software you need **Windows 64 bits** and **CygWin 64 bits** to use **Linux-Bash** commands.
 
@@ -159,9 +159,9 @@ bin/getswandisoCentOS7Minimal.sh
 
 
 ## 3.4. Build the image ##
-You need enter the username and userpass of the *Linux* admin account what is desired.
+You need enter the username and userpass of the *Linux* admin account what is desired, and one optional parameter for the cloud-init default user (if this parameter is not provided then the default user is `cloud-user`.
 ```bash
-bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass
+bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]
 ```
 
 When finished the build then will create three files (**vmdk**, **ovf** and **ova** files) inside the images directory. See the configuration files in [Configuration Directory](conf "Configuration Directory").
