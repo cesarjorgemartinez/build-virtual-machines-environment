@@ -72,7 +72,7 @@ if [ ${#args[@]} -ne 0 ]; then help "ERROR: Many arguments <${args[@]}>"; fi
 [[ "${ADMINPASS}" == "" ]] && help "ERROR: Required parameter --adminpass"
 
 # Optional parameters
-[[ "${DEFAULTCLOUDUSER}" == "" ]] && SO_DEFAULTCLOUDUSER=cloud-user
+[[ "${DEFAULTCLOUDUSER}" == "" ]] && SO_DEFAULTCLOUDUSER="cloud-user"
 
 # Required arguments
 [[ "${SO_ADMINUSER}" == "" ]] && help "ERROR: Missing argument of --adminuser"
