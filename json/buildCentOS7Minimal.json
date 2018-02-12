@@ -75,7 +75,8 @@
     {
       "environment_vars": [
         "so_adminuser={{user `so_adminuser`}}",
-        "so_adminpass={{user `so_adminpass`}}"
+        "so_adminpass={{user `so_adminpass`}}",
+        "so_defaultclouduser={{user `so_defaultclouduser`}}"
       ],
       "execute_command": "echo 'packer' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts": [
