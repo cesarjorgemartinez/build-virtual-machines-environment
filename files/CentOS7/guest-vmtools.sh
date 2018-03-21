@@ -31,7 +31,7 @@ else
       sudo curl -s --fail http://download.virtualbox.org/virtualbox/${VBOXHOSTVERSION}/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso -o /opt/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso
       sudo mkdir -p /mnt/VBoxGuestAdditionsISO
       sudo mountpoint -q /mnt/VBoxGuestAdditionsISO || sudo mount -o loop,ro /opt/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso /mnt/VBoxGuestAdditionsISO || true
-      echo 'yes' | sudo sh /mnt/VBoxGuestAdditionsISO/VBoxLinuxAdditions.run || true 2>&1
+      sudo /mnt/VBoxGuestAdditionsISO/VBoxLinuxAdditions.run || true 2>&1
       sudo umount /mnt/VBoxGuestAdditionsISO
       sudo rm -rf /mnt/VBoxGuestAdditionsISO
       set -e
