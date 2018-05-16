@@ -46,6 +46,7 @@ else
     sudo rm -rf /opt/VBoxGuestAdditions* /var/log/vboxadd*.log*
     echo "INFO: Install VMware packages"
     sudo yum -y install -q open-vm-tools open-vm-tools-desktop
+    sudo systemctl restart vmtoolsd.service
   elif [ "$(echo "${MACHINETYPE}" | grep '^kvm$')" != "" ]
   then
     echo "INFO: It is a kvm virtual machine"
