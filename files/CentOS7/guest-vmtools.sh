@@ -28,7 +28,7 @@ else
       sudo sed -i s/SELINUX=enforcing/SELINUX=disabled/g /etc/selinux/config
       sudo yum -y install -q bzip2 gcc make perl kernel-devel dkms
       export KERN_DIR=/usr/src/kernels/$(uname -r)
-      sudo curl -s --fail http://download.virtualbox.org/virtualbox/${VBOXHOSTVERSION}/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso -o /opt/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso
+      sudo curl -s -S --fail --retry 3 --retry-delay 60 http://download.virtualbox.org/virtualbox/${VBOXHOSTVERSION}/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso -o /opt/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso
       sudo mkdir -p /mnt/VBoxGuestAdditionsISO
       sudo mountpoint -q /mnt/VBoxGuestAdditionsISO || sudo mount -o loop,ro /opt/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso /mnt/VBoxGuestAdditionsISO || true
       sudo /mnt/VBoxGuestAdditionsISO/VBoxLinuxAdditions.run || true 2>&1
