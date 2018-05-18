@@ -15,7 +15,7 @@ else
     echo "INFO: Get SMBIOS OEM Strings type 11 to find VBOX version of host"
     VBOXHOSTVERSION="$(LANG=C sudo dmidecode -q --type 11 2>&1 | sed -r -n -e 's/^.*vboxVer_(.+)$/\1/p')"
     echo "INFO: Get the VBOX guest version of guest if it is installed"
-    VBOXGUESTVERSION="$(sudo VBoxControl --nologo guestproperty get '/VirtualBox/HostInfo/VBoxVerExt' 2>/dev/null | cut -d ' ' -f2 || true)"
+    VBOXGUESTVERSION="$(sudo VBoxControl --nologo guestproperty get '/VirtualBox/GuestAdd/VersionExt' 2>/dev/null | cut -d ' ' -f2 || true)"
     echo "INFO: VBOX host version <${VBOXHOSTVERSION}> VBOX guest version <${VBOXGUESTVERSION}>"
     # If differ then install new guest version
     if [ "${VBOXHOSTVERSION}" != "${VBOXGUESTVERSION}" ]
