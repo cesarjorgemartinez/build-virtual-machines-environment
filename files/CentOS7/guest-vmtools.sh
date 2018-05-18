@@ -15,7 +15,7 @@ else
     echo "INFO: Get SMBIOS OEM Strings type 11 to find VBOX version of host"
     VBOXHOSTVERSION="$(LANG=C sudo dmidecode -q --type 11 2>&1 | sed -r -n -e 's/^.*vboxVer_(.+)$/\1/p')"
     echo "INFO: Get the VBOX guest version of guest if it is installed"
-    VBOXGUESTVERSION="$(sudo VBoxControl --nologo guestproperty get '/VirtualBox/HostInfo/VBoxVerExt' 2>/dev/null | cut -d ' ' -f2 || true)"
+    VBOXGUESTVERSION="$(sudo VBoxControl --nologo guestproperty get '/VirtualBox/GuestAdd/VersionExt' 2>/dev/null | cut -d ' ' -f2 || true)"
     echo "INFO: VBOX host version <${VBOXHOSTVERSION}> VBOX guest version <${VBOXGUESTVERSION}>"
     # If differ then install new guest version
     if [ "${VBOXHOSTVERSION}" != "${VBOXGUESTVERSION}" ]
@@ -28,7 +28,7 @@ else
       sudo sed -i s/SELINUX=enforcing/SELINUX=disabled/g /etc/selinux/config
       sudo yum -y install -q bzip2 gcc make perl kernel-devel dkms
       export KERN_DIR=/usr/src/kernels/$(uname -r)
-      sudo curl -s --fail http://download.virtualbox.org/virtualbox/${VBOXHOSTVERSION}/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso -o /opt/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso
+      sudo curl -s -S --fail --retry 3 --retry-delay 60 http://download.virtualbox.org/virtualbox/${VBOXHOSTVERSION}/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso -o /opt/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso
       sudo mkdir -p /mnt/VBoxGuestAdditionsISO
       sudo mountpoint -q /mnt/VBoxGuestAdditionsISO || sudo mount -o loop,ro /opt/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso /mnt/VBoxGuestAdditionsISO || true
       sudo /mnt/VBoxGuestAdditionsISO/VBoxLinuxAdditions.run || true 2>&1
