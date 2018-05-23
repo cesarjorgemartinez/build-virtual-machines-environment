@@ -73,6 +73,16 @@
       "destination": "guest-vmtools.sh"
     },
     {
+      "type": "file",
+      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/switch-to-GraphicalUserInterface.sh",
+      "destination": "switch-to-GraphicalUserInterface.sh"
+    },
+    {
+      "type": "file",
+      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/switch-to-TextUserInterface.sh",
+      "destination": "switch-to-TextUserInterface.sh"
+    },
+    {
       "environment_vars": [
         "so_adminuser={{user `so_adminuser`}}",
         "so_adminpass={{user `so_adminpass`}}",

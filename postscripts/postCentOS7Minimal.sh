@@ -44,12 +44,12 @@ rm -rf /var/cache/yum
 rpm --rebuilddb
 rm -f /var/lib/rpm/__db*
 
-echo "INFO: Install serverstatus.sh file to /usr/local/bin/serverstatus.sh"
+echo "INFO: Install serverstatus.sh script to /usr/local/bin/serverstatus.sh"
 mv serverstatus.sh /usr/local/bin
 chown root.root /usr/local/bin/serverstatus.sh
 chmod +x /usr/local/bin/serverstatus.sh
 
-echo "INFO: Install control-cloud-init.sh file to /usr/local/bin/control-cloud-init.sh"
+echo "INFO: Install control-cloud-init.sh script to /usr/local/bin/control-cloud-init.sh"
 mv control-cloud-init.sh /usr/local/bin
 chown root.root /usr/local/bin/control-cloud-init.sh
 chmod +x /usr/local/bin/control-cloud-init.sh
@@ -59,7 +59,7 @@ mv control-cloud-init.service /etc/systemd/system/control-cloud-init.service
 chown root.root /etc/systemd/system/control-cloud-init.service
 chmod 644 /etc/systemd/system/control-cloud-init.service
 
-echo "INFO: Install guest-vmtools.sh file to /usr/local/bin/guest-vmtools.sh"
+echo "INFO: Install guest-vmtools.sh script to /usr/local/bin/guest-vmtools.sh"
 mv guest-vmtools.sh /usr/local/bin
 chown root.root /usr/local/bin/guest-vmtools.sh
 chmod +x /usr/local/bin/guest-vmtools.sh
@@ -68,6 +68,16 @@ echo "INFO: Install Systemd Unit /etc/systemd/system/guest-vmtools.service"
 mv guest-vmtools.service /etc/systemd/system/guest-vmtools.service
 chown root.root /etc/systemd/system/guest-vmtools.service
 chmod 644 /etc/systemd/system/guest-vmtools.service
+
+echo "INFO: Install switch-to-GraphicalUserInterface.sh file to /usr/local/bin/switch-to-GraphicalUserInterface.sh"
+mv switch-to-GraphicalUserInterface.sh /usr/local/bin/switch-to-GraphicalUserInterface.sh
+chown root.root /usr/local/bin/switch-to-GraphicalUserInterface.sh
+chmod +x /usr/local/bin/switch-to-GraphicalUserInterface.sh
+
+echo "INFO: Install switch-to-TextUserInterface.sh file to /usr/local/bin/switch-to-TextUserInterface.sh"
+mv switch-to-TextUserInterface.sh /usr/local/bin/switch-to-TextUserInterface.sh
+chown root.root /usr/local/bin/switch-to-TextUserInterface.sh
+chmod +x /usr/local/bin/switch-to-TextUserInterface.sh
 
 echo "INFO: Reload Systemd"
 systemctl daemon-reload
