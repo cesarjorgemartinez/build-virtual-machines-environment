@@ -10,6 +10,7 @@ else
   if [ "$(echo "${MACHINETYPE}" | grep '^virtualbox$')" != "" ]
   then
     echo "INFO: It is a VBOX virtual machine"
+    echo "INFO: If exist the file /opt/reinstallGuestAdditions.action then force to reinstall the GuestAdditions"
     echo "INFO: Erase VMware packages"
     sudo yum -y erase -C -q open-vm-tools open-vm-tools-desktop
     echo "INFO: Get SMBIOS OEM Strings type 11 to find VBOX version of host"
@@ -17,8 +18,8 @@ else
     echo "INFO: Get the VBOX guest version of guest if it is installed"
     VBOXGUESTVERSION="$(sudo VBoxControl --nologo guestproperty get '/VirtualBox/GuestAdd/VersionExt' 2>/dev/null | cut -d ' ' -f2 || true)"
     echo "INFO: VBOX host version <${VBOXHOSTVERSION}> VBOX guest version <${VBOXGUESTVERSION}>"
-    # If differ then install new guest version
-    if [ "${VBOXHOSTVERSION}" != "${VBOXGUESTVERSION}" ]
+    # If differ  or exists the file /opt/reinstallGuestAdditions.action then install new guest version
+    if [[ "${VBOXHOSTVERSION}" != "${VBOXGUESTVERSION}" || -f /opt/reinstallGuestAdditions.action ]]
     then
       echo "INFO: Install or update GuestAdditions"
       set +e
@@ -34,6 +35,7 @@ else
       sudo /mnt/VBoxGuestAdditionsISO/VBoxLinuxAdditions.run || true 2>&1
       sudo umount /mnt/VBoxGuestAdditionsISO
       sudo rm -rf /mnt/VBoxGuestAdditionsISO
+      sudo rm -f /opt/reinstallGuestAdditions.action
       set -e
     else
       echo "INFO: VBOX GuestAdditions already updated"
