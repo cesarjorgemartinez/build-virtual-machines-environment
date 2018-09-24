@@ -174,7 +174,7 @@ ${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUIL
 Content of **CentOS 7 minimum** configuration file.
 ```bash
 # Variables to build Operationg System
-export PACKER_VERSION="1.1.3"
+export PACKER_VERSION="1.2.3"
 export PACKER_MACHINEREADABLEOUTPUT="False"
 export PACKER_DEBUG="False"
 export QEMUIMG_VERSION="2.3.0"
@@ -183,8 +183,8 @@ export SO_GUESTOSTYPE="RedHat_64"
 export SO_IMAGETYPE="Minimal"
 export SO_DISTRIBUTION="CentOS"
 export SO_MAJORVERSION="7"
-export SO_MINORVERSION="4"
-export SO_NAMEVERSION="1708"
+export SO_MINORVERSION="5"
+export SO_NAMEVERSION="1804"
 export SO_SHORTVERSION="${SO_MAJORVERSION}.${SO_MINORVERSION}"
 export SO_FULLVERSION="${SO_SHORTVERSION}-${SO_NAMEVERSION}"
 # Minimal or DVD
