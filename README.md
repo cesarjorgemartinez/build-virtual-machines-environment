@@ -175,7 +175,7 @@ ${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUIL
 Content of **CentOS 7 minimum** configuration file.
 ```bash
 # Variables to build Operationg System
-export PACKER_VERSION="1.2.3"
+export PACKER_VERSION="1.3.1"
 export PACKER_MACHINEREADABLEOUTPUT="False"
 export PACKER_DEBUG="False"
 export QEMUIMG_VERSION="2.3.0"
