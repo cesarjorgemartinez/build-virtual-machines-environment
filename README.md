@@ -13,22 +13,23 @@
 <h2>Index</h2>
 <!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:0 -->
 
-- [1. Introduction](#1-introduction)
-- [2. Prepare the CygWin and Git environment](#2-prepare-the-cygwin-and-git-environment)
-   - [2.1. Install CygWin 64 bits](#21-install-cygwin-64-bits)
-   - [2.2. Disable Windows Python installation](#22-disable-windows-python-installation)
-   - [2.3. Install needed packages](#23-install-needed-packages)
-   - [2.4. Optionally tasks if need to use sshpass](#24-optionally-tasks-if-need-to-use-sshpass)
-   - [2.5. Install Python system pip packages](#25-install-python-system-pip-packages)
-   - [2.6. Configure your Git environment to work with github](#26-configure-your-git-environment-to-work-with-github)
-- [3. Getting stated](#3-getting-stated)
-   - [3.1. Clone this repository](#31-clone-this-repository)
-   - [3.2. Enter your git root directory](#32-enter-your-git-root-directory)
-   - [3.3. Get the base software to work for this project](#33-get-the-base-software-to-work-for-this-project)
-   - [3.4. Build the image](#34-build-the-image)
-   - [3.5. Convert the image to other formats](#35-convert-the-image-to-other-formats)
-   - [3.6. Optionally upload to the OpenStack Image Store](#36-optionally-upload-to-the-openstack-image-store)
-- [4. Build other Operationg Systems](#4-build-other-operationg-systems)
+- [1. Introduction](#1-introduction)   
+- [2. Prepare the CygWin and Git environment](#2-prepare-the-cygwin-and-git-environment)   
+   - [2.1. Install CygWin 64 bits](#21-install-cygwin-64-bits)   
+   - [2.2. Disable Windows Python installation](#22-disable-windows-python-installation)   
+   - [2.3. Install needed packages](#23-install-needed-packages)   
+   - [2.4. Optionally tasks if need to use sshpass](#24-optionally-tasks-if-need-to-use-sshpass)   
+   - [2.5. Install Python system pip packages](#25-install-python-system-pip-packages)   
+   - [2.6. Configure your Git environment to work with github](#26-configure-your-git-environment-to-work-with-github)   
+- [3. Getting stated for CentOS 7 minimum](#3-getting-stated-for-centos-7-minimum)   
+   - [3.1. Clone this repository](#31-clone-this-repository)   
+   - [3.2. Enter your git root directory](#32-enter-your-git-root-directory)   
+   - [3.3. Get the base software to work for this project](#33-get-the-base-software-to-work-for-this-project)   
+   - [3.4. Build the image](#34-build-the-image)   
+   - [3.5. Convert the image to other formats](#35-convert-the-image-to-other-formats)   
+   - [3.6. Optionally upload to the OpenStack Image Store](#36-optionally-upload-to-the-openstack-image-store)   
+   - [3.7. Utility files used in this image](#37-utility-files-used-in-this-image)   
+- [4. Build other Operationg Systems](#4-build-other-operationg-systems)   
 
 <!-- /MDTOC -->
 
@@ -133,7 +134,7 @@ git config --system http.sslVerify false
 ```
 
 
-# 3. Getting stated #
+# 3. Getting stated for CentOS 7 minimum #
 After you have completed the previous sections, follow the next steps.
 
 
@@ -221,6 +222,59 @@ If you have one *OpenStack virtualization environment*, you can upload the **qco
 ```bash
 bin/uploadqcow2toopenstack.sh
 ```
+
+
+## 3.7. Utility files used in this image ##
+When build this image, automatically the following files in [Files for Centos7 Directory](files/CentOS7 "Files for Centos7 Directory") folder are installed and configured.
+
+* **control-cloud-init.service**: Systemd Unit to control cloud-init to enable in OpenStack and disable in VMware or VirtualBox. This service calls the file `/usr/local/bin/control-cloud-init.sh`. Installed in `/etc/systemd/system/control-cloud-init.service`. See [control-cloud-init.service](files/CentOS7/control-cloud-init.service "control-cloud-init.service").
+
+* **control-cloud-init.sh**: Process that controls cloud-init to enable in OpenStack and disable in VMware or VirtualBox. Installed in `/usr/local/bin/control-cloud-init.sh`. See [control-cloud-init.sh](files/CentOS7/control-cloud-init.sh "control-cloud-init.sh").
+
+* **guest-vmtools.service**: Manage virtual machine tools for OpenStack or VMware or VirtualBox. This service calls the file `/usr/local/bin/guest-vmtools.sh`. Installed in `/etc/systemd/system/guest-vmtools.service`. See [guest-vmtools.service](files/CentOS7/guest-vmtools.service "guest-vmtools.service").
+
+* **guest-vmtools.sh**: Process that install/configure certain tasks for OpenStack or VMware or VirtualBox (Install and update the Guest Tools for VMware or VirtualBox, or remove these tools if use OpenStack). Installed in `/usr/local/bin/guest-vmtools.sh`. See [guest-vmtools.sh](files/CentOS7/guest-vmtools.sh "guest-vmtools.sh").
+
+* **hostinfo.sh**: Process that informs over basic properties of a host (CPU, memory, etc). Installed in `/usr/local/bin/hostinfo.sh`. See [hostinfo.sh](files/CentOS7/hostinfo.sh "hostinfo.sh").
+
+  Execution example:
+  ```
+  [sysadmin@host ~]$ /usr/local/bin/hostinfo.sh
+  ===========================================================================
+  HOSTNAME...........: ripley
+  INTERFACES.........:
+  Interface         MAC Address       IP4 Address                                   IP6 Address
+  enp0s3            08:08:08:08:08:08 1.2.3.4/24                                    fe80::a00:eeee:eeee:eeee/64
+  enp0s8            09:09:09:09:09:09 10.20.30.40/24                                fe80::a00:ffff:ffff:ffff/64
+  CPU CORES..........: 1
+  MEMORY.............:
+                total        used        free      shared  buff/cache   available
+  Mem:           1.6G        876M        576M        4.0M        202M        604M
+  Swap:          3.0G        443M        2.6G
+  FILESYSTEMS........:
+  Filesystem               Size  Used Avail Use% Mounted on
+  /dev/mapper/centos-root   37G   14G   24G  37% /
+  devtmpfs                 812M     0  812M   0% /dev
+  tmpfs                    828M  316K  828M   1% /dev/shm
+  tmpfs                    828M  1.4M  827M   1% /run
+  tmpfs                    828M     0  828M   0% /sys/fs/cgroup
+  /dev/sda1                497M  254M  244M  51% /boot
+  tmpfs                    166M  8.0K  166M   1% /run/user/42
+  tmpfs                    166M   32K  166M   1% /run/user/1000
+  SYSTEM UPTIME......: 13:37:44 up 4:24, 7 users, load average: 3.66, 2.70, 2.85
+  RELEASE............: CentOS Linux release 7.5.1804 (Core) 
+  KERNEL.............: 3.10.0-862.11.6.el7.x86_64
+  DATE...............: Mon Sep 24 13:37:44 CEST 2018
+  USERS..............: Currently 7 user(s) logged on
+  CURRENT USER.......: sysadmin
+  PROCESSES..........: 213 running
+  ===========================================================================
+  ```
+
+* **switch-to-GraphicalUserInterface.sh**: Process that install and enable the GNOME Display Manager and set Graphical the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-GraphicalUserInterface.sh`. See [switch-to-GraphicalUserInterface.sh](files/CentOS7/switch-to-GraphicalUserInterface.sh "switch-to-GraphicalUserInterface.sh").
+
+
+* **switch-to-TextUserInterface.sh**: Process that disables (not uninstall) the GNOME Display Manager and set Text the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-TextUserInterface.sh`. See [switch-to-TextUserInterface.sh](files/CentOS7/switch-to-TextUserInterface.sh "switch-to-TextUserInterface.sh").
 
 
 # 4. Build other Operationg Systems #
