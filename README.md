@@ -238,7 +238,7 @@ When build this image, automatically the following files in [Files for Centos7 D
 * **hostinfo.sh**: Process that informs over basic properties of a host (CPU, memory, etc). Installed in `/usr/local/bin/hostinfo.sh`. See [hostinfo.sh](files/CentOS7/hostinfo.sh "hostinfo.sh").
 
   Execution example:
-  ```
+  ```bash
   [sysadmin@host ~]$ /usr/local/bin/hostinfo.sh
   ===========================================================================
   HOSTNAME...........: ripley
