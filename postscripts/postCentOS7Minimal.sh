@@ -44,10 +44,10 @@ rm -rf /var/cache/yum
 rpm --rebuilddb
 rm -f /var/lib/rpm/__db*
 
-echo "INFO: Install serverstatus.sh script to /usr/local/bin/serverstatus.sh"
-mv serverstatus.sh /usr/local/bin
-chown root.root /usr/local/bin/serverstatus.sh
-chmod +x /usr/local/bin/serverstatus.sh
+echo "INFO: Install hostinfo.sh script to /usr/local/bin/hostinfo.sh"
+mv hostinfo.sh /usr/local/bin
+chown root.root /usr/local/bin/hostinfo.sh
+chmod +x /usr/local/bin/hostinfo.sh
 
 echo "INFO: Install control-cloud-init.sh script to /usr/local/bin/control-cloud-init.sh"
 mv control-cloud-init.sh /usr/local/bin
