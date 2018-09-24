@@ -21,7 +21,7 @@ mkdir -p ${HOME_BASEDIR}/images
 cd ${HOME_BASEDIR}/images
 
 echo "INFO: Get vmdk file inside ${HOME_BASEDIR}/images"
-VMDK_FILENAME="$(find *.vmdk 2>/dev/null || true)"
+VMDK_FILENAME="$(find *[0-9].vmdk 2>/dev/null || true)"
 
 if [ "${VMDK_FILENAME}" == "" ]
 then
@@ -34,6 +34,12 @@ echo "INFO: Convert vmdk file to qcow2"
 ${HOME_BASEDIR}/software/qemu-img.exe convert -c \
 -f vmdk ${ONLYNAME_IMAGE}.vmdk \
 -O qcow2 ${ONLYNAME_IMAGE}.qcow2
+
+# Not work correctly in ESX VMware
+# echo "INFO: Convert vmdk file to vmdk VMware compatible"
+# ${HOME_BASEDIR}/software/qemu-img.exe convert -c \
+# -f qcow2 ${ONLYNAME_IMAGE}.qcow2 \
+# -O vmdk ${ONLYNAME_IMAGE}-vmdk-VMware.vmdk -o adapter_type=lsilogic,subformat=streamOptimized,compat6
 
 echo "INFO: Create ova file from vmdk and ovf files"
 tar cf ${ONLYNAME_IMAGE}.ova \

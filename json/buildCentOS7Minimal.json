@@ -49,8 +49,8 @@
   "provisioners": [
     {
       "type": "file",
-      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/serverinfo.sh",
-      "destination": "serverinfo.sh"
+      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/hostinfo.sh",
+      "destination": "hostinfo.sh"
     },
     {
       "type": "file",
