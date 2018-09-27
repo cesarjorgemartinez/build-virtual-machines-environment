@@ -26,7 +26,7 @@
       "keep_registered": false,
       "ssh_username": "packer",
       "ssh_password": "packer",
-      "ssh_wait_timeout": "35m",
+      "ssh_wait_timeout": "{{env `PACKER_SSH_WAIT_TIMEOUT`}}",
       "ssh_host_port_min": 2222,
       "ssh_host_port_max": 2229,
       "ssh_skip_nat_mapping": false,
