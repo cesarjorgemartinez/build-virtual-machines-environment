@@ -178,6 +178,7 @@ Content of **CentOS 7 minimum** configuration file.
 export PACKER_VERSION="1.3.1"
 export PACKER_MACHINEREADABLEOUTPUT="False"
 export PACKER_DEBUG="False"
+export PACKER_SSH_WAIT_TIMEOUT="50m"
 export QEMUIMG_VERSION="2.3.0"
 export SO_GUESTOSTYPE="RedHat_64"
 # Minimal or Desktop
@@ -279,3 +280,4 @@ When build this image, automatically the following files in [Files for Centos7 D
 
 # 4. Build other Operationg Systems #
 Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).
+
