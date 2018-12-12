@@ -13,23 +13,23 @@
 <h2>Index</h2>
 <!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:0 -->
 
-- [1. Introduction](#1-introduction)   
-- [2. Prepare the CygWin and Git environment](#2-prepare-the-cygwin-and-git-environment)   
-   - [2.1. Install CygWin 64 bits](#21-install-cygwin-64-bits)   
-   - [2.2. Disable Windows Python installation](#22-disable-windows-python-installation)   
-   - [2.3. Install needed packages](#23-install-needed-packages)   
-   - [2.4. Optionally tasks if need to use sshpass](#24-optionally-tasks-if-need-to-use-sshpass)   
-   - [2.5. Install Python system pip packages](#25-install-python-system-pip-packages)   
-   - [2.6. Configure your Git environment to work with github](#26-configure-your-git-environment-to-work-with-github)   
-- [3. Getting stated for CentOS 7 minimum](#3-getting-stated-for-centos-7-minimum)   
-   - [3.1. Clone this repository](#31-clone-this-repository)   
-   - [3.2. Enter your git root directory](#32-enter-your-git-root-directory)   
-   - [3.3. Get the base software to work for this project](#33-get-the-base-software-to-work-for-this-project)   
-   - [3.4. Build the image](#34-build-the-image)   
-   - [3.5. Convert the image to other formats](#35-convert-the-image-to-other-formats)   
-   - [3.6. Optionally upload to the OpenStack Image Store](#36-optionally-upload-to-the-openstack-image-store)   
-   - [3.7. Utility files used in this image](#37-utility-files-used-in-this-image)   
-- [4. Build other Operationg Systems](#4-build-other-operationg-systems)   
+- [1. Introduction](#1-introduction)
+- [2. Prepare the CygWin and Git environment](#2-prepare-the-cygwin-and-git-environment)
+   - [2.1. Install CygWin 64 bits](#21-install-cygwin-64-bits)
+   - [2.2. Disable Windows Python installation](#22-disable-windows-python-installation)
+   - [2.3. Install needed packages](#23-install-needed-packages)
+   - [2.4. Optionally tasks if need to use sshpass](#24-optionally-tasks-if-need-to-use-sshpass)
+   - [2.5. Install Python system pip packages](#25-install-python-system-pip-packages)
+   - [2.6. Configure your Git environment to work with github](#26-configure-your-git-environment-to-work-with-github)
+- [3. Getting stated for CentOS 7 minimum](#3-getting-stated-for-centos-7-minimum)
+   - [3.1. Clone this repository](#31-clone-this-repository)
+   - [3.2. Enter your git root directory](#32-enter-your-git-root-directory)
+   - [3.3. Get the base software to work for this project](#33-get-the-base-software-to-work-for-this-project)
+   - [3.4. Build the image](#34-build-the-image)
+   - [3.5. Convert the image to other formats](#35-convert-the-image-to-other-formats)
+   - [3.6. Optionally upload to the OpenStack Image Store](#36-optionally-upload-to-the-openstack-image-store)
+   - [3.7. Utility files used in this image](#37-utility-files-used-in-this-image)
+- [4. Build other Operationg Systems](#4-build-other-operationg-systems)
 
 <!-- /MDTOC -->
 
@@ -43,7 +43,7 @@ You can deploy and boot directly these images in these virtualization systems wi
 
 For now you can only build an image of **CentOS 7 minimum**, ideal to work as servers in *Cloud*, *traditional* or *development* environments, and is very useful to work with **Docker**, because the size of the image created is very small. This image is builded with a *Linux* admin account provided as parameter at the time of build. The cloud-init use other account provided as optional parameter at the time of build (not created because the cloud-init do this work at the first boot of the virtual machine) that by default is *cloud-user*.
 
-To work with this software you need **Windows 64 bits** and **CygWin 64 bits** to use **Linux-Bash** commands.
+To work with this software you need **Windows 7 or 10 for 64 bits** and **CygWin 64 bits** to use **Linux-Bash** commands.
 
 
 # 2. Prepare the CygWin and Git environment #
@@ -51,11 +51,33 @@ You need to do the following tasks.
 
 
 ## 2.1. Install CygWin 64 bits ##
-With a browser download <https://cygwin.com/setup-x86_64.exe> and install this software. Use a mininal installation.
+To use **CygWin 64 bits** you need to do the following tasks:
+
+- With a browser download <https://cygwin.com/setup-x86_64.exe>.
+- Install this doing right button of the mouse over this downloaded file, and `Run as admistrator`.
+- Following.
+- Install from Internet.
+- Following.
+- Local Package Directory: `C:\cygwin64\mypackages`.
+- Use System Proxy Settings.
+- Choose A Download Site, choose one and:
+- Following.
+- Use default packages (Don't select others).
+- Following.
+- Following.
+- Finalize.
+
+When terminate these tasks, then:
+
+- In `Cygwin64 Terminal Desktop Icon` click on right button of the mouse and select `properties`.
+- Click in `Advanced options`.
+- Set `Run as administrator` and click `Accept` and `Accept`.
 
 
 ## 2.2. Disable Windows Python installation ##
+
 To prevent that *CygWin* use the *Python* installed in *Windows* (if exist), do the following to disable access to *Windows Python installation*:
+
 - Enter in a *Cygwin64 session*.
 - Launch this:
 ```bash
@@ -69,8 +91,8 @@ You need to install the following packages.
 - Enter in a *Cygwin64 session*.
 - Launch this:
 ```bash
-curl https://cygwin.com/setup-x86_64.exe -o setup-x86_64.exe
-./setup-x86_64.exe -q --packages bash python python-devel python-setuptools openssl openssh openssl-devel libffi-devel gcc-g++ git
+curl -O https://cygwin.com/setup-x86_64.exe
+./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git"
 ```
 
 
@@ -79,10 +101,10 @@ Follow the next tasks.
 - Enter in a *Cygwin64 session*.
 - Launch this:
 ```bash
-./setup-x86_64.exe -q --packages bash rsync gettext autoconf automake binutils cygport gcc-core make
+./setup-x86_64.exe -q --packages="bash,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make"
 # Build sshpass
-curl -L https://downloads.sourceforge.net/project/sshpass/sshpass/1.06/sshpass-1.06.tar.gz -o sshpass-1.06.tar.gz
-tar -zxf sshpass-1.06.tar.gz
+curl -L https://sourceforge.net/projects/sshpass/files/latest/download -o sshpass.tar.gz
+tar zxf sshpass.tar.gz
 cd sshpass-1.06
 ./configure
 make && make install
@@ -263,7 +285,7 @@ When build this image, automatically the following files in [Files for Centos7 D
   tmpfs                    166M  8.0K  166M   1% /run/user/42
   tmpfs                    166M   32K  166M   1% /run/user/1000
   SYSTEM UPTIME......: 13:37:44 up 4:24, 7 users, load average: 3.66, 2.70, 2.85
-  RELEASE............: CentOS Linux release 7.5.1804 (Core) 
+  RELEASE............: CentOS Linux release 7.5.1804 (Core)
   KERNEL.............: 3.10.0-862.11.6.el7.x86_64
   DATE...............: Mon Sep 24 13:37:44 CEST 2018
   USERS..............: Currently 7 user(s) logged on
@@ -280,4 +302,3 @@ When build this image, automatically the following files in [Files for Centos7 D
 
 # 4. Build other Operationg Systems #
 Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).
-
