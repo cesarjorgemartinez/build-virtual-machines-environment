@@ -59,7 +59,7 @@ To prevent that *CygWin* use the *Python* installed in *Windows* (if exist), do 
 - Enter in a *Cygwin64 session*.
 - Launch this:
 ```bash
-echo $'PATH=$(echo $PATH | tr \':\' \'\\n\' | grep -v "/cygdrive/.*/Python27" | paste -sd:)' >> .bash_profile
+echo $'PATH=$(echo $PATH | tr \':\' \'\\n\' | grep -v "/cygdrive/.*/Python[23]7" | paste -sd:)' >> .bash_profile
 exit
 ```
 
