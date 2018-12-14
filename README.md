@@ -92,7 +92,7 @@ You need to install the following packages.
 - Launch this:
 ```bash
 curl -O https://cygwin.com/setup-x86_64.exe
-./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git"
+./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6"
 ```
 
 
