@@ -92,7 +92,7 @@ You need to install the following packages.
 - Launch this:
 ```bash
 curl -O https://cygwin.com/setup-x86_64.exe
-./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6"
+./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,python-crypto,python-paramiko,python2-boto,python2-certifi,python2-pip,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,python2-nacl,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make"
 ```
 
 
@@ -101,8 +101,6 @@ Follow the next tasks.
 - Enter in a *Cygwin64 session*.
 - Launch this:
 ```bash
-./setup-x86_64.exe -q --packages="bash,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make"
-# Build sshpass
 curl -L https://sourceforge.net/projects/sshpass/files/latest/download -o sshpass.tar.gz
 tar zxf sshpass.tar.gz
 cd sshpass-1.06
@@ -120,7 +118,8 @@ easy_install-2.7 pip
 pip install --upgrade pip
 pip install --upgrade setuptools
 pip install --upgrade wheel
-pip install virtualenv
+pip install --upgrade virtualenv
+pip install --upgrade terrafile
 ```
 
 
