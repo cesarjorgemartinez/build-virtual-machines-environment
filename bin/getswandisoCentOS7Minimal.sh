@@ -32,6 +32,7 @@ for myzip in $(find . -type f -name "*.zip")
 do
   unzip ${myzip}
 done
+chmod 755 *.exe
 
 mkdir -p ${HOME_BASEDIR}/isos
 cd ${HOME_BASEDIR}/isos
