@@ -200,7 +200,6 @@ export PACKER_VERSION="1.3.1"
 export PACKER_MACHINEREADABLEOUTPUT="False"
 export PACKER_DEBUG="False"
 export PACKER_SSH_WAIT_TIMEOUT="50m"
-export QEMUIMG_VERSION="2.3.0"
 export SO_GUESTOSTYPE="RedHat_64"
 # Minimal or Desktop
 export SO_IMAGETYPE="Minimal"

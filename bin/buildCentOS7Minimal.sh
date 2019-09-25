@@ -80,7 +80,7 @@ if [ ${#args[@]} -ne 0 ]; then help "ERROR: Many arguments <${args[@]}>"; fi
 [[ "${SO_DEFAULTCLOUDUSER}" == "" ]] && help "ERROR: Missing argument of --defaultclouduser"
 
 echo "INFO: show environment variables"
-env | egrep "^PACKER_|^QEMUIMG_|^SO_" | sort
+env | egrep "^PACKER_|^SO_" | sort
 
 if [ "${PACKER_MACHINEREADABLEOUTPUT,,}" == "true" ]
 then
