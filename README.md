@@ -195,18 +195,23 @@ ${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUIL
 
 Content of **CentOS 7 minimum** configuration file.
 ```bash
-# Variables to build Operationg System
-export PACKER_VERSION="1.3.1"
+# Variables to build Operating System
+export PACKER_VERSION="1.4.3"
 export PACKER_MACHINEREADABLEOUTPUT="False"
 export PACKER_DEBUG="False"
-export PACKER_SSH_WAIT_TIMEOUT="50m"
+export PACKER_SSH_TIMEOUT="50m"
+export PACKER_TMP_DIR="${HOME_BASEDIR}/packer.d"
 export SO_GUESTOSTYPE="RedHat_64"
+# Values for hard_drive_interface are: ide sata or scsi
+export SO_GUESTHDDINTERFACE="sata"
+export SO_VBOXPATH="/cygdrive/c/Program Files/Oracle/VirtualBox"
+export PATH="${SO_VBOXPATH}:${PATH}"
 # Minimal or Desktop
 export SO_IMAGETYPE="Minimal"
 export SO_DISTRIBUTION="CentOS"
 export SO_MAJORVERSION="7"
-export SO_MINORVERSION="5"
-export SO_NAMEVERSION="1804"
+export SO_MINORVERSION="7"
+export SO_NAMEVERSION="1908"
 export SO_SHORTVERSION="${SO_MAJORVERSION}.${SO_MINORVERSION}"
 export SO_FULLVERSION="${SO_SHORTVERSION}-${SO_NAMEVERSION}"
 # Minimal or DVD
@@ -300,3 +305,4 @@ When build this image, automatically the following files in [Files for Centos7 D
 
 # 4. Build other Operationg Systems #
 Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).
+
