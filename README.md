@@ -18,9 +18,8 @@
    - [2.1. Install CygWin 64 bits](#21-install-cygwin-64-bits)
    - [2.2. Disable Windows Python installation](#22-disable-windows-python-installation)
    - [2.3. Install needed packages](#23-install-needed-packages)
-   - [2.4. Optionally tasks if need to use sshpass](#24-optionally-tasks-if-need-to-use-sshpass)
-   - [2.5. Install Python system pip packages](#25-install-python-system-pip-packages)
-   - [2.6. Configure your Git environment to work with github](#26-configure-your-git-environment-to-work-with-github)
+   - [2.4. Install Python system pip packages](#24-install-python-system-pip-packages)
+   - [2.5. Configure your Git environment to work with github](#25-configure-your-git-environment-to-work-with-github)
 - [3. Getting stated for CentOS 7 minimum](#3-getting-stated-for-centos-7-minimum)
    - [3.1. Clone this repository](#31-clone-this-repository)
    - [3.2. Enter your git root directory](#32-enter-your-git-root-directory)
@@ -92,24 +91,11 @@ You need to install the following packages.
 - Launch this:
 ```bash
 curl -O https://cygwin.com/setup-x86_64.exe
-./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,python-crypto,python-paramiko,python2-boto,python2-certifi,python2-pip,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,python2-nacl,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip"
+./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,python-crypto,python-paramiko,python2-boto,python2-certifi,python2-pip,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,python2-nacl,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip,sshpass"
 ```
 
 
-## 2.4. Optionally tasks if need to use sshpass ##
-Follow the next tasks.
-- Enter in a *Cygwin64 session*.
-- Launch this:
-```bash
-curl -L https://sourceforge.net/projects/sshpass/files/latest/download -o sshpass.tar.gz
-tar zxf sshpass.tar.gz
-cd sshpass-1.06
-./configure
-make && make install
-```
-
-
-## 2.5. Install Python system pip packages ##
+## 2.4. Install Python system pip packages ##
 To work with *Python*, it install *pip*, *setuptools*, *wheel* and *virtualenv* in a system level.
 - Enter in a *Cygwin64 session*.
 - Launch this:
@@ -123,7 +109,7 @@ pip install --upgrade terrafile
 ```
 
 
-## 2.6. Configure your Git environment to work with github ##
+## 2.5. Configure your Git environment to work with github ##
 To work with <https://github.com> you need to do the next tasks. Example to use *Git* with *SSH*.
 - Get your public and private *SSH keys* of your *GitHub account*.
 - Enter in a *Cygwin64 session*.
@@ -305,4 +291,3 @@ When build this image, automatically the following files in [Files for Centos7 D
 
 # 4. Build other Operationg Systems #
 Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).
-
