@@ -15,7 +15,7 @@ set -e
 source ${HOME_BASEDIR}/conf/CentOS7Minimal.conf
 
 echo "INFO: show environment variables"
-env | egrep "^PACKER_|^SO_" | sort
+env | egrep '^PACKER_|^SO_|^VBOXPATH=|^QEMUPATH=|^PATH=' | sort
 
 mkdir -p ${HOME_BASEDIR}/images
 cd ${HOME_BASEDIR}/images

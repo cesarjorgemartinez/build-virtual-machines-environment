@@ -80,7 +80,7 @@ if [ ${#args[@]} -ne 0 ]; then help "ERROR: Many arguments <${args[@]}>"; fi
 [[ "${SO_DEFAULTCLOUDUSER}" == "" ]] && help "ERROR: Missing argument of --defaultclouduser"
 
 echo "INFO: show environment variables"
-env | egrep "^PACKER_|^SO_" | sort
+env | egrep '^PACKER_|^SO_|^VBOXPATH=|^QEMUPATH=|^PATH=' | sort
 
 if [ "${PACKER_MACHINEREADABLEOUTPUT,,}" == "true" ]
 then
@@ -128,4 +128,30 @@ echo "INFO: Move vmdk and ovf files from ${HOME_BASEDIR}/output-virtualbox-iso t
 rm -rf ${HOME_BASEDIR}/images
 mkdir -p ${HOME_BASEDIR}/images
 find ${HOME_BASEDIR}/output-virtualbox-iso -maxdepth 1 -type f | xargs -r -I '{}' mv {} ${HOME_BASEDIR}/images
+
+cd ${HOME_BASEDIR}/images
+
+echo "INFO: Get vmdk file inside ${HOME_BASEDIR}/images"
+SEARCHFILE=".*${SO_DISTRIBUTION}${SO_FULLVERSION}-${SO_IMAGETYPE}-[0-9]*.vmdk"
+VMDK_FILENAME="$(find * -type f -regex "${SEARCHFILE}" 2>/dev/null || true)"
+
+if [ "${VMDK_FILENAME}" == "" ]
+then
+  echo "ERROR: Can not find any vmdk file"
+  exit 1
+fi
+ONLYNAME_IMAGE="$(basename -s .vmdk ${VMDK_FILENAME})"
+
+echo "INFO: VMDK file to convert <${VMDK_FILENAME}>"
+echo "INFO: Image name to convert <${ONLYNAME_IMAGE}>"
+
+echo "INFO: Create ova file from vmdk and ovf files"
+tar cf ${ONLYNAME_IMAGE}.ova \
+${ONLYNAME_IMAGE}.vmdk \
+${ONLYNAME_IMAGE}.ovf
+
+echo "INFO: Convert vmdk file to qcow2"
+qemu-img.exe convert -c -f vmdk ${ONLYNAME_IMAGE}.vmdk -O qcow2 ${ONLYNAME_IMAGE}.qcow2
+
+cd ${HOME_BASEDIR}
 

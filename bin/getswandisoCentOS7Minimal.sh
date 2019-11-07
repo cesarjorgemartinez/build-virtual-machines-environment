@@ -19,7 +19,7 @@ mkdir -p ${HOME_BASEDIR}/software
 cd ${HOME_BASEDIR}/software
 
 echo "INFO: show environment variables"
-env | egrep "^PACKER_|^SO_" | sort
+env | egrep '^PACKER_|^SO_|^VBOXPATH=|^QEMUPATH=|^PATH=' | sort
 
 echo "INFO: Get packer software ${PACKER_VERSION}"
 curl -O https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_windows_amd64.zip

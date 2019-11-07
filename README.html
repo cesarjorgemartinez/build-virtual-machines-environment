@@ -35,22 +35,29 @@
 
 <ul>
 <li><a href="#1-introduction">1. Introduction</a></li>
-<li><a href="#2-prepare-the-cygwin-and-git-environment">2. Prepare the CygWin and Git environment</a><ul>
-<li><a href="#21-install-cygwin-64-bits">2.1. Install CygWin 64 bits</a></li>
-<li><a href="#22-disable-windows-python-installation">2.2. Disable Windows Python installation</a></li>
-<li><a href="#23-install-needed-packages">2.3. Install needed packages</a></li>
-<li><a href="#24-install-python-system-pip-packages">2.4. Install Python system pip packages</a></li>
-<li><a href="#25-configure-your-git-environment-to-work-with-github">2.5. Configure your Git environment to work with github</a></li>
+<li><a href="#2-create-and-configure-the-environment">2. Create and configure the environment</a><ul>
+<li><a href="#21-install-virtualbox">2.1. Install VirtualBox</a></li>
+<li><a href="#22-install-vmware-workstation-player">2.2. Install VMware Workstation Player</a></li>
+<li><a href="#23-install-cygwin-64-bits">2.3. Install CygWin 64 bits</a></li>
+<li><a href="#24-disable-windows-python-installation">2.4. Disable Windows Python installation</a></li>
+<li><a href="#25-install-needed-cygwin-packages">2.5. Install needed CygWin packages</a></li>
+<li><a href="#26-install-python-system-pip-packages">2.6. Install Python system pip packages</a></li>
+<li><a href="#27-configure-your-git-environment-to-work-with-github">2.7. Configure your Git environment to work with github</a></li>
 </ul>
 </li>
-<li><a href="#3-getting-stated-for-centos-7-minimum">3. Getting stated for CentOS 7 minimum</a><ul>
-<li><a href="#31-clone-this-repository">3.1. Clone this repository</a></li>
-<li><a href="#32-enter-your-git-root-directory">3.2. Enter your git root directory</a></li>
-<li><a href="#33-get-the-base-software-to-work-for-this-project">3.3. Get the base software to work for this project</a></li>
-<li><a href="#34-build-the-image">3.4. Build the image</a></li>
-<li><a href="#35-convert-the-image-to-other-formats">3.5. Convert the image to other formats</a></li>
-<li><a href="#36-optionally-upload-to-the-openstack-image-store">3.6. Optionally upload to the OpenStack Image Store</a></li>
-<li><a href="#37-utility-files-used-in-this-image">3.7. Utility files used in this image</a></li>
+<li><a href="#3-getting-started-for-centos-7-minimum">3. Getting started for CentOS 7 minimum</a><ul>
+<li><a href="#31-clone-and-enter-in-the-git-root-directory-of-this-repository">3.1. Clone and enter in the git root directory of this repository</a></li>
+<li><a href="#32-get-the-software-to-work-for-this-project">3.2. Get the software to work for this project</a></li>
+<li><a href="#33-build-the-image">3.3. Build the image</a></li>
+<li><a href="#34-optionally-upload-to-the-openstack-image-store">3.4. Optionally upload to the OpenStack Image Store</a></li>
+<li><a href="#35-utility-files-used-in-this-image">3.5. Utility files used in this image</a></li>
+<li><a href="#36-virtual-machine-example-in-virtualbox">3.6. Virtual machine example in VirtualBox</a><ul>
+<li><a href="#361-import-the-virtualized-service">3.6.1. Import the virtualized service</a></li>
+<li><a href="#362-configure-the-virtual-machine">3.6.2. Configure the virtual machine</a></li>
+<li><a href="#363-use-the-virtual-machine">3.6.3. Use the virtual machine</a></li>
+</ul>
+</li>
+<li><a href="#37-convert-vmdk-image-to-work-inside-vmware-esxi-65-or-vmware-esxi-67">3.7. Convert vmdk image to work inside VMware ESXI 6.5 or VMware ESXI 6.7</a></li>
 </ul>
 </li>
 <li><a href="#4-build-other-operationg-systems">4. Build other Operationg Systems</a></li>
@@ -59,18 +66,31 @@
 
 
 <h1 id="1-introduction">1. Introduction</h1>
-<p>This project helps to build automatically <em>Virtual Machine Images of Operating Systems</em> that are <strong>compatible</strong> with different virtualization systems, as <em>OpenStack</em> (<em>kvm</em>), <em>VirtualBox</em>, <em>VMware</em>, <em>Hyper-V</em>, etc.</p>
+<p>This project helps to build automatically <em>Virtual Machine Images of Operating Systems</em> that are <strong>compatible</strong> with different virtualization systems, as <em>OpenStack</em> (<em>kvm</em>), <em>VirtualBox</em>, <em>VMware</em>, <em>ESXI</em>, <em>Nutanix</em>, etc.</p>
+<p>The image formats that are generated are the following:</p>
+<ul>
+<li><strong>vmdk:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>ESXI</em>.</li>
+<li><strong>ovf:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>ESXI</em>.</li>
+<li><strong>ova:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>ESXI</em>.</li>
+<li><strong>qcow2:</strong> For <em>OpenStack</em> (<em>kvm</em>) and <em>Nutanix</em>.</li>
+</ul>
+<p>The virtualization system <em>VirtualBox</em> also uses the <strong>vdi</strong> format. but it is not necessary since the <em>VirtualBox</em> itself converts the <strong>vmdk</strong> format into <strong>vdi</strong>.</p>
 <p>You can deploy and boot directly these images in these virtualization systems without doing anything special or extra, thanks to the use of two <em>systemd</em> units:</p>
 <ul>
-<li><strong>control-cloud-init.service</strong>: By default the cloud-init units are enabled. But if the Virtual Machine boots inside <em>VirtualBox</em> or <em>VMware</em>, then disable the cloud-init units.</li>
-<li><strong>guest-vmtools.service</strong>: If the Virtual Machine boots inside <em>VirtualBox</em> then install its <em>GuestTools</em> disabling others. Same behavihour for <em>VMware</em> and <em>OpenStack</em>.</li>
+<li><strong>control-cloud-init.service</strong>: By default the cloud-init units are enabled. But if the virtual machine boots in a virtualization system that is not <em>OpenStack</em>, then disable the cloud-init units.</li>
+<li><strong>guest-vmtools.service</strong>: If the virtual machine boots inside <em>VirtualBox</em> then install its <em>GuestTools</em> disabling others. If the virtual machine boots inside <em>VMware</em> or <em>ESXI</em> then install its <em>VMwareTools</em> disabling others.</li>
 </ul>
-<p>For now you can only build an image of <strong>CentOS 7 minimum</strong>, ideal to work as servers in <em>Cloud</em>, <em>traditional</em> or <em>development</em> environments, and is very useful to work with <strong>Docker</strong>, because the size of the image created is very small. This image is builded with a <em>Linux</em> admin account provided as parameter at the time of build. The cloud-init use other account provided as optional parameter at the time of build (not created because the cloud-init do this work at the first boot of the virtual machine) that by default is <em>cloud-user</em>.</p>
-<p>To work with this software you need <strong>Windows 7 or 10 for 64 bits</strong> and <strong>CygWin 64 bits</strong> to use <strong>Linux-Bash</strong> commands.</p>
-<h1 id="2-prepare-the-cygwin-and-git-environment">2. Prepare the CygWin and Git environment</h1>
-<p>You need to do the following tasks.</p>
-<h2 id="2-1-install-cygwin-64-bits">2.1. Install CygWin 64 bits</h2>
-<p>To use <strong>CygWin 64 bits</strong> you need to do the following tasks:</p>
+<p>For now you can only build an image of <strong>CentOS 7 minimum</strong>, ideal to work as servers in <em>Cloud</em>, <em>traditional</em> or <em>development</em> environments, and is very useful to work with <strong>Docker</strong>, because the size of the image created is very small. This image is builded with a <em>Linux</em> admin account provided as parameter at the time of build. The <code>cloud-init</code> software use other account provided as optional parameter at the time of build (not created because the <code>cloud-init</code> do this work at the first boot of the virtual machine) that by default is <em>cloud-user</em>.</p>
+<p>To work with this software you need <strong>Windows 10 for 64 bits</strong> and <strong>CygWin 64 bits</strong> to use <strong>Linux-Bash</strong> commands.</p>
+<h1 id="2-create-and-configure-the-environment">2. Create and configure the environment</h1>
+<p>You need to do the next tasks.</p>
+<h2 id="2-1-install-virtualbox">2.1. Install VirtualBox</h2>
+<p>Go to this URL <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a> and install latest <em>VirtualBox</em> for Windows.</p>
+<h2 id="2-2-install-vmware-workstation-player">2.2. Install VMware Workstation Player</h2>
+<p>Go to this URL <a href="https://www.vmware.com/go/downloadworkstationplayer">https://www.vmware.com/go/downloadworkstationplayer</a> and install latest <em>VMware Workstation Player</em> for Windows.</p>
+<p>This is optional step only if you will be use <em>VMware</em> or <em>ESXI</em>.</p>
+<h2 id="2-3-install-cygwin-64-bits">2.3. Install CygWin 64 bits</h2>
+<p>To install <strong>CygWin 64 bits</strong> you need to do the following tasks:</p>
 <ul>
 <li>With a browser download <a href="https://cygwin.com/setup-x86_64.exe">https://cygwin.com/setup-x86_64.exe</a>.</li>
 <li>Install this doing right button of the mouse over this downloaded file, and <code>Run as admistrator</code>.</li>
@@ -92,7 +112,7 @@
 <li>Click in <code>Advanced options</code>.</li>
 <li>Set <code>Run as administrator</code> and click <code>Accept</code> and <code>Accept</code>.</li>
 </ul>
-<h2 id="2-2-disable-windows-python-installation">2.2. Disable Windows Python installation</h2>
+<h2 id="2-4-disable-windows-python-installation">2.4. Disable Windows Python installation</h2>
 <p>To prevent that <em>CygWin</em> use the <em>Python</em> installed in <em>Windows</em> (if exist), do the following to disable access to <em>Windows Python installation</em>:</p>
 <ul>
 <li>Enter in a <em>Cygwin64 session</em>.</li>
@@ -100,16 +120,16 @@
 exit</code></pre>
 </li>
 </ul>
-<h2 id="2-3-install-needed-packages">2.3. Install needed packages</h2>
-<p>You need to install the following packages.</p>
+<h2 id="2-5-install-needed-cygwin-packages">2.5. Install needed CygWin packages</h2>
+<p>You need to do the following tasks:</p>
 <ul>
 <li>Enter in a <em>Cygwin64 session</em>.</li>
 <li>Launch this:<pre><code class="language-bash">curl -O https://cygwin.com/setup-x86_64.exe
 ./setup-x86_64.exe -q --packages=&quot;bash,python,python-devel,python-setuptools,python-crypto,python-paramiko,python2-boto,python2-certifi,python2-pip,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,python2-nacl,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip,sshpass&quot;</code></pre>
 </li>
 </ul>
-<h2 id="2-4-install-python-system-pip-packages">2.4. Install Python system pip packages</h2>
-<p>To work with <em>Python</em>, it install <em>pip</em>, <em>setuptools</em>, <em>wheel</em> and <em>virtualenv</em> in a system level.</p>
+<h2 id="2-6-install-python-system-pip-packages">2.6. Install Python system pip packages</h2>
+<p>To work with <em>Python</em> install basic <em>pip</em> packages in a system level:</p>
 <ul>
 <li>Enter in a <em>Cygwin64 session</em>.</li>
 <li>Launch this:<pre><code class="language-bash">easy_install-2.7 pip
@@ -120,7 +140,7 @@ pip install --upgrade virtualenv
 pip install --upgrade terrafile</code></pre>
 </li>
 </ul>
-<h2 id="2-5-configure-your-git-environment-to-work-with-github">2.5. Configure your Git environment to work with github</h2>
+<h2 id="2-7-configure-your-git-environment-to-work-with-github">2.7. Configure your Git environment to work with github</h2>
 <p>To work with <a href="https://github.com">https://github.com</a> you need to do the next tasks. Example to use <em>Git</em> with <em>SSH</em>.</p>
 <ul>
 <li>Get your public and private <em>SSH keys</em> of your <em>GitHub account</em>.</li>
@@ -134,7 +154,7 @@ ServerAliveCountMax 3
 ControlMaster no</li>
 </ul>
 <p>Host github.com
- IdentityFile ~/.ssh/id_rsa_private_github
+  IdentityFile ~/.ssh/id_rsa_private_github
 &quot; &gt; ~/.ssh/config</p>
 <pre><code>- Store your public key to `~/.ssh/id_rsa_private_github.pub` and your private key to `~/.ssh/id_rsa_private_github`.
 - Set good permissions in the *SSH* config folder.
@@ -148,35 +168,44 @@ git config --system user.email &quot;&lt;your user.email&gt;&quot;
 git config --system http.sslVerify false</code></pre>
 </li>
 </ul>
-<h1 id="3-getting-stated-for-centos-7-minimum">3. Getting stated for CentOS 7 minimum</h1>
+<h1 id="3-getting-started-for-centos-7-minimum">3. Getting started for CentOS 7 minimum</h1>
 <p>After you have completed the previous sections, follow the next steps.</p>
-<h2 id="3-1-clone-this-repository">3.1. Clone this repository</h2>
-<p>Clone this repository.</p>
-<pre><code class="language-bash">git clone git@github.com:cesarjorgemartinez/automatevmimages.git</code></pre>
-<h2 id="3-2-enter-your-git-root-directory">3.2. Enter your git root directory</h2>
-<p>To launch commands you need to enter your git root directory.</p>
-<pre><code class="language-bash">cd automatevmimages</code></pre>
-<h2 id="3-3-get-the-base-software-to-work-for-this-project">3.3. Get the base software to work for this project</h2>
-<p>This software is <em>Packer</em>, <em>QEMU for Windows</em>, and the <strong>iso</strong> image of <strong>CentOS 7 minimum</strong>.</p>
+<h2 id="3-1-clone-and-enter-in-the-git-root-directory-of-this-repository">3.1. Clone and enter in the git root directory of this repository</h2>
+<p>Do the following tasks:</p>
+<pre><code class="language-bash">git clone git@github.com:cesarjorgemartinez/automatevmimages.git
+cd automatevmimages</code></pre>
+<h2 id="3-2-get-the-software-to-work-for-this-project">3.2. Get the software to work for this project</h2>
+<p>This software is <em>Packer</em>, <em>QEMU for Windows</em> and the <strong>iso</strong> image of <strong>CentOS 7 minimum</strong>. See the configuration files in <a href="conf" title="Configuration Directory">Configuration Directory</a>.</p>
 <pre><code class="language-bash">bin/getswandisoCentOS7Minimal.sh</code></pre>
-<h2 id="3-4-build-the-image">3.4. Build the image</h2>
+<p>A <em>QEMU for Windows</em> installer window appears and do the following:</p>
+<ul>
+<li>Please select a language: Select your language, as example <code>English / English</code></li>
+<li>Click in OK</li>
+<li>Next</li>
+<li>I Agree</li>
+<li>Next</li>
+<li>Install</li>
+<li>Finish</li>
+</ul>
+<h2 id="3-3-build-the-image">3.3. Build the image</h2>
 <p>You need enter the username and userpass of the <em>Linux</em> admin account what is desired, and one optional parameter for the cloud-init default user (if this parameter is not provided then the default user is <code>cloud-user</code>.</p>
 <pre><code class="language-bash">bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]</code></pre>
-<p>When finished the build then will create three files (<strong>vmdk</strong>, <strong>ovf</strong> and <strong>ova</strong> files) inside the images directory. See the configuration files in <a href="conf" title="Configuration Directory">Configuration Directory</a>.</p>
-<p>The base format of the generated files (and extensions <strong>.vmdk</strong> or <strong>.ovf</strong> or <strong>.ova</strong>) is as follows:</p>
-<pre><code class="language-bash">${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}</code></pre>
-<p>Content of <strong>CentOS 7 minimum</strong> configuration file.</p>
+<p>When finished the build then will create the image files <strong>vmdk</strong>, <strong>ovf</strong>, <strong>ova</strong> and <strong>qcow2</strong> inside the images directory. See the configuration files in <a href="conf" title="Configuration Directory">Configuration Directory</a>.</p>
+<p>The name of the generated image files is as follows:</p>
+<pre><code class="language-bash">${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|ova|qcow2)</code></pre>
+<p>Example of <strong>CentOS 7 minimum</strong> configuration file:</p>
 <pre><code class="language-bash"># Variables to build Operating System
-export PACKER_VERSION=&quot;1.4.3&quot;
+export PACKER_VERSION=&quot;1.4.5&quot;
 export PACKER_MACHINEREADABLEOUTPUT=&quot;False&quot;
 export PACKER_DEBUG=&quot;False&quot;
 export PACKER_SSH_TIMEOUT=&quot;50m&quot;
 export PACKER_TMP_DIR=&quot;${HOME_BASEDIR}/packer.d&quot;
+export VBOXPATH=&quot;/cygdrive/c/Program Files/Oracle/VirtualBox&quot;
+export QEMUPATH=&quot;/cygdrive/c/Program Files/qemu&quot;
+export PATH=&quot;${VBOXPATH}:${QEMUPATH}:${PATH}&quot;
 export SO_GUESTOSTYPE=&quot;RedHat_64&quot;
 # Values for hard_drive_interface are: ide sata or scsi
 export SO_GUESTHDDINTERFACE=&quot;sata&quot;
-export SO_VBOXPATH=&quot;/cygdrive/c/Program Files/Oracle/VirtualBox&quot;
-export PATH=&quot;${SO_VBOXPATH}:${PATH}&quot;
 # Minimal or Desktop
 export SO_IMAGETYPE=&quot;Minimal&quot;
 export SO_DISTRIBUTION=&quot;CentOS&quot;
@@ -193,76 +222,115 @@ export SO_ISOSHA256SUMNAME=&quot;sha256sum.txt&quot;
 export SO_ISOCHECKSUMTYPE=&quot;sha256&quot;
 export SO_ISOURLSHA256SUM=&quot;http://ftp.uma.es/mirror/${SO_DISTRIBUTION}/${SO_MAJORVERSION}/isos/x86_64/${SO_ISOSHA256SUMNAME}&quot;
 export SO_BUILDDATE=&quot;$(date +%Y%m%d)&quot;
-export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}&quot;
-export SO_CONVERTFIXED_VHD_VHDX_IMAGES=&quot;false&quot;</code></pre>
-<h2 id="3-5-convert-the-image-to-other-formats">3.5. Convert the image to other formats</h2>
-<p>The previous process creates <strong>vmdk</strong>, <strong>ovf</strong> and <strong>ova</strong> files. If you need the image in other formats (<strong>qcow2</strong>, <strong>vdi</strong>, <strong>vhd</strong> and <strong>vhdx</strong>) then launch this converter. The converted images are saved inside the images directory.</p>
-<pre><code class="language-bash">bin/convertCentOS7Minimal.sh</code></pre>
-<p>List of formats:</p>
-<ul>
-<li><strong>qcow2</strong>: baseformat.qcow2</li>
-<li><strong>vdi</strong>: baseformat.vdi</li>
-<li><strong>vhd dynamic</strong>: baseformat-dynamic.vhd</li>
-<li><strong>vhdx dynamic</strong>: baseformat-dynamic.vhdx</li>
-<li>And optionally according to the variable <code>SO_CONVERTFIXED_VHD_VHDX_IMAGES</code> (by default is set to false):<ul>
-<li><strong>vhd fixed</strong>: baseformat-fixed.vhd</li>
-<li><strong>vhdx fixed</strong>: baseformat-fixed.vhdx</li>
-</ul>
-</li>
-</ul>
-<h2 id="3-6-optionally-upload-to-the-openstack-image-store">3.6. Optionally upload to the OpenStack Image Store</h2>
+export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}&quot;</code></pre>
+<h2 id="3-4-optionally-upload-to-the-openstack-image-store">3.4. Optionally upload to the OpenStack Image Store</h2>
 <p>If you have one <em>OpenStack virtualization environment</em>, you can upload the <strong>qcow2</strong> image file to the <em>OpenStack Image Store</em> (you need one appropiated virtualenv and environment variables defined and be registered in that <em>OpenStack</em>). These tasks are not related (TODO).</p>
 <pre><code class="language-bash">bin/uploadqcow2toopenstack.sh</code></pre>
-<h2 id="3-7-utility-files-used-in-this-image">3.7. Utility files used in this image</h2>
-<p>When build this image, automatically the following files in <a href="files/CentOS7" title="Files for Centos7 Directory">Files for Centos7 Directory</a> folder are installed and configured.</p>
+<h2 id="3-5-utility-files-used-in-this-image">3.5. Utility files used in this image</h2>
+<p>When build this image the following files in <a href="files/CentOS7" title="Files for Centos7 Directory">Files for Centos7 Directory</a> folder are installed and configured.</p>
 <ul>
-<li><p><strong>control-cloud-init.service</strong>: Systemd Unit to control cloud-init to enable in OpenStack and disable in VMware or VirtualBox. This service calls the file <code>/usr/local/bin/control-cloud-init.sh</code>. Installed in <code>/etc/systemd/system/control-cloud-init.service</code>. See <a href="files/CentOS7/control-cloud-init.service" title="control-cloud-init.service">control-cloud-init.service</a>.</p>
+<li><p><strong>control-cloud-init.service</strong>: Unit to control <code>cloud-init</code> to enable in <em>OpenStack</em> and disable in other virtualization systems. This unit calls the file <code>/usr/local/bin/control-cloud-init.sh</code>. Installed in <code>/etc/systemd/system/control-cloud-init.service</code>. See <a href="files/CentOS7/control-cloud-init.service" title="control-cloud-init.service">control-cloud-init.service</a>.</p>
 </li>
-<li><p><strong>control-cloud-init.sh</strong>: Process that controls cloud-init to enable in OpenStack and disable in VMware or VirtualBox. Installed in <code>/usr/local/bin/control-cloud-init.sh</code>. See <a href="files/CentOS7/control-cloud-init.sh" title="control-cloud-init.sh">control-cloud-init.sh</a>.</p>
+<li><p><strong>control-cloud-init.sh</strong>: Process that controls <code>cloud-init</code> to enable in <em>OpenStack</em> and disable in other virtualization systems. Installed in <code>/usr/local/bin/control-cloud-init.sh</code>. See <a href="files/CentOS7/control-cloud-init.sh" title="control-cloud-init.sh">control-cloud-init.sh</a>.</p>
 </li>
-<li><p><strong>guest-vmtools.service</strong>: Manage virtual machine tools for OpenStack or VMware or VirtualBox. This service calls the file <code>/usr/local/bin/guest-vmtools.sh</code>. Installed in <code>/etc/systemd/system/guest-vmtools.service</code>. See <a href="files/CentOS7/guest-vmtools.service" title="guest-vmtools.service">guest-vmtools.service</a>.</p>
+<li><p><strong>guest-vmtools.service</strong>: Unit to manage virtual machine tools for <em>VirtualBox</em>, <em>VMware</em> or <em>ESXI</em>. This unit calls the file <code>/usr/local/bin/guest-vmtools.sh</code>. Installed in <code>/etc/systemd/system/guest-vmtools.service</code>. See <a href="files/CentOS7/guest-vmtools.service" title="guest-vmtools.service">guest-vmtools.service</a>.</p>
 </li>
-<li><p><strong>guest-vmtools.sh</strong>: Process that install/configure certain tasks for OpenStack or VMware or VirtualBox (Install and update the Guest Tools for VMware or VirtualBox, or remove these tools if use OpenStack). Installed in <code>/usr/local/bin/guest-vmtools.sh</code>. See <a href="files/CentOS7/guest-vmtools.sh" title="guest-vmtools.sh">guest-vmtools.sh</a>.</p>
+<li><p><strong>guest-vmtools.sh</strong>: Process that install and configure the <em>GuestTools</em> for <em>VirtualBox</em> or <em>VMwareTools</em> for <em>VMware</em> or <em>ESXI</em>. Or remove these tools if boot in other virtual environments. Installed in <code>/usr/local/bin/guest-vmtools.sh</code>. See <a href="files/CentOS7/guest-vmtools.sh" title="guest-vmtools.sh">guest-vmtools.sh</a>.</p>
 </li>
 <li><p><strong>hostinfo.sh</strong>: Process that informs over basic properties of a host (CPU, memory, etc). Installed in <code>/usr/local/bin/hostinfo.sh</code>. See <a href="files/CentOS7/hostinfo.sh" title="hostinfo.sh">hostinfo.sh</a>.</p>
 <p>Execution example:</p>
-<pre><code class="language-bash">[sysadmin@host ~]$ /usr/local/bin/hostinfo.sh
-===========================================================================
-HOSTNAME...........: ripley
+<pre><code class="language-bash">===========================================================================
+HOSTNAME...........: myvm
 INTERFACES.........:
 Interface         MAC Address       IP4 Address                                   IP6 Address
-enp0s3            08:08:08:08:08:08 1.2.3.4/24                                    fe80::a00:eeee:eeee:eeee/64
-enp0s8            09:09:09:09:09:09 10.20.30.40/24                                fe80::a00:ffff:ffff:ffff/64
+eth0              08:00:27:34:1c:b6 192.168.56.115/24                             fe80::a00:27ff:fe34:1cb6/64
+eth1              08:00:27:c1:06:ba 10.0.3.15/24                                  fe80::a00:27ff:fec1:6ba/64
 CPU CORES..........: 1
 MEMORY.............:
               total        used        free      shared  buff/cache   available
-Mem:           1.6G        876M        576M        4.0M        202M        604M
-Swap:          3.0G        443M        2.6G
+Mem:           991M        116M        186M         12M        688M        701M
+Swap:          1.0G          0B        1.0G
 FILESYSTEMS........:
-Filesystem               Size  Used Avail Use% Mounted on
-/dev/mapper/centos-root   37G   14G   24G  37% /
-devtmpfs                 812M     0  812M   0% /dev
-tmpfs                    828M  316K  828M   1% /dev/shm
-tmpfs                    828M  1.4M  827M   1% /run
-tmpfs                    828M     0  828M   0% /sys/fs/cgroup
-/dev/sda1                497M  254M  244M  51% /boot
-tmpfs                    166M  8.0K  166M   1% /run/user/42
-tmpfs                    166M   32K  166M   1% /run/user/1000
-SYSTEM UPTIME......: 13:37:44 up 4:24, 7 users, load average: 3.66, 2.70, 2.85
-RELEASE............: CentOS Linux release 7.5.1804 (Core)
-KERNEL.............: 3.10.0-862.11.6.el7.x86_64
-DATE...............: Mon Sep 24 13:37:44 CEST 2018
-USERS..............: Currently 7 user(s) logged on
-CURRENT USER.......: sysadmin
-PROCESSES..........: 213 running
+Filesystem                      Size  Used Avail Use% Mounted on
+devtmpfs                        485M     0  485M   0% /dev
+tmpfs                           496M     0  496M   0% /dev/shm
+tmpfs                           496M   13M  483M   3% /run
+tmpfs                           496M     0  496M   0% /sys/fs/cgroup
+/dev/mapper/centos_centos-root   18G  906M   18G   5% /
+/dev/sda1                      1014M   68M  947M   7% /boot
+tmpfs                           100M     0  100M   0% /run/user/1000
+SYSTEM UPTIME......: 13:26:36 up 16 min, 1 user, load average: 0.00, 0.08, 0.21
+RELEASE............: CentOS Linux release 7.7.1908 (Core)
+KERNEL.............: 3.10.0-1062.4.1.el7.x86_64
+DATE...............: Thu Nov  7 13:26:36 CET 2019
+USERS..............: Currently 1 user(s) logged on
+CURRENT USER.......: adminuser
+PROCESSES..........: 154 running
 ===========================================================================</code></pre>
 </li>
-<li><p><strong>switch-to-GraphicalUserInterface.sh</strong>: Process that install and enable the GNOME Display Manager and set Graphical the default login. After finish, you need to reboot this host to apply these changes (<code>sudo shutdown -r now</code>). Installed in <code>/usr/local/bin/switch-to-GraphicalUserInterface.sh</code>. See <a href="files/CentOS7/switch-to-GraphicalUserInterface.sh" title="switch-to-GraphicalUserInterface.sh">switch-to-GraphicalUserInterface.sh</a>.</p>
+<li><p><strong>switch-to-GraphicalUserInterface.sh</strong>: Process that install and enable the <code>GNOME Display Manager</code> and set <code>Graphical Mode</code> as the default login. After finish, you need to reboot this host to apply these changes (<code>sudo shutdown -r now</code>). Installed in <code>/usr/local/bin/switch-to-GraphicalUserInterface.sh</code>. See <a href="files/CentOS7/switch-to-GraphicalUserInterface.sh" title="switch-to-GraphicalUserInterface.sh">switch-to-GraphicalUserInterface.sh</a>.</p>
 </li>
 </ul>
 <ul>
-<li><strong>switch-to-TextUserInterface.sh</strong>: Process that disables (not uninstall) the GNOME Display Manager and set Text the default login. After finish, you need to reboot this host to apply these changes (<code>sudo shutdown -r now</code>). Installed in <code>/usr/local/bin/switch-to-TextUserInterface.sh</code>. See <a href="files/CentOS7/switch-to-TextUserInterface.sh" title="switch-to-TextUserInterface.sh">switch-to-TextUserInterface.sh</a>.</li>
+<li><strong>switch-to-TextUserInterface.sh</strong>: Process that disables (not uninstall) the <code>GNOME Display Manager</code> and set <code>Text Mode</code> as the default login. After finish, you need to reboot this host to apply these changes (<code>sudo shutdown -r now</code>). Installed in <code>/usr/local/bin/switch-to-TextUserInterface.sh</code>. See <a href="files/CentOS7/switch-to-TextUserInterface.sh" title="switch-to-TextUserInterface.sh">switch-to-TextUserInterface.sh</a>.</li>
 </ul>
+<h2 id="3-6-virtual-machine-example-in-virtualbox">3.6. Virtual machine example in VirtualBox</h2>
+<p>Steps to use virtual machines using <em>VirtualBox</em>.</p>
+<h3 id="3-6-1-import-the-virtualized-service">3.6.1. Import the virtualized service</h3>
+<p>To import virtualized service in <em>VirtualBox</em> to create a virtual machine perform the following steps using the <code>Oracle VM VirtualBox Administrator</code>.</p>
+<ul>
+<li>Click in <code>Archive -&gt; Import virtualized service...</code></li>
+<li>Click in <code>Select a virtualized service file to import...</code> in <code>Service to import</code>. Example <code>C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191107.ovf</code></li>
+<li>Name: <code>myvm</code></li>
+<li>Type of guest OS: <code>Red Hat (64-bit)</code></li>
+<li>CPU: <code>1</code></li>
+<li>RAM: <code>1024 MB</code></li>
+<li>Storage Controller (SATA) -&gt; Virtual Disk Image: <code>myvm.vmdk</code></li>
+<li>MAC address policy: <code>Generate new MAC addresses for all network adapters</code></li>
+<li>Additional options: <code>Import disks as VDI</code></li>
+<li>Click in <code>Import</code> button</li>
+</ul>
+<h3 id="3-6-2-configure-the-virtual-machine">3.6.2. Configure the virtual machine</h3>
+<p>The virtual machine is created and the next steps are to configure it correcty doing double-click in this virtual machine and select <code>Configuration...</code> or using the menu <code>Machine -&gt; Configuration...</code>.</p>
+<ul>
+<li>General -&gt; Advanced -&gt; Share clipboard: <code>Bidirectional</code></li>
+<li>General -&gt; Advanced -&gt; Drag and drop: <code>Bidirectional</code></li>
+<li>System -&gt; Motherboard -&gt; UTC time hardware clock: <code>Enabled</code></li>
+<li>Screen -&gt; Screen -&gt; Video memory: <code>16 MB</code></li>
+<li>Display -&gt; Display -&gt; Graphic controller: <code>VMSVGA</code></li>
+<li>Network -&gt; Network -&gt; Adapter 1 -&gt; Enable network adapter: <code>Enabled</code></li>
+<li>Network -&gt; Network -&gt; Adapter 1 -&gt; Connected to: <code>Host-only adapter</code></li>
+<li>Network -&gt; Network -&gt; Adapter 1 -&gt; Name: <code>VirtualBox Host-Only Ethernet Adapter</code></li>
+<li>Network -&gt; Network -&gt; Adapter 1 -&gt; Advanced -&gt; Promiscuous mode: <code>Allow all</code></li>
+<li>Network -&gt; Network -&gt; Adapter 2 -&gt; Enable network adapter: <code>Enabled</code></li>
+<li>Network -&gt; Network -&gt; Adapter 2 -&gt; Connected to: <code>NAT</code></li>
+</ul>
+<h3 id="3-6-3-use-the-virtual-machine">3.6.3. Use the virtual machine</h3>
+<p>Once the virtual machine is configured you can click in <code>Start</code> button.</p>
+<p>To get guest properties of the virtual machine:</p>
+<ul>
+<li>Enter in a <em>Cygwin64 session</em>.</li>
+<li>To get all guest properties.<pre><code class="language-bash">&quot;/cygdrive/c/Program Files/Oracle/VirtualBox/VBoxManage&quot; guestproperty enumerate myvm</code></pre>
+</li>
+<li>To get the assigned IP for adapter 1.<pre><code class="language-bash">&quot;/cygdrive/c/Program Files/Oracle/VirtualBox/VBoxManage&quot; guestproperty get myvm /VirtualBox/GuestInfo/Net/0/V4/IP</code></pre>
+</li>
+</ul>
+<p>Launch a ssh session to this virtual machine:</p>
+<pre><code class="language-bash">sshpass -p adminpass ssh adminuser@&lt;assigned_IP_for_adapter_1&gt;</code></pre>
+<p>Change the <code>hostname</code> for this virtual machine:</p>
+<pre><code class="language-bash">sudo hostnamectl --static set-hostname myvm
+sudo hostnamectl --transient set-hostname myvm</code></pre>
+<p>Get basic properties of this virtual machine:</p>
+<pre><code class="language-bash">/usr/local/bin/hostinfo.sh</code></pre>
+<p>Switch to <code>Graphical User Interface</code> for this virtual machine:</p>
+<pre><code class="language-bash">sudo /usr/local/bin/switch-to-GraphicalUserInterface.sh
+# Wait a bit to terminate this execution
+sudo reboot</code></pre>
+<p><strong>WARNING:</strong> Exist a bug in last package named <code>polkit</code> (<code>polkit-0.112-22.el7_7.1.x86_64</code>) consisting of copy-paste commands in ssh sessions only paste the first line <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1753037">https://bugzilla.redhat.com/show_bug.cgi?id=1753037</a>. In this link exists a workaround until release next version of this package.</p>
+<h2 id="3-7-convert-vmdk-image-to-work-inside-vmware-esxi-6-5-or-vmware-esxi-6-7">3.7. Convert vmdk image to work inside VMware ESXI 6.5 or VMware ESXI 6.7</h2>
+<p>The image formats obtained <strong>vmdk</strong>, <strong>ovf</strong> or <strong>ova</strong> are compatible with <em>VMware Workstation Player</em> but not are compatible for <em>ESXI 6.5</em> or <em>ESXI 6.7</em>.</p>
+<p>For this reason need to use <em>VMware Workstation Player</em> for Windows to obtain a compatible virtual machine.</p>
+<p>TODO</p>
 <h1 id="4-build-other-operationg-systems">4. Build other Operationg Systems</h1>
 <p>Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).</p>
 </article></div><div style="background-color: #b4b2b2;width: 50px;height:50px;line-height: 50px;text-align: center;position: fixed;bottom: 10px;right: 10px;padding-top:5px;" onclick="document.documentElement.scrollTop = document.body.scrollTop =0;">
