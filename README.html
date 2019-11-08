@@ -57,10 +57,10 @@
 <li><a href="#363-use-the-virtual-machine">3.6.3. Use the virtual machine</a></li>
 </ul>
 </li>
-<li><a href="#37-convert-vmdk-image-to-work-inside-vmware-esxi-65-or-vmware-esxi-67">3.7. Convert vmdk image to work inside VMware ESXI 6.5 or VMware ESXI 6.7</a></li>
+<li><a href="#37-convert-vmdk-image-to-work-inside-vmware-esxi-65-or-67">3.7. Convert vmdk image to work inside VMware ESXI 6.5 or 6.7</a></li>
 </ul>
 </li>
-<li><a href="#4-build-other-operationg-systems">4. Build other Operationg Systems</a></li>
+<li><a href="#4-build-other-operating-systems">4. Build other Operating Systems</a></li>
 </ul>
 <!-- /MDTOC -->
 
@@ -143,31 +143,37 @@ pip install --upgrade terrafile</code></pre>
 <h2 id="2-7-configure-your-git-environment-to-work-with-github">2.7. Configure your Git environment to work with github</h2>
 <p>To work with <a href="https://github.com">https://github.com</a> you need to do the next tasks. Example to use <em>Git</em> with <em>SSH</em>.</p>
 <ul>
-<li>Get your public and private <em>SSH keys</em> of your <em>GitHub account</em>.</li>
-<li>Enter in a <em>Cygwin64 session</em>.
-<code>`</code>bash
-mkdir -p ~/.ssh
+<li><p>Get your public and private <em>SSH keys</em> of your <em>GitHub account</em>.</p>
+</li>
+<li><p>Enter in a <em>Cygwin64 session</em>.</p>
+</li>
+</ul>
+<pre><code class="language-bash">mkdir -p ~/.ssh
 echo &quot;StrictHostKeyChecking no
 UserKnownHostsFile /dev/null
 ServerAliveInterval 30
 ServerAliveCountMax 3
-ControlMaster no</li>
-</ul>
-<p>Host github.com
+ControlMaster no
+
+Host github.com
   IdentityFile ~/.ssh/id_rsa_private_github
-&quot; &gt; ~/.ssh/config</p>
-<pre><code>- Store your public key to `~/.ssh/id_rsa_private_github.pub` and your private key to `~/.ssh/id_rsa_private_github`.
-- Set good permissions in the *SSH* config folder.
-```bash
-chmod 600 ~/.ssh/*
-chmod 700 ~/.ssh</code></pre><ul>
-<li>Configure your Git client settings. You need the <code>user.name</code> and <code>user.email</code> of your <em>GitHub account</em>. Enter in a <em>Cygwin64 session</em>.<pre><code class="language-bash">git config --system color.ui &quot;true&quot;
+&quot; &gt; ~/.ssh/config</code></pre>
+<ul>
+<li><p>Store your public key to <code>~/.ssh/id_rsa_private_github.pub</code> and your private key to <code>~/.ssh/id_rsa_private_github</code>.</p>
+</li>
+<li><p>Set good permissions in the <em>SSH</em> config folder.</p>
+</li>
+</ul>
+<pre><code class="language-bash">chmod 600 ~/.ssh/*
+chmod 700 ~/.ssh</code></pre>
+<ul>
+<li>Configure your Git client settings. You need the <code>user.name</code> and <code>user.email</code> of your <em>GitHub account</em>. Enter in a <em>Cygwin64 session</em>.</li>
+</ul>
+<pre><code class="language-bash">git config --system color.ui &quot;true&quot;
 git config --system alias.lg &quot;log --graph --pretty=format:&apos;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&apos; --abbrev-commit --date=relative&quot;
 git config --system user.name &quot;&lt;your user.name&gt;&quot;
 git config --system user.email &quot;&lt;your user.email&gt;&quot;
 git config --system http.sslVerify false</code></pre>
-</li>
-</ul>
 <h1 id="3-getting-started-for-centos-7-minimum">3. Getting started for CentOS 7 minimum</h1>
 <p>After you have completed the previous sections, follow the next steps.</p>
 <h2 id="3-1-clone-and-enter-in-the-git-root-directory-of-this-repository">3.1. Clone and enter in the git root directory of this repository</h2>
@@ -188,10 +194,10 @@ cd automatevmimages</code></pre>
 <li>Finish</li>
 </ul>
 <h2 id="3-3-build-the-image">3.3. Build the image</h2>
-<p>You need enter the username and userpass of the <em>Linux</em> admin account what is desired, and one optional parameter for the cloud-init default user (if this parameter is not provided then the default user is <code>cloud-user</code>.</p>
+<p>You need enter the username and userpass of the <em>Linux</em> admin account what is desired, and one optional parameter for the <code>cloud-init</code> default user (if this parameter is not provided then the default user is <code>cloud-user</code>.</p>
 <pre><code class="language-bash">bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]</code></pre>
 <p>When finished the build then will create the image files <strong>vmdk</strong>, <strong>ovf</strong>, <strong>ova</strong> and <strong>qcow2</strong> inside the images directory. See the configuration files in <a href="conf" title="Configuration Directory">Configuration Directory</a>.</p>
-<p>The name of the generated image files is as follows:</p>
+<p>The format name of the generated image files is as follows:</p>
 <pre><code class="language-bash">${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|ova|qcow2)</code></pre>
 <p>Example of <strong>CentOS 7 minimum</strong> configuration file:</p>
 <pre><code class="language-bash"># Variables to build Operating System
@@ -326,12 +332,12 @@ sudo hostnamectl --transient set-hostname myvm</code></pre>
 <pre><code class="language-bash">sudo /usr/local/bin/switch-to-GraphicalUserInterface.sh
 # Wait a bit to terminate this execution
 sudo reboot</code></pre>
-<p><strong>WARNING:</strong> Exist a bug in last package named <code>polkit</code> (<code>polkit-0.112-22.el7_7.1.x86_64</code>) consisting of copy-paste commands in ssh sessions only paste the first line <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1753037">https://bugzilla.redhat.com/show_bug.cgi?id=1753037</a>. In this link exists a workaround until release next version of this package.</p>
-<h2 id="3-7-convert-vmdk-image-to-work-inside-vmware-esxi-6-5-or-vmware-esxi-6-7">3.7. Convert vmdk image to work inside VMware ESXI 6.5 or VMware ESXI 6.7</h2>
+<p><strong>WARNING:</strong> Exist a bug in last package named <code>polkit</code> (<code>polkit-0.112-22.el7_7.1.x86_64</code>) consisting of copy-paste commands in ssh sessions only paste the first line. In the link <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1753037">https://bugzilla.redhat.com/show_bug.cgi?id=1753037</a> exists a workaround until release next version of this package.</p>
+<h2 id="3-7-convert-vmdk-image-to-work-inside-vmware-esxi-6-5-or-6-7">3.7. Convert vmdk image to work inside VMware ESXI 6.5 or 6.7</h2>
 <p>The image formats obtained <strong>vmdk</strong>, <strong>ovf</strong> or <strong>ova</strong> are compatible with <em>VMware Workstation Player</em> but not are compatible for <em>ESXI 6.5</em> or <em>ESXI 6.7</em>.</p>
-<p>For this reason need to use <em>VMware Workstation Player</em> for Windows to obtain a compatible virtual machine.</p>
+<p>For this reason you need to use <em>VMware Workstation Player</em> for Windows to obtain a compatible virtual machine.</p>
 <p>TODO</p>
-<h1 id="4-build-other-operationg-systems">4. Build other Operationg Systems</h1>
+<h1 id="4-build-other-operating-systems">4. Build other Operating Systems</h1>
 <p>Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).</p>
 </article></div><div style="background-color: #b4b2b2;width: 50px;height:50px;line-height: 50px;text-align: center;position: fixed;bottom: 10px;right: 10px;padding-top:5px;" onclick="document.documentElement.scrollTop = document.body.scrollTop =0;">
   <svg t="1533629773982" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1035" xlink="http://www.w3.org/1999/xlink" width="40" height="40"><defs><style type="text/css">@font-face { font-family: uc-nexus-iconfont; src: url("chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.woff") format("woff"), url("chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.ttf") format("truetype"); }

@@ -32,8 +32,8 @@
       - [3.6.1. Import the virtualized service](#361-import-the-virtualized-service)
       - [3.6.2. Configure the virtual machine](#362-configure-the-virtual-machine)
       - [3.6.3. Use the virtual machine](#363-use-the-virtual-machine)
-   - [3.7. Convert vmdk image to work inside VMware ESXI 6.5 or VMware ESXI 6.7](#37-convert-vmdk-image-to-work-inside-vmware-esxi-65-or-vmware-esxi-67)
-- [4. Build other Operationg Systems](#4-build-other-operationg-systems)
+   - [3.7. Convert vmdk image to work inside VMware ESXI 6.5 or 6.7](#37-convert-vmdk-image-to-work-inside-vmware-esxi-65-or-67)
+- [4. Build other Operating Systems](#4-build-other-operating-systems)
 
 <!-- /MDTOC -->
 
@@ -67,12 +67,12 @@ You need to do the next tasks.
 
 ## 2.1. Install VirtualBox
 
-Go to this URL https://www.virtualbox.org/wiki/Downloads and install latest *VirtualBox* for Windows.
+Go to this URL <https://www.virtualbox.org/wiki/Downloads> and install latest *VirtualBox* for Windows.
 
 
 ## 2.2. Install VMware Workstation Player
 
-Go to this URL https://www.vmware.com/go/downloadworkstationplayer and install latest *VMware Workstation Player* for Windows.
+Go to this URL <https://www.vmware.com/go/downloadworkstationplayer> and install latest *VMware Workstation Player* for Windows.
 
 This is optional step only if you will be use *VMware* or *ESXI*.
 
@@ -147,7 +147,9 @@ pip install --upgrade terrafile
 To work with <https://github.com> you need to do the next tasks. Example to use *Git* with *SSH*.
 
 - Get your public and private *SSH keys* of your *GitHub account*.
+
 - Enter in a *Cygwin64 session*.
+
 ```bash
 mkdir -p ~/.ssh
 echo "StrictHostKeyChecking no
@@ -160,13 +162,18 @@ Host github.com
   IdentityFile ~/.ssh/id_rsa_private_github
 " > ~/.ssh/config
 ```
+
 - Store your public key to `~/.ssh/id_rsa_private_github.pub` and your private key to `~/.ssh/id_rsa_private_github`.
+
 - Set good permissions in the *SSH* config folder.
+
 ```bash
 chmod 600 ~/.ssh/*
 chmod 700 ~/.ssh
 ```
+
 - Configure your Git client settings. You need the `user.name` and `user.email` of your *GitHub account*. Enter in a *Cygwin64 session*.
+
 ```bash
 git config --system color.ui "true"
 git config --system alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative"
@@ -211,7 +218,7 @@ A *QEMU for Windows* installer window appears and do the following:
 
 ## 3.3. Build the image
 
-You need enter the username and userpass of the *Linux* admin account what is desired, and one optional parameter for the cloud-init default user (if this parameter is not provided then the default user is `cloud-user`.
+You need enter the username and userpass of the *Linux* admin account what is desired, and one optional parameter for the `cloud-init` default user (if this parameter is not provided then the default user is `cloud-user`.
 
 ```bash
 bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]
@@ -219,7 +226,7 @@ bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass [--defaul
 
 When finished the build then will create the image files **vmdk**, **ovf**, **ova** and **qcow2** inside the images directory. See the configuration files in [Configuration Directory](conf "Configuration Directory").
 
-The name of the generated image files is as follows:
+The format name of the generated image files is as follows:
 
 ```bash
 ${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|ova|qcow2)
@@ -402,18 +409,18 @@ sudo /usr/local/bin/switch-to-GraphicalUserInterface.sh
 sudo reboot
 ```
 
-**WARNING:** Exist a bug in last package named `polkit` (`polkit-0.112-22.el7_7.1.x86_64`) consisting of copy-paste commands in ssh sessions only paste the first line https://bugzilla.redhat.com/show_bug.cgi?id=1753037. In this link exists a workaround until release next version of this package.
+**WARNING:** Exist a bug in last package named `polkit` (`polkit-0.112-22.el7_7.1.x86_64`) consisting of copy-paste commands in ssh sessions only paste the first line. In the link <https://bugzilla.redhat.com/show_bug.cgi?id=1753037> exists a workaround until release next version of this package.
 
 
-## 3.7. Convert vmdk image to work inside VMware ESXI 6.5 or VMware ESXI 6.7
+## 3.7. Convert vmdk image to work inside VMware ESXI 6.5 or 6.7
 
 The image formats obtained **vmdk**, **ovf** or **ova** are compatible with *VMware Workstation Player* but not are compatible for *ESXI 6.5* or *ESXI 6.7*.
 
-For this reason need to use *VMware Workstation Player* for Windows to obtain a compatible virtual machine.
+For this reason you need to use *VMware Workstation Player* for Windows to obtain a compatible virtual machine.
 
 TODO
 
 
-# 4. Build other Operationg Systems
+# 4. Build other Operating Systems
 
 Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).
