@@ -451,6 +451,12 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 "/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool" --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration "C:\VMware\CentOS7.7-1908-Minimal-20191107\CentOS7.7-1908-Minimal-20191107.vmx" "C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191107-esx14.ovf"
 ```
 
+- To get an image for *ESXI* version `6.7 U2` or `6.8` or `6.9` launch:
+
+```
+"/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool" --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration "C:\VMware\CentOS7.7-1908-Minimal-20191107\CentOS7.7-1908-Minimal-20191107.vmx" "C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191107-esx15.ovf"
+```
+
 
 # 4. Build other Operating Systems
 
