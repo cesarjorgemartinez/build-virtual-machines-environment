@@ -414,7 +414,7 @@ sudo reboot
 
 ## 3.7. Convert vmdk image to work inside VMware ESXI
 
-The image formats obtained **vmdk**, **ovf** or **ova** are compatible with *VMware Workstation Player* but not are compatible for *ESXI*.
+The image formats obtained **vmdk**, **ovf** or **ova** are compatible with *VMware Workstation Player* but they are not compatible for *ESXI*.
 
 For this reason you need to use *VMware Workstation Player* for Windows to obtain a compatible virtual machine.
 
