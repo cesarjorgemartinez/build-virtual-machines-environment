@@ -57,7 +57,7 @@
 <li><a href="#363-use-the-virtual-machine">3.6.3. Use the virtual machine</a></li>
 </ul>
 </li>
-<li><a href="#37-convert-vmdk-image-to-work-inside-vmware-esxi-65-or-67">3.7. Convert vmdk image to work inside VMware ESXI 6.5 or 6.7</a></li>
+<li><a href="#37-convert-vmdk-image-to-work-inside-vmware-esxi">3.7. Convert vmdk image to work inside VMware ESXI</a></li>
 </ul>
 </li>
 <li><a href="#4-build-other-operating-systems">4. Build other Operating Systems</a></li>
@@ -333,11 +333,37 @@ sudo hostnamectl --transient set-hostname myvm</code></pre>
 # Wait a bit to terminate this execution
 sudo reboot</code></pre>
 <p><strong>WARNING:</strong> Exist a bug in last package named <code>polkit</code> (<code>polkit-0.112-22.el7_7.1.x86_64</code>) consisting of copy-paste commands in ssh sessions only paste the first line. In the link <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1753037">https://bugzilla.redhat.com/show_bug.cgi?id=1753037</a> exists a workaround until release next version of this package.</p>
-<h2 id="3-7-convert-vmdk-image-to-work-inside-vmware-esxi-6-5-or-6-7">3.7. Convert vmdk image to work inside VMware ESXI 6.5 or 6.7</h2>
-<p>The image formats obtained <strong>vmdk</strong>, <strong>ovf</strong> or <strong>ova</strong> are compatible with <em>VMware Workstation Player</em> but not are compatible for <em>ESXI 6.5</em> or <em>ESXI 6.7</em>.</p>
+<h2 id="3-7-convert-vmdk-image-to-work-inside-vmware-esxi">3.7. Convert vmdk image to work inside VMware ESXI</h2>
+<p>The image formats obtained <strong>vmdk</strong>, <strong>ovf</strong> or <strong>ova</strong> are compatible with <em>VMware Workstation Player</em> but not are compatible for <em>ESXI</em>.</p>
 <p>For this reason you need to use <em>VMware Workstation Player</em> for Windows to obtain a compatible virtual machine.</p>
-<p>TODO</p>
-<h1 id="4-build-other-operating-systems">4. Build other Operating Systems</h1>
+<p>Then follow these steps:</p>
+<ul>
+<li>Open <em>VMware Workstation Player</em></li>
+<li>Click in <code>Player-&gt;File-&gt;Open...</code> and select the <strong>ovf</strong> file <code>C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191107.ovf</code></li>
+<li>Name for the new virtual machine: <code>CentOS7.7-1908-Minimal-20191107</code></li>
+<li>Storage path for the new virtual machine: <code>C:\VMware\CentOS7.7-1908-Minimal-20191107</code></li>
+<li>Click in <code>Import</code> button</li>
+<li>Click in <code>Retry</code> button to relax OVF specifications</li>
+<li>Click in <code>Edit virtual machine settings</code></li>
+<li>Options -&gt; General -&gt; Guest Operation System: <code>Linux</code></li>
+<li>Options -&gt; General -&gt; Guest Operation System -&gt; Version: <code>Centos 7 64-bit</code></li>
+<li>Options -&gt; VMware Tools -&gt; VMware Tools features -&gt; Syncronize guest time with host: <code>Enabled</code></li>
+<li>Network Adapter -&gt; Network connection -&gt; Bridged: Connected directly to the physical network: <code>Enabled</code></li>
+<li>Network Adapter -&gt; Network connection -&gt; Replicate physical network connection state: <code>Disabled</code></li>
+<li>Network Adapter -&gt; Network connection -&gt; Configure Adapters -&gt; Realtek PCIe GBE Family Controller: <code>Enabled</code></li>
+<li>Network Adapter -&gt; Network connection -&gt; Configure Adapters -&gt; Other adapters: <code>Disabled</code></li>
+</ul>
+<p>Then you have an image imported into <em>VMware Workstation Player</em>. Here you need to choose the <em>ESXI</em> version reading the article <a href="https://kb.vmware.com/s/article/1003746">https://kb.vmware.com/s/article/1003746</a> and follow these steps:</p>
+<ul>
+<li><p>Enter in a <em>Cygwin64 session</em>.</p>
+</li>
+<li><p>To get an image for <em>ESXI</em> version <code>6.5</code> launch:</p>
+</li>
+</ul>
+<pre><code>&quot;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&quot; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration &quot;C:\VMware\CentOS7.7-1908-Minimal-20191107\CentOS7.7-1908-Minimal-20191107.vmx&quot; &quot;C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191107-esx13.ovf&quot;</code></pre><ul>
+<li>To get an image for <em>ESXI</em> version <code>6.7</code> launch:</li>
+</ul>
+<pre><code>&quot;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&quot; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration &quot;C:\VMware\CentOS7.7-1908-Minimal-20191107\CentOS7.7-1908-Minimal-20191107.vmx&quot; &quot;C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191107-esx14.ovf&quot;</code></pre><h1 id="4-build-other-operating-systems">4. Build other Operating Systems</h1>
 <p>Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).</p>
 </article></div><div style="background-color: #b4b2b2;width: 50px;height:50px;line-height: 50px;text-align: center;position: fixed;bottom: 10px;right: 10px;padding-top:5px;" onclick="document.documentElement.scrollTop = document.body.scrollTop =0;">
   <svg t="1533629773982" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1035" xlink="http://www.w3.org/1999/xlink" width="40" height="40"><defs><style type="text/css">@font-face { font-family: uc-nexus-iconfont; src: url("chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.woff") format("woff"), url("chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.ttf") format("truetype"); }

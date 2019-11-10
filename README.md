@@ -32,7 +32,7 @@
       - [3.6.1. Import the virtualized service](#361-import-the-virtualized-service)
       - [3.6.2. Configure the virtual machine](#362-configure-the-virtual-machine)
       - [3.6.3. Use the virtual machine](#363-use-the-virtual-machine)
-   - [3.7. Convert vmdk image to work inside VMware ESXI 6.5 or 6.7](#37-convert-vmdk-image-to-work-inside-vmware-esxi-65-or-67)
+   - [3.7. Convert vmdk image to work inside VMware ESXI](#37-convert-vmdk-image-to-work-inside-vmware-esxi)
 - [4. Build other Operating Systems](#4-build-other-operating-systems)
 
 <!-- /MDTOC -->
@@ -412,13 +412,44 @@ sudo reboot
 **WARNING:** Exist a bug in last package named `polkit` (`polkit-0.112-22.el7_7.1.x86_64`) consisting of copy-paste commands in ssh sessions only paste the first line. In the link <https://bugzilla.redhat.com/show_bug.cgi?id=1753037> exists a workaround until release next version of this package.
 
 
-## 3.7. Convert vmdk image to work inside VMware ESXI 6.5 or 6.7
+## 3.7. Convert vmdk image to work inside VMware ESXI
 
-The image formats obtained **vmdk**, **ovf** or **ova** are compatible with *VMware Workstation Player* but not are compatible for *ESXI 6.5* or *ESXI 6.7*.
+The image formats obtained **vmdk**, **ovf** or **ova** are compatible with *VMware Workstation Player* but not are compatible for *ESXI*.
 
 For this reason you need to use *VMware Workstation Player* for Windows to obtain a compatible virtual machine.
 
-TODO
+Then follow these steps:
+
+- Open *VMware Workstation Player*
+- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191107.ovf`
+- Name for the new virtual machine: `CentOS7.7-1908-Minimal-20191107`
+- Storage path for the new virtual machine: `C:\VMware\CentOS7.7-1908-Minimal-20191107`
+- Click in `Import` button
+- Click in `Retry` button to relax OVF specifications
+- Click in `Edit virtual machine settings`
+- Options -> General -> Guest Operation System: `Linux`
+- Options -> General -> Guest Operation System -> Version: `Centos 7 64-bit`
+- Options -> VMware Tools -> VMware Tools features -> Syncronize guest time with host: `Enabled`
+- Network Adapter -> Network connection -> Bridged: Connected directly to the physical network: `Enabled`
+- Network Adapter -> Network connection -> Replicate physical network connection state: `Disabled`
+- Network Adapter -> Network connection -> Configure Adapters -> Realtek PCIe GBE Family Controller: `Enabled`
+- Network Adapter -> Network connection -> Configure Adapters -> Other adapters: `Disabled`
+
+Then you have an image imported into *VMware Workstation Player*. Here you need to choose the *ESXI* version reading the article <https://kb.vmware.com/s/article/1003746> and follow these steps:
+
+- Enter in a *Cygwin64 session*.
+
+- To get an image for *ESXI* version `6.5` launch:
+
+```
+"/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool" --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration "C:\VMware\CentOS7.7-1908-Minimal-20191107\CentOS7.7-1908-Minimal-20191107.vmx" "C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191107-esx13.ovf"
+```
+
+- To get an image for *ESXI* version `6.7` launch:
+
+```
+"/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool" --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration "C:\VMware\CentOS7.7-1908-Minimal-20191107\CentOS7.7-1908-Minimal-20191107.vmx" "C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191107-esx14.ovf"
+```
 
 
 # 4. Build other Operating Systems
