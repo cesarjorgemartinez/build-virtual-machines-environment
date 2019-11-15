@@ -409,8 +409,6 @@ sudo /usr/local/bin/switch-to-GraphicalUserInterface.sh
 sudo reboot
 ```
 
-**WARNING:** Exist a bug in last package named `polkit` (`polkit-0.112-22.el7_7.1.x86_64`) consisting of copy-paste commands in ssh sessions only paste the first line. In the link <https://bugzilla.redhat.com/show_bug.cgi?id=1753037> exists a workaround until release next version of this package.
-
 
 ## 3.7. Convert vmdk image to work inside VMware ESXI
 
