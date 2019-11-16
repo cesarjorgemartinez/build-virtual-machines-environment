@@ -71,7 +71,6 @@
 <ul>
 <li><strong>vmdk:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>ESXI</em>.</li>
 <li><strong>ovf:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>ESXI</em>.</li>
-<li><strong>ova:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>ESXI</em>.</li>
 <li><strong>qcow2:</strong> For <em>OpenStack</em> (<em>kvm</em>) and <em>Nutanix</em>.</li>
 </ul>
 <p>The virtualization system <em>VirtualBox</em> also uses the <strong>vdi</strong> format. but it is not necessary since the <em>VirtualBox</em> itself converts the <strong>vmdk</strong> format into <strong>vdi</strong>.</p>
@@ -196,9 +195,9 @@ cd automatevmimages</code></pre>
 <h2 id="3-3-build-the-image">3.3. Build the image</h2>
 <p>You need enter the username and userpass of the <em>Linux</em> admin account what is desired, and one optional parameter for the <code>cloud-init</code> default user (if this parameter is not provided then the default user is <code>cloud-user</code>.</p>
 <pre><code class="language-bash">bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]</code></pre>
-<p>When finished the build then will create the image files <strong>vmdk</strong>, <strong>ovf</strong>, <strong>ova</strong> and <strong>qcow2</strong> inside the images directory. See the configuration files in <a href="conf" title="Configuration Directory">Configuration Directory</a>.</p>
+<p>When finished the build then will create the image files <strong>vmdk</strong>, <strong>ovf</strong> and <strong>qcow2</strong> inside the images directory. See the configuration files in <a href="conf" title="Configuration Directory">Configuration Directory</a>.</p>
 <p>The format name of the generated image files is as follows:</p>
-<pre><code class="language-bash">${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|ova|qcow2)</code></pre>
+<pre><code class="language-bash">${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|qcow2)</code></pre>
 <p>Example of <strong>CentOS 7 minimum</strong> configuration file:</p>
 <pre><code class="language-bash"># Variables to build Operating System
 export PACKER_VERSION=&quot;1.4.5&quot;
@@ -333,7 +332,7 @@ sudo hostnamectl --transient set-hostname myvm</code></pre>
 # Wait a bit to terminate this execution
 sudo reboot</code></pre>
 <h2 id="3-7-convert-vmdk-image-to-work-inside-vmware-esxi">3.7. Convert vmdk image to work inside VMware ESXI</h2>
-<p>The image formats obtained <strong>vmdk</strong>, <strong>ovf</strong> or <strong>ova</strong> are compatible with <em>VMware Workstation Player</em> but they are not compatible for <em>ESXI</em>.</p>
+<p>The image formats obtained <strong>vmdk</strong> or <strong>ovf</strong> are compatible with <em>VMware Workstation Player</em> but they are not compatible for <em>ESXI</em>.</p>
 <p>For this reason you need to use <em>VMware Workstation Player</em> for Windows to obtain a compatible virtual machine.</p>
 <p>Then follow these steps:</p>
 <ul>

@@ -145,11 +145,6 @@ ONLYNAME_IMAGE="$(basename -s .vmdk ${VMDK_FILENAME})"
 echo "INFO: VMDK file to convert <${VMDK_FILENAME}>"
 echo "INFO: Image name to convert <${ONLYNAME_IMAGE}>"
 
-echo "INFO: Create ova file from vmdk and ovf files"
-tar cf ${ONLYNAME_IMAGE}.ova \
-${ONLYNAME_IMAGE}.vmdk \
-${ONLYNAME_IMAGE}.ovf
-
 echo "INFO: Convert vmdk file to qcow2"
 qemu-img.exe convert -c -f vmdk ${ONLYNAME_IMAGE}.vmdk -O qcow2 ${ONLYNAME_IMAGE}.qcow2
 

@@ -45,7 +45,6 @@ This project helps to build automatically *Virtual Machine Images of Operating S
 The image formats that are generated are the following:
 - **vmdk:** For *VirtualBox*, *VMware* and *ESXI*.
 - **ovf:** For *VirtualBox*, *VMware* and *ESXI*.
-- **ova:** For *VirtualBox*, *VMware* and *ESXI*.
 - **qcow2:** For *OpenStack* (*kvm*) and *Nutanix*.
 
 The virtualization system *VirtualBox* also uses the **vdi** format. but it is not necessary since the *VirtualBox* itself converts the **vmdk** format into **vdi**.
@@ -224,12 +223,12 @@ You need enter the username and userpass of the *Linux* admin account what is de
 bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]
 ```
 
-When finished the build then will create the image files **vmdk**, **ovf**, **ova** and **qcow2** inside the images directory. See the configuration files in [Configuration Directory](conf "Configuration Directory").
+When finished the build then will create the image files **vmdk**, **ovf** and **qcow2** inside the images directory. See the configuration files in [Configuration Directory](conf "Configuration Directory").
 
 The format name of the generated image files is as follows:
 
 ```bash
-${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|ova|qcow2)
+${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|qcow2)
 ```
 
 Example of **CentOS 7 minimum** configuration file:
@@ -412,7 +411,7 @@ sudo reboot
 
 ## 3.7. Convert vmdk image to work inside VMware ESXI
 
-The image formats obtained **vmdk**, **ovf** or **ova** are compatible with *VMware Workstation Player* but they are not compatible for *ESXI*.
+The image formats obtained **vmdk** or **ovf** are compatible with *VMware Workstation Player* but they are not compatible for *ESXI*.
 
 For this reason you need to use *VMware Workstation Player* for Windows to obtain a compatible virtual machine.
 
