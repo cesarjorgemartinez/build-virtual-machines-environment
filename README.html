@@ -346,23 +346,26 @@ sudo reboot</code></pre>
 <li>Options -&gt; General -&gt; Guest Operation System: <code>Linux</code></li>
 <li>Options -&gt; General -&gt; Guest Operation System -&gt; Version: <code>Centos 7 64-bit</code></li>
 <li>Options -&gt; VMware Tools -&gt; VMware Tools features -&gt; Syncronize guest time with host: <code>Enabled</code></li>
-<li>Network Adapter -&gt; Network connection -&gt; Bridged: Connected directly to the physical network: <code>Enabled</code></li>
-<li>Network Adapter -&gt; Network connection -&gt; Replicate physical network connection state: <code>Disabled</code></li>
-<li>Network Adapter -&gt; Network connection -&gt; Configure Adapters -&gt; Realtek PCIe GBE Family Controller: <code>Enabled</code></li>
-<li>Network Adapter -&gt; Network connection -&gt; Configure Adapters -&gt; Other adapters: <code>Disabled</code></li>
+<li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Bridged: Connected directly to the physical network: <code>Enabled</code></li>
+<li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Replicate physical network connection state: <code>Disabled</code></li>
+<li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Configure Adapters -&gt; Realtek PCIe GBE Family Controller: <code>Enabled</code></li>
+<li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Configure Adapters -&gt; Other adapters: <code>Disabled</code></li>
 </ul>
 <p>Then you have an image imported into <em>VMware Workstation Player</em>. Here you need to choose the <em>ESXI</em> version reading the article <a href="https://kb.vmware.com/s/article/1003746">https://kb.vmware.com/s/article/1003746</a> and follow these steps:</p>
 <ul>
 <li><p>Enter in a <em>Cygwin64 session</em>.</p>
 </li>
-<li><p>To get an image for <em>ESXI</em> version <code>6.5</code> launch:</p>
+<li><p>To get an image for <em>ESXI</em> version <code>6.0</code> launch:</p>
 </li>
+</ul>
+<pre><code>&quot;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&quot; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration &quot;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&quot; &quot;C:\cygwin64\home\${USERNAME}\automatevmimages\images\CentOS7.7-1908-Minimal-20191115-esx11.ovf&quot;</code></pre><ul>
+<li>To get an image for <em>ESXI</em> version <code>6.5</code> launch:</li>
 </ul>
 <pre><code>&quot;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&quot; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration &quot;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&quot; &quot;C:\cygwin64\home\${USERNAME}\automatevmimages\images\CentOS7.7-1908-Minimal-20191115-esx13.ovf&quot;</code></pre><ul>
 <li>To get an image for <em>ESXI</em> version <code>6.7</code> launch:</li>
 </ul>
 <pre><code>&quot;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&quot; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration &quot;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&quot; &quot;C:\cygwin64\home\${USERNAME}\automatevmimages\images\CentOS7.7-1908-Minimal-20191115-esx14.ovf&quot;</code></pre><ul>
-<li>To get an image for <em>ESXI</em> version <code>6.7 U2</code> or <code>6.8</code> or <code>6.9</code> launch:</li>
+<li>To get an image for <em>ESXI</em> version <code>6.7 U2</code> or <code>6.8.x</code> or <code>6.9.x</code> launch:</li>
 </ul>
 <pre><code>&quot;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&quot; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration &quot;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&quot; &quot;C:\cygwin64\home\${USERNAME}\automatevmimages\images\CentOS7.7-1908-Minimal-20191115-esx15.ovf&quot;</code></pre><h1 id="4-build-other-operating-systems">4. Build other Operating Systems</h1>
 <p>Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).</p>
