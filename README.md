@@ -4,7 +4,7 @@
 **Author: Cesar Jorge Martínez**
 <br>
 
-**Site: <https://cesarjorgemartinez.github.io/automatevmimages>**
+**Site: <https://cesarjorgemartinez.github.io/automate-vm-linux-images>**
 <br>
 
 **Read the LICENSE [GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007](LICENSE "GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007")**
