@@ -4,7 +4,7 @@ MYUSER=$(whoami)
 MYHOSTNAME=$(uname -n)
 MYPROCESSES=$(ps -Afl | wc -l)
 MYINTERFACES="$(ip -4 ad | grep 'state' | awk -F ": " '!/^[0-9]*: ?lo/ {print $2}')"
-MYCPUCORES="$(grep -c ^processor /proc/cpuinfo)"
+MYCPUPHYSICAL="$(grep -c ^processor /proc/cpuinfo)"
 
 COLOR_COLUMN="\e[1m"
 COLOR_VALUE="\e[31m"
@@ -21,7 +21,9 @@ do
   ip6=$(ip ad show dev ${ifacename} | grep -Fw inet6 | awk '{print $2}')
   printf "%-18s%-18s%-46s%-46s\n" "${ifacename}" "${mac}" "${ip4}" "${ip6}" | sed -e 's/[[:space:]]*$//'
 done)${RESET_COLORS}
-${COLOR_COLUMN}CPU CORES${RESET_COLORS}..........: ${COLOR_VALUE}${MYCPUCORES}${RESET_COLORS}
+${COLOR_COLUMN}CPU PHYSICAL${RESET_COLORS}.......: ${COLOR_VALUE}${MYCPUPHYSICAL}${RESET_COLORS}
+${COLOR_COLUMN}CPU DETAIL INFO${RESET_COLORS}.......:
+${COLOR_VALUE}$(lscpu | egrep 'Model name|Socket|Thread|NUMA|CPU\(s\)')${RESET_COLORS}
 ${COLOR_COLUMN}MEMORY${RESET_COLORS}.............:
 ${COLOR_VALUE}$(free -h)${RESET_COLORS}
 ${COLOR_COLUMN}FILESYSTEMS${RESET_COLORS}........:
