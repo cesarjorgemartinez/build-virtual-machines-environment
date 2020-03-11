@@ -22,8 +22,9 @@ do
   printf "%-18s%-18s%-46s%-46s\n" "${ifacename}" "${mac}" "${ip4}" "${ip6}" | sed -e 's/[[:space:]]*$//'
 done)${RESET_COLORS}
 ${COLOR_COLUMN}CPU PHYSICAL${RESET_COLORS}.......: ${COLOR_VALUE}${MYCPUPHYSICAL}${RESET_COLORS}
-${COLOR_COLUMN}CPU DETAIL INFO${RESET_COLORS}.......:
-${COLOR_VALUE}$(lscpu | egrep 'Model name|Socket|Thread|NUMA|CPU\(s\)')${RESET_COLORS}
+${COLOR_COLUMN}CPU VIRTUAL${RESET_COLORS}........: ${COLOR_VALUE}$(nproc --all)${RESET_COLORS}
+${COLOR_COLUMN}CPU DETAIL INFO${RESET_COLORS}....:
+${COLOR_VALUE}$(lscpu | fgrep -e 'CPU' -e 'Thread' -e 'Core' -e 'Socket' -e 'Model name' -e 'NUMA')${RESET_COLORS}
 ${COLOR_COLUMN}MEMORY${RESET_COLORS}.............:
 ${COLOR_VALUE}$(free -h)${RESET_COLORS}
 ${COLOR_COLUMN}FILESYSTEMS${RESET_COLORS}........:
