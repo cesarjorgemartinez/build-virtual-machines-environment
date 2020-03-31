@@ -177,8 +177,8 @@ git config --system http.sslVerify false</code></pre>
 <p>After you have completed the previous sections, follow the next steps.</p>
 <h2 id="3-1-clone-and-enter-in-the-git-root-directory-of-this-repository">3.1. Clone and enter in the git root directory of this repository</h2>
 <p>Do the following tasks:</p>
-<pre><code class="language-bash">git clone git@github.com:cesarjorgemartinez/automatevmimages.git
-cd automatevmimages</code></pre>
+<pre><code class="language-bash">git clone git@github.com:cesarjorgemartinez/automate-virtual-machine-linux-images.git
+cd automate-virtual-machine-linux-images</code></pre>
 <h2 id="3-2-get-the-software-to-work-for-this-project">3.2. Get the software to work for this project</h2>
 <p>This software is <em>Packer</em>, <em>QEMU for Windows</em> and the <strong>iso</strong> image of <strong>CentOS 7 minimum</strong>. See the configuration files in <a href="conf" title="Configuration Directory">Configuration Directory</a>.</p>
 <pre><code class="language-bash">bin/getswandisoCentOS7Minimal.sh</code></pre>
@@ -285,7 +285,7 @@ PROCESSES..........: 154 running
 <p>To import virtualized service in <em>VirtualBox</em> to create a virtual machine perform the following steps using the <code>Oracle VM VirtualBox Administrator</code>.</p>
 <ul>
 <li>Click in <code>Archive -&gt; Import virtualized service...</code></li>
-<li>Click in <code>Select a virtualized service file to import...</code> in <code>Service to import</code>. Example <code>C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191115.ovf</code></li>
+<li>Click in <code>Select a virtualized service file to import...</code> in <code>Service to import</code>. Example <code>C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS7.7-1908-Minimal-20191115.ovf</code></li>
 <li>Name: <code>myvm</code></li>
 <li>Type of guest OS: <code>Red Hat (64-bit)</code></li>
 <li>CPU: <code>1</code></li>
@@ -337,7 +337,7 @@ sudo reboot</code></pre>
 <p>Then follow these steps:</p>
 <ul>
 <li>Open <em>VMware Workstation Player</em></li>
-<li>Click in <code>Player-&gt;File-&gt;Open...</code> and select the <strong>ovf</strong> file <code>C:\cygwin64\home\user\automatevmimages\images\CentOS7.7-1908-Minimal-20191115.ovf</code></li>
+<li>Click in <code>Player-&gt;File-&gt;Open...</code> and select the <strong>ovf</strong> file <code>C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS7.7-1908-Minimal-20191115.ovf</code></li>
 <li>Name for the new virtual machine: <code>CentOS7.7-1908-Minimal-20191115</code></li>
 <li>Storage path for the new virtual machine: <code>C:\VMware\CentOS7.7-1908-Minimal-20191115</code></li>
 <li>Click in <code>Import</code> button</li>
@@ -358,16 +358,16 @@ sudo reboot</code></pre>
 <li><p>To get an image for <em>ESXI</em> version <code>6.0</code> launch:</p>
 </li>
 </ul>
-<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automatevmimages\images\CentOS7.7-1908-Minimal-20191115-esx11.ovf&apos;</code></pre><ul>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS7.7-1908-Minimal-20191115-esx11.ovf&apos;</code></pre><ul>
 <li>To get an image for <em>ESXI</em> version <code>6.5</code> launch:</li>
 </ul>
-<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automatevmimages\images\CentOS7.7-1908-Minimal-20191115-esx13.ovf&apos;</code></pre><ul>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS7.7-1908-Minimal-20191115-esx13.ovf&apos;</code></pre><ul>
 <li>To get an image for <em>ESXI</em> version <code>6.7</code> launch:</li>
 </ul>
-<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automatevmimages\images\CentOS7.7-1908-Minimal-20191115-esx14.ovf&apos;</code></pre><ul>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS7.7-1908-Minimal-20191115-esx14.ovf&apos;</code></pre><ul>
 <li>To get an image for <em>ESXI</em> version <code>6.7 U2</code> or <code>6.8.x</code> or <code>6.9.x</code> launch:</li>
 </ul>
-<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automatevmimages\images\CentOS7.7-1908-Minimal-20191115-esx15.ovf&apos;</code></pre><h1 id="4-build-other-operating-systems">4. Build other Operating Systems</h1>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS7.7-1908-Minimal-20191115-esx15.ovf&apos;</code></pre><h1 id="4-build-other-operating-systems">4. Build other Operating Systems</h1>
 <p>Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).</p>
 </article></div><div style="background-color: #b4b2b2;width: 50px;height:50px;line-height: 50px;text-align: center;position: fixed;bottom: 10px;right: 10px;padding-top:5px;" onclick="document.documentElement.scrollTop = document.body.scrollTop =0;">
   <svg t="1533629773982" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1035" xlink="http://www.w3.org/1999/xlink" width="40" height="40"><defs><style type="text/css">@font-face { font-family: uc-nexus-iconfont; src: url("chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.woff") format("woff"), url("chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.ttf") format("truetype"); }
