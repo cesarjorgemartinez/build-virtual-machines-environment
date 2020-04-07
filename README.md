@@ -66,7 +66,7 @@ You need to do the next tasks.
 
 ## 2.1. Install VirtualBox
 
-Go to this URL <https://www.virtualbox.org/wiki/Downloads> and install latest *VirtualBox* for Windows.
+Go to this URL <https://www.virtualbox.org/wiki/Downloads> and install latest *VirtualBox* for Windows. You need to ensure that in addition to installing *VirtualBox* you also install *Oracle VM VirtualBox Extension Pack*.
 
 
 ## 2.2. Install VMware Workstation Player
