@@ -79,7 +79,7 @@ hs_err_pid*
 # Specific folders
 images/
 isos/
-output-virtualbox-iso/
-packer_cache/
-software/
+# output-virtualbox-iso/
+# packer_cache/
+qemuinstaller/
 
