@@ -82,4 +82,5 @@ isos/
 # output-virtualbox-iso/
 # packer_cache/
 qemuinstaller/
+CentOS7Minimal/packer-software/
 
