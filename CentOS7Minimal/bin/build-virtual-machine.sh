@@ -131,7 +131,7 @@ then
   sed -i -e 's/-disk001//g' ${HOME_BASEDIR}/output-virtualbox-iso/${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.ovf
 fi
 
-echo "INFO: Remove all images named as <${PARENT_HOME_BASEDIR}/images/${SO_DISTRIBUTION}.${SO_MAJORVERSION}*>
+echo "INFO: Remove all images named as <${PARENT_HOME_BASEDIR}/images/${SO_DISTRIBUTION}.${SO_MAJORVERSION}*>"
 mkdir -p ${PARENT_HOME_BASEDIR}/images
 rm -rf ${PARENT_HOME_BASEDIR}/images/${SO_DISTRIBUTION}.${SO_MAJORVERSION}*
 echo "INFO: Move vmdk and ovf files from <${HOME_BASEDIR}/output-virtualbox-iso> to <${PARENT_HOME_BASEDIR}/images>"
