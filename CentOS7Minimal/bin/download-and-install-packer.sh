@@ -12,7 +12,7 @@ SCRIPT_BASEDIR="$(dirname $(readlink -f "${BASH_SOURCE[0]}"))"
 HOME_BASEDIR="$(dirname $(readlink -f "${SCRIPT_BASEDIR}"))"
 cd ${HOME_BASEDIR}
 set -e
-source ${HOME_BASEDIR}/conf/settings.conf
+source ${HOME_BASEDIR}/conf/virtual-machine.conf
 
 rm -rf ${HOME_BASEDIR}/packer-software
 mkdir -p ${HOME_BASEDIR}/packer-software

@@ -287,7 +287,7 @@ When build this image the following files in [Files for Centos7 Directory](files
 
 * **guest-vmtools.sh**: Process that install and configure the *GuestTools* for *VirtualBox* or *VMwareTools* for *VMware* or *ESXI*. Or remove these tools if boot in other virtual environments. Installed in `/usr/local/bin/guest-vmtools.sh`. See [guest-vmtools.sh](files/CentOS7/guest-vmtools.sh "guest-vmtools.sh").
 
-* **hostinfo.sh**: Process that informs over basic properties of a host (CPU, memory, etc). Installed in `/usr/local/bin/hostinfo.sh`. See [hostinfo.sh](files/CentOS7/hostinfo.sh "hostinfo.sh").
+* **host-info.sh**: Process that informs over basic properties of a host (CPU, memory, etc). Installed in `/usr/local/bin/host-info.sh`. See [host-info.sh](files/CentOS7/host-info.sh "host-info.sh").
 
   Execution example:
   ```bash
@@ -397,7 +397,7 @@ sudo hostnamectl --transient set-hostname myvm
 Get basic properties of this virtual machine:
 
 ```bash
-/usr/local/bin/hostinfo.sh
+/usr/local/bin/host-info.sh
 ```
 
 Switch to `Graphical User Interface` for this virtual machine:

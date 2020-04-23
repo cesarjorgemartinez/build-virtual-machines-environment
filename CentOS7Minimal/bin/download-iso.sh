@@ -13,7 +13,7 @@ HOME_BASEDIR="$(dirname $(readlink -f "${SCRIPT_BASEDIR}"))"
 PARENT_HOME_BASEDIR="$(dirname $(readlink -f "${HOME_BASEDIR}"))"
 cd ${HOME_BASEDIR}
 set -e
-source ${HOME_BASEDIR}/conf/settings.conf
+source ${HOME_BASEDIR}/conf/virtual-machine.conf
 
 echo "INFO: show environment variables"
 env | egrep '^PACKER_|^SO_|^VBOXPATH=|^QEMUPATH=|^PATH=' | sort
