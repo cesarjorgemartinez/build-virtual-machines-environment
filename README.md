@@ -58,15 +58,13 @@ These images are ideal to work as servers in *Cloud*, *traditional* or *developm
 
 To work with this software you need **Windows 10 for 64 bits** and **CygWin 64 bits** to use **Linux-Bash** commands.
 
-For now you can only build an image of **CentOS 7 minimum**,
-
 
 # 2. Operating Systems that can be built
 
 Actually you can build the following Operating Systems:
 
 - CentOS 7 Minimal
-- Centos 8 Minimal
+- CentOS 8 Minimal
 
 
 # 3. Create and configure the environment
@@ -192,17 +190,12 @@ git config --system http.sslVerify false
 ```
 
 
------------------ TODO
------------------ TODO
------------------ TODO
-
-
-# 4. Getting started for CentOS 7 Minimal
+# 4. Getting started
 
 After you have completed the previous sections, follow the next steps.
 
 
-## 4.1. Clone and enter in the git root directory of this repository
+## 4.1. Clone and enter into the git root directory of this repository
 
 Do the following tasks:
 
@@ -212,15 +205,15 @@ cd automate-virtual-machine-linux-images
 ```
 
 
-## 4.2. Get the software to work for this project
+## 4.2. Install QEMU for Windows
 
-This software is *Packer*, *QEMU for Windows* and the **iso** image of **CentOS 7 minimum**. See the configuration files in [Configuration Directory](conf "Configuration Directory").
+The *QEMU for Windows* is needed to convert the **vmdk** to **qcow2** image format. Launch this command:
 
 ```bash
-bin/getswandisoCentOS7Minimal.sh
+download-and-install-qemu.sh
 ```
 
-A *QEMU for Windows* installer window appears and do the following:
+Then a *QEMU for Windows* installer window appears and do the following:
 - Please select a language: Select your language, as example `English / English`
 - Click in OK
 - Next
@@ -228,6 +221,21 @@ A *QEMU for Windows* installer window appears and do the following:
 - Next
 - Install
 - Finish
+
+
+# 5. Build CentOS 7 Minimal image
+
+----------------- TODO
+----------------- TODO
+----------------- TODO
+
+## 5.2. Get the software to work for this project
+
+This software is *Packer*, *QEMU for Windows* and the **iso** image of **CentOS 7 minimum**. See the configuration files in [Configuration Directory](conf "Configuration Directory").
+
+```bash
+bin/getswandisoCentOS7Minimal.sh
+```
 
 
 ## 4.3. Build the image

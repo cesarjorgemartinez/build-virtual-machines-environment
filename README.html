@@ -81,12 +81,11 @@
 </ul>
 <p>These images are ideal to work as servers in <em>Cloud</em>, <em>traditional</em> or <em>development</em> environments, and is very useful to work with <strong>Docker</strong>, because the size of the image created is very small and clean. These images are builded with a <em>Linux</em> admin account provided as parameter at the time of build. The <code>cloud-init</code> software use other account provided as optional parameter at the time of build (not created because the <code>cloud-init</code> do this work at the first boot of the virtual machine) that by default is <em>cloud-user</em>.</p>
 <p>To work with this software you need <strong>Windows 10 for 64 bits</strong> and <strong>CygWin 64 bits</strong> to use <strong>Linux-Bash</strong> commands.</p>
-<p>For now you can only build an image of <strong>CentOS 7 minimum</strong>,</p>
 <h1 id="2-operating-systems-that-can-be-built">2. Operating Systems that can be built</h1>
 <p>Actually you can build the following Operating Systems:</p>
 <ul>
 <li>CentOS 7 Minimal</li>
-<li>Centos 8 Minimal</li>
+<li>CentOS 8 Minimal</li>
 </ul>
 <h1 id="3-create-and-configure-the-environment">3. Create and configure the environment</h1>
 <p>You need to do the next tasks.</p>
@@ -180,19 +179,16 @@ git config --system alias.lg &quot;log --graph --pretty=format:&apos;%Cred%h%Cre
 git config --system user.name &quot;&lt;your user.name&gt;&quot;
 git config --system user.email &quot;&lt;your user.email&gt;&quot;
 git config --system http.sslVerify false</code></pre>
-<p>----------------- TODO
------------------ TODO
------------------ TODO</p>
-<h1 id="4-getting-started-for-centos-7-minimal">4. Getting started for CentOS 7 Minimal</h1>
+<h1 id="4-getting-started">4. Getting started</h1>
 <p>After you have completed the previous sections, follow the next steps.</p>
-<h2 id="4-1-clone-and-enter-in-the-git-root-directory-of-this-repository">4.1. Clone and enter in the git root directory of this repository</h2>
+<h2 id="4-1-clone-and-enter-into-the-git-root-directory-of-this-repository">4.1. Clone and enter into the git root directory of this repository</h2>
 <p>Do the following tasks:</p>
 <pre><code class="language-bash">git clone git@github.com:cesarjorgemartinez/automate-virtual-machine-linux-images.git
 cd automate-virtual-machine-linux-images</code></pre>
-<h2 id="4-2-get-the-software-to-work-for-this-project">4.2. Get the software to work for this project</h2>
-<p>This software is <em>Packer</em>, <em>QEMU for Windows</em> and the <strong>iso</strong> image of <strong>CentOS 7 minimum</strong>. See the configuration files in <a href="conf" title="Configuration Directory">Configuration Directory</a>.</p>
-<pre><code class="language-bash">bin/getswandisoCentOS7Minimal.sh</code></pre>
-<p>A <em>QEMU for Windows</em> installer window appears and do the following:</p>
+<h2 id="4-2-install-qemu-for-windows">4.2. Install QEMU for Windows</h2>
+<p>The <em>QEMU for Windows</em> is needed to convert the <strong>vmdk</strong> to <strong>qcow2</strong> image format. Launch this command:</p>
+<pre><code class="language-bash">download-and-install-qemu.sh</code></pre>
+<p>Then a <em>QEMU for Windows</em> installer window appears and do the following:</p>
 <ul>
 <li>Please select a language: Select your language, as example <code>English / English</code></li>
 <li>Click in OK</li>
@@ -202,6 +198,13 @@ cd automate-virtual-machine-linux-images</code></pre>
 <li>Install</li>
 <li>Finish</li>
 </ul>
+<h1 id="5-build-centos-7-minimal-image">5. Build CentOS 7 Minimal image</h1>
+<p>----------------- TODO
+----------------- TODO
+----------------- TODO</p>
+<h2 id="5-2-get-the-software-to-work-for-this-project">5.2. Get the software to work for this project</h2>
+<p>This software is <em>Packer</em>, <em>QEMU for Windows</em> and the <strong>iso</strong> image of <strong>CentOS 7 minimum</strong>. See the configuration files in <a href="conf" title="Configuration Directory">Configuration Directory</a>.</p>
+<pre><code class="language-bash">bin/getswandisoCentOS7Minimal.sh</code></pre>
 <h2 id="4-3-build-the-image">4.3. Build the image</h2>
 <p>You need enter the username and userpass of the <em>Linux</em> admin account what is desired, and one optional parameter for the <code>cloud-init</code> default user (if this parameter is not provided then the default user is <code>cloud-user</code>.</p>
 <pre><code class="language-bash">bin/buildCentOS7Minimal.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]</code></pre>
