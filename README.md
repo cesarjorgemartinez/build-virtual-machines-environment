@@ -1,4 +1,4 @@
-<h1><center><b>Automate Virtual Machine Images</b></center></h1>
+<h1><center><b>Automate Virtual Machine Linux Images</b></center></h1>
 <br>
 
 **Author: Cesar Jorge Martínez**
@@ -14,33 +14,33 @@
 <!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:0 -->
 
 - [1. Introduction](#1-introduction)
-- [2. Create and configure the environment](#2-create-and-configure-the-environment)
-   - [2.1. Install VirtualBox](#21-install-virtualbox)
-   - [2.2. Install VMware Workstation Player](#22-install-vmware-workstation-player)
-   - [2.3. Install CygWin 64 bits](#23-install-cygwin-64-bits)
-   - [2.4. Disable Windows Python installation](#24-disable-windows-python-installation)
-   - [2.5. Install needed CygWin packages](#25-install-needed-cygwin-packages)
-   - [2.6. Install Python system pip packages](#26-install-python-system-pip-packages)
-   - [2.7. Configure your Git environment to work with github](#27-configure-your-git-environment-to-work-with-github)
-- [3. Getting started for CentOS 7 minimum](#3-getting-started-for-centos-7-minimum)
-   - [3.1. Clone and enter in the git root directory of this repository](#31-clone-and-enter-in-the-git-root-directory-of-this-repository)
-   - [3.2. Get the software to work for this project](#32-get-the-software-to-work-for-this-project)
-   - [3.3. Build the image](#33-build-the-image)
-   - [3.4. Optionally upload to the OpenStack Image Store](#34-optionally-upload-to-the-openstack-image-store)
-   - [3.5. Utility files used in this image](#35-utility-files-used-in-this-image)
-   - [3.6. Virtual machine example in VirtualBox](#36-virtual-machine-example-in-virtualbox)
-      - [3.6.1. Import the virtualized service](#361-import-the-virtualized-service)
-      - [3.6.2. Configure the virtual machine](#362-configure-the-virtual-machine)
-      - [3.6.3. Use the virtual machine](#363-use-the-virtual-machine)
-   - [3.7. Convert vmdk image to work inside VMware ESXI](#37-convert-vmdk-image-to-work-inside-vmware-esxi)
-- [4. Build other Operating Systems](#4-build-other-operating-systems)
+- [2. Operating Systems that can be built](#2-operating-systems-that-can-be-built)
+- [3. Create and configure the environment](#3-create-and-configure-the-environment)
+   - [3.1. Install VirtualBox](#31-install-virtualbox)
+   - [3.2. Install VMware Workstation Player](#32-install-vmware-workstation-player)
+   - [3.3. Install CygWin 64 bits](#33-install-cygwin-64-bits)
+   - [3.4. Disable Windows Python installation](#34-disable-windows-python-installation)
+   - [3.5. Install needed CygWin packages](#35-install-needed-cygwin-packages)
+   - [3.6. Install Python system pip packages](#36-install-python-system-pip-packages)
+   - [3.7. Configure your Git environment to work with github](#37-configure-your-git-environment-to-work-with-github)
+- [4. Getting started for CentOS 7 Minimal](#4-getting-started-for-centos-7-minimal)
+   - [4.1. Clone and enter in the git root directory of this repository](#41-clone-and-enter-in-the-git-root-directory-of-this-repository)
+   - [4.2. Get the software to work for this project](#42-get-the-software-to-work-for-this-project)
+   - [4.3. Build the image](#43-build-the-image)
+   - [4.4. Optionally upload to the OpenStack Image Store](#44-optionally-upload-to-the-openstack-image-store)
+   - [4.5. Utility files used in this image](#45-utility-files-used-in-this-image)
+   - [4.6. Virtual machine example in VirtualBox](#46-virtual-machine-example-in-virtualbox)
+      - [4.6.1. Import the virtualized service](#461-import-the-virtualized-service)
+      - [4.6.2. Configure the virtual machine](#462-configure-the-virtual-machine)
+      - [4.6.3. Use the virtual machine](#463-use-the-virtual-machine)
+   - [4.7. Convert vmdk image to work inside VMware ESXI](#47-convert-vmdk-image-to-work-inside-vmware-esxi)
 
 <!-- /MDTOC -->
 
 
 # 1. Introduction
 
-This project helps to build automatically *Virtual Machine Images of Operating Systems* that are **compatible** with different virtualization systems, as *OpenStack* (*kvm*), *VirtualBox*, *VMware*, *ESXI*, *Nutanix*, etc.
+This project helps to build automatically multiple *Virtual Machine Images of Operating Systems* that are **compatible** with different virtualization systems, as *OpenStack* (*kvm*), *VirtualBox*, *VMware*, *ESXI*, *Nutanix*, etc.
 
 The image formats that are generated are the following:
 - **vmdk:** For *VirtualBox*, *VMware* and *ESXI*.
@@ -54,29 +54,39 @@ You can deploy and boot directly these images in these virtualization systems wi
 - **control-cloud-init.service**: By default the cloud-init units are enabled. But if the virtual machine boots in a virtualization system that is not *OpenStack*, then disable the cloud-init units.
 - **guest-vmtools.service**: If the virtual machine boots inside *VirtualBox* then install its *GuestTools* disabling others. If the virtual machine boots inside *VMware* or *ESXI* then install its *VMwareTools* disabling others.
 
-For now you can only build an image of **CentOS 7 minimum**, ideal to work as servers in *Cloud*, *traditional* or *development* environments, and is very useful to work with **Docker**, because the size of the image created is very small. This image is builded with a *Linux* admin account provided as parameter at the time of build. The `cloud-init` software use other account provided as optional parameter at the time of build (not created because the `cloud-init` do this work at the first boot of the virtual machine) that by default is *cloud-user*.
+These images are ideal to work as servers in *Cloud*, *traditional* or *development* environments, and is very useful to work with **Docker**, because the size of the image created is very small and clean. These images are builded with a *Linux* admin account provided as parameter at the time of build. The `cloud-init` software use other account provided as optional parameter at the time of build (not created because the `cloud-init` do this work at the first boot of the virtual machine) that by default is *cloud-user*.
 
 To work with this software you need **Windows 10 for 64 bits** and **CygWin 64 bits** to use **Linux-Bash** commands.
 
+For now you can only build an image of **CentOS 7 minimum**,
 
-# 2. Create and configure the environment
+
+# 2. Operating Systems that can be built
+
+Actually you can build the following Operating Systems:
+
+- CentOS 7 Minimal
+- Centos 8 Minimal
+
+
+# 3. Create and configure the environment
 
 You need to do the next tasks.
 
 
-## 2.1. Install VirtualBox
+## 3.1. Install VirtualBox
 
 Go to this URL <https://www.virtualbox.org/wiki/Downloads> and install latest *VirtualBox* for Windows. You need to ensure that in addition to installing *VirtualBox* you also install *Oracle VM VirtualBox Extension Pack*.
 
 
-## 2.2. Install VMware Workstation Player
+## 3.2. Install VMware Workstation Player
 
 Go to this URL <https://www.vmware.com/go/downloadworkstationplayer> and install latest *VMware Workstation Player* for Windows.
 
 This is optional step only if you will be use *VMware* or *ESXI*.
 
 
-## 2.3. Install CygWin 64 bits
+## 3.3. Install CygWin 64 bits
 
 To install **CygWin 64 bits** you need to do the following tasks:
 
@@ -101,7 +111,7 @@ When terminate these tasks, then:
 - Set `Run as administrator` and click `Accept` and `Accept`.
 
 
-## 2.4. Disable Windows Python installation
+## 3.4. Disable Windows Python installation
 
 To prevent that *CygWin* use the *Python* installed in *Windows* (if exist), do the following to disable access to *Windows Python installation*:
 
@@ -113,7 +123,7 @@ exit
 ```
 
 
-## 2.5. Install needed CygWin packages
+## 3.5. Install needed CygWin packages
 
 You need to do the following tasks:
 
@@ -125,7 +135,7 @@ curl -O https://cygwin.com/setup-x86_64.exe
 ```
 
 
-## 2.6. Install Python system pip packages
+## 3.6. Install Python system pip packages
 
 To work with *Python* install basic *pip* packages in a system level:
 
@@ -141,7 +151,7 @@ pip install --upgrade terrafile
 ```
 
 
-## 2.7. Configure your Git environment to work with github
+## 3.7. Configure your Git environment to work with github
 
 To work with <https://github.com> you need to do the next tasks. Example to use *Git* with *SSH*.
 
@@ -182,12 +192,17 @@ git config --system http.sslVerify false
 ```
 
 
-# 3. Getting started for CentOS 7 minimum
+----------------- TODO
+----------------- TODO
+----------------- TODO
+
+
+# 4. Getting started for CentOS 7 Minimal
 
 After you have completed the previous sections, follow the next steps.
 
 
-## 3.1. Clone and enter in the git root directory of this repository
+## 4.1. Clone and enter in the git root directory of this repository
 
 Do the following tasks:
 
@@ -197,7 +212,7 @@ cd automate-virtual-machine-linux-images
 ```
 
 
-## 3.2. Get the software to work for this project
+## 4.2. Get the software to work for this project
 
 This software is *Packer*, *QEMU for Windows* and the **iso** image of **CentOS 7 minimum**. See the configuration files in [Configuration Directory](conf "Configuration Directory").
 
@@ -215,7 +230,7 @@ A *QEMU for Windows* installer window appears and do the following:
 - Finish
 
 
-## 3.3. Build the image
+## 4.3. Build the image
 
 You need enter the username and userpass of the *Linux* admin account what is desired, and one optional parameter for the `cloud-init` default user (if this parameter is not provided then the default user is `cloud-user`.
 
@@ -266,7 +281,7 @@ export SO_VMFULLNAME="${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${S
 ```
 
 
-## 3.4. Optionally upload to the OpenStack Image Store
+## 4.4. Optionally upload to the OpenStack Image Store
 
 If you have one *OpenStack virtualization environment*, you can upload the **qcow2** image file to the *OpenStack Image Store* (you need one appropiated virtualenv and environment variables defined and be registered in that *OpenStack*). These tasks are not related (TODO).
 
@@ -275,7 +290,7 @@ bin/uploadqcow2toopenstack.sh
 ```
 
 
-## 3.5. Utility files used in this image
+## 4.5. Utility files used in this image
 
 When build this image the following files in [Files for Centos7 Directory](files/CentOS7 "Files for Centos7 Directory") folder are installed and configured.
 
@@ -327,12 +342,12 @@ When build this image the following files in [Files for Centos7 Directory](files
 * **switch-to-TextUserInterface.sh**: Process that disables (not uninstall) the `GNOME Display Manager` and set `Text Mode` as the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-TextUserInterface.sh`. See [switch-to-TextUserInterface.sh](files/CentOS7/switch-to-TextUserInterface.sh "switch-to-TextUserInterface.sh").
 
 
-## 3.6. Virtual machine example in VirtualBox
+## 4.6. Virtual machine example in VirtualBox
 
 Steps to use virtual machines using *VirtualBox*.
 
 
-### 3.6.1. Import the virtualized service
+### 4.6.1. Import the virtualized service
 
 To import virtualized service in *VirtualBox* to create a virtual machine perform the following steps using the `Oracle VM VirtualBox Administrator`.
 
@@ -348,7 +363,7 @@ To import virtualized service in *VirtualBox* to create a virtual machine perfor
 - Click in `Import` button
 
 
-### 3.6.2. Configure the virtual machine
+### 4.6.2. Configure the virtual machine
 
 The virtual machine is created and the next steps are to configure it correcty doing double-click in this virtual machine and select `Configuration...` or using the menu `Machine -> Configuration...`.
 
@@ -365,7 +380,7 @@ The virtual machine is created and the next steps are to configure it correcty d
 - Network -> Network -> Adapter 2 -> Connected to: `NAT`
 
 
-### 3.6.3. Use the virtual machine
+### 4.6.3. Use the virtual machine
 
 Once the virtual machine is configured you can click in `Start` button.
 
@@ -409,7 +424,7 @@ sudo reboot
 ```
 
 
-## 3.7. Convert vmdk image to work inside VMware ESXI
+## 4.7. Convert vmdk image to work inside VMware ESXI
 
 The image formats obtained **vmdk** or **ovf** are compatible with *VMware Workstation Player* but they are not compatible for *ESXI*.
 
@@ -459,8 +474,3 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.7-1908-Minimal-20191115-esx15.ovf'
 ```
-
-
-# 4. Build other Operating Systems
-
-Later, the builders for other Operating Systems will be coded or you can contribute to these builders (TODO).
