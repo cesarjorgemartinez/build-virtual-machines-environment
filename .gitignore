@@ -79,7 +79,12 @@ hs_err_pid*
 # Specific folders
 images/
 isos/
-output-virtualbox-iso/
-packer_cache/
-software/
+qemuinstaller/
+# for each Operating System build then replicate it
+CentOS7Minimal/logs/
+CentOS7Minimal/output-virtualbox-iso/
+CentOS7Minimal/.packer.d/
+CentOS7Minimal/.packerconfig
+CentOS7Minimal/packer_cache/
+CentOS7Minimal/packer-software/
 

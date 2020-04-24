@@ -10,18 +10,19 @@ function catch_errors() {
 
 SCRIPT_BASEDIR="$(dirname $(readlink -f "${BASH_SOURCE[0]}"))"
 HOME_BASEDIR="$(dirname $(readlink -f "${SCRIPT_BASEDIR}"))"
+PARENT_HOME_BASEDIR="$(dirname $(readlink -f "${HOME_BASEDIR}"))"
 cd ${HOME_BASEDIR}
 set -e
-source ${HOME_BASEDIR}/conf/CentOS7Minimal.conf
+source ${HOME_BASEDIR}/conf/virtual-machine.conf
 
-echo "INFO: show environment variables"
+echo "INFO: Show environment variables"
 env | egrep '^PACKER_|^SO_|^VBOXPATH=|^QEMUPATH=|^PATH=' | sort
 
-mkdir -p ${HOME_BASEDIR}/images
-cd ${HOME_BASEDIR}/images
+mkdir -p ${PARENT_HOME_BASEDIR}/images
+cd ${PARENT_HOME_BASEDIR}/images
 
-echo "INFO: Get qcow2 file inside ${HOME_BASEDIR}/images"
-QCOW2_FILENAME="$(find *.qcow2 2>/dev/null || true)"
+echo "INFO: Get qcow2 file inside <${PARENT_HOME_BASEDIR}/images>"
+QCOW2_FILENAME=".*${SO_DISTRIBUTION}${SO_FULLVERSION}-${SO_IMAGETYPE}-[0-9]*.qcow2"
 
 if [ "${QCOW2_FILENAME}" == "" ]
 then
@@ -34,13 +35,15 @@ echo "INFO: Check availability of openstack command"
 openstack --version > /dev/null 2>&1 || { echo "ERROR: The openstack command not found"; exit 1; }
 
 echo "INFO: Remember to export these OpenStack variables to upload the image correcty"
-echo "export OS_TENANT_NAME=<tenant_name>"
 echo "export OS_PROJECT_NAME=<project_name>"
-echo "export OS_TENANT_ID=<tenant_id>"
 echo "export OS_PROJECT_ID=<project_id>"
-echo "export OS_AUTH_URL=<openstack_auth_url>"
+echo "export OS_AUTH_URL=<openstack_auth_base_url>:13000/v3"
 echo "export OS_USERNAME=<openstack_username>"
 echo "export OS_PASSWORD=<openstack_userpass>"
+echo "export OS_REGION_NAME=regionOne"
+echo "export OS_USER_DOMAIN_NAME=<mydomainname>"
+echo "export OS_INTERFACE=public"
+echo "export OS_IDENTITY_API_VERSION=3"
 
 echo "INFO: Upload qcow2 image ${ONLYNAME_IMAGE} to OpenStack"
 for qcow2image in $(openstack --insecure image list -f value -c Name --name "${ONLYNAME_IMAGE}")

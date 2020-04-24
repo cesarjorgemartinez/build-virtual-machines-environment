@@ -5,7 +5,7 @@
     "so_imagetype": "{{env `SO_IMAGETYPE`}}",
     "guest_os_type": "{{env `SO_GUESTOSTYPE`}}",
     "so_guesthddinterface": "{{env `SO_GUESTHDDINTERFACE`}}",
-    "iso": "isos/{{env `SO_ISOIMAGENAME`}}",
+    "iso": "../isos/{{env `SO_ISOIMAGENAME`}}",
     "checksum": "{{env `SO_ISOCHECKSUMIMAGE`}}",
     "checksum_type": "{{env `SO_ISOCHECKSUMTYPE`}}",
     "packer_ssh_timeout": "{{env `PACKER_SSH_TIMEOUT`}}",
@@ -38,13 +38,11 @@
       "http_port_max": 10089,
       "skip_export": false,
       "output_directory": "output-virtualbox-iso",
-      "vboxmanage": [
-      ],
-      "vboxmanage_post": [
-      ],
+      "vboxmanage": [],
+      "vboxmanage_post": [],
       "boot_wait": "10s",
       "boot_command": [
-        "<up><wait><tab><wait> ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anacondaks{{user `so_distribution`}}{{user `so_majorversion`}}{{user `so_imagetype`}}.cfg text<enter><wait>"
+        "<up><wait><tab><wait> ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-virtual-machine.cfg text<enter><wait>"
       ],
       "shutdown_command": "echo {{user `so_adminpass`}} | sudo -S -i -u {{user `so_adminuser`}} sudo -S shutdown -P now"
     }
@@ -52,38 +50,38 @@
   "provisioners": [
     {
       "type": "file",
-      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/hostinfo.sh",
-      "destination": "hostinfo.sh"
+      "source": "files/host-info.sh",
+      "destination": "host-info.sh"
     },
     {
       "type": "file",
-      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/control-cloud-init.service",
+      "source": "files/control-cloud-init.service",
       "destination": "control-cloud-init.service"
     },
     {
       "type": "file",
-      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/control-cloud-init.sh",
+      "source": "files/control-cloud-init.sh",
       "destination": "control-cloud-init.sh"
     },
     {
       "type": "file",
-      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/guest-vmtools.service",
+      "source": "files/guest-vmtools.service",
       "destination": "guest-vmtools.service"
     },
     {
       "type": "file",
-      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/guest-vmtools.sh",
+      "source": "files/guest-vmtools.sh",
       "destination": "guest-vmtools.sh"
     },
     {
       "type": "file",
-      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/switch-to-GraphicalUserInterface.sh",
-      "destination": "switch-to-GraphicalUserInterface.sh"
+      "source": "files/switch-to-graphical-user-interface.sh",
+      "destination": "switch-to-graphical-user-interface.sh"
     },
     {
       "type": "file",
-      "source": "./files/{{user `so_distribution`}}{{user `so_majorversion`}}/switch-to-TextUserInterface.sh",
-      "destination": "switch-to-TextUserInterface.sh"
+      "source": "files/switch-to-text-user-interface.sh",
+      "destination": "switch-to-text-user-interface.sh"
     },
     {
       "environment_vars": [
@@ -93,7 +91,7 @@
       ],
       "execute_command": "echo 'packer' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts": [
-        "postscripts/post{{user `so_distribution`}}{{user `so_majorversion`}}{{user `so_imagetype`}}.sh"
+        "postscripts/post-stage-1.sh"
       ],
       "type": "shell"
     }
