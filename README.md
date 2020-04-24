@@ -324,7 +324,7 @@ If you have one *OpenStack virtualization environment*, you can upload the **qco
 To do the upload you need one appropiated virtualenv and environment variables defined and be registered in that *OpenStack virtualization environment* and launch:
 
 ```bash
-CentOS7Minimal/bin/uploadqcow2toopenstack.sh
+CentOS7Minimal/bin/upload-qcow2-to-openstack.sh
 ```
 
 
