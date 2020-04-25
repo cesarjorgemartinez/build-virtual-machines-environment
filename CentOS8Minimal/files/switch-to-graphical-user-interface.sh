@@ -2,8 +2,8 @@
 
 echo "INFO: Switch Text User Interface to Graphical User Interface"
 
-echo "INFO: Install the GNOME Display Manager RPM group. It takes a bit of time..."
-sudo yum groupinstall -q -y "GNOME Desktop"
+echo "INFO: Install the Server with GUI (GNOME Display Manager) group. It takes a bit of time..."
+sudo dnf group install -q -y "Server with GUI"
 
 echo "INFO: Set GNOME Autostart configuration to false in /etc/xdg/autostart/gnome-initial-setup-first-login.desktop"
 sudo sed -r -i -e '/^\s*X-GNOME-Autostart-enabled\s*=/{

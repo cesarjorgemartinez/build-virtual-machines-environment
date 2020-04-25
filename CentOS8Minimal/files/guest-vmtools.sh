@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 echo "INFO: Detects if we are inside a virtual machine"
+
 MACHINETYPE="$(sudo virt-what)"
 if [ "$(echo "${MACHINETYPE}")" == "" ]
 then
@@ -12,7 +13,7 @@ else
     echo "INFO: It is a VBOX virtual machine"
     echo "INFO: If exist the file /opt/reinstallGuestAdditions.action then force to reinstall the GuestAdditions"
     echo "INFO: Erase VMware packages"
-    sudo yum -y erase -C -q open-vm-tools open-vm-tools-desktop
+    sudo dnf -y erase -C -q open-vm-tools open-vm-tools-desktop
     echo "INFO: Get SMBIOS OEM Strings type 11 to find VBOX version of host"
     VBOXHOSTVERSION="$(LANG=C sudo dmidecode -q --type 11 2>&1 | sed -r -n -e 's/^.*vboxVer_(.+)$/\1/p')"
     echo "INFO: Get the VBOX guest version of guest if it is installed"
@@ -27,7 +28,7 @@ else
       # Although disabling selinux is done in a previous step, it is reapplied in case some previous tasks enables it
       sudo /sbin/setenforce 0 || true
       sudo sed -i s/SELINUX=enforcing/SELINUX=disabled/g /etc/selinux/config
-      sudo yum -y install -q bzip2 gcc make perl kernel-devel dkms
+      sudo dnf -y install -q bzip2 gcc make perl kernel-devel dkms
       export KERN_DIR=/usr/src/kernels/$(uname -r)
       sudo curl -s -S --fail --retry 3 --retry-delay 60 http://download.virtualbox.org/virtualbox/${VBOXHOSTVERSION}/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso -o /opt/VBoxGuestAdditions_${VBOXHOSTVERSION}.iso
       sudo mkdir -p /mnt/VBoxGuestAdditionsISO
@@ -47,7 +48,7 @@ else
     sudo /opt/VBoxGuestAdditions-*/uninstall.sh 2>/dev/null || true
     sudo rm -rf /opt/VBoxGuestAdditions* /var/log/vboxadd*.log*
     echo "INFO: Install VMware packages"
-    sudo yum -y install -q open-vm-tools open-vm-tools-desktop
+    sudo dnf -y install -q open-vm-tools open-vm-tools-desktop
     sudo systemctl restart vmtoolsd.service
   elif [ "$(echo "${MACHINETYPE}" | grep '^kvm$')" != "" ]
   then
@@ -56,7 +57,7 @@ else
     sudo /opt/VBoxGuestAdditions-*/uninstall.sh 2>/dev/null || true
     sudo rm -rf /opt/VBoxGuestAdditions* /var/log/vboxadd*.log*
     echo "INFO: Erase VMware packages"
-    sudo yum -y erase -C -q open-vm-tools open-vm-tools-desktop
+    sudo dnf -y erase -C -q open-vm-tools open-vm-tools-desktop
   else
     echo "INFO: The virtual machine is not supported"
   fi
