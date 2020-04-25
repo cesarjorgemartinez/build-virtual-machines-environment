@@ -98,7 +98,7 @@ echo "INFO: Remove previous directories to prevent fails"
 rm -rf ${HOME_BASEDIR}/output-virtualbox-iso ${HOME_BASEDIR}/packer_cache
 
 echo "INFO: Obtain SO_ISOCHECKSUMIMAGE from ${SO_ISOURLSHA256SUM}"
-export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOIMAGENAME}" ${PARENT_HOME_BASEDIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $1}')"
+export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOCHECKSUMTYPE^^}.*${SO_ISOIMAGENAME}" ${PARENT_HOME_BASEDIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $4}')"
 
 echo "INFO: Validate JSON with Packer"
 ${HOME_BASEDIR}/packer-software/packer.exe ${MACHINEREADABLEPARAMETER} validate json/virtual-machine.json
