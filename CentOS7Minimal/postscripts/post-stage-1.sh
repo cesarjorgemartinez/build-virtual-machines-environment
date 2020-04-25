@@ -44,10 +44,10 @@ rm -rf /var/cache/yum
 rpm --rebuilddb
 rm -f /var/lib/rpm/__db*
 
-echo "INFO: Install hostinfo.sh script to /usr/local/bin/hostinfo.sh"
-mv hostinfo.sh /usr/local/bin
-chown root.root /usr/local/bin/hostinfo.sh
-chmod +x /usr/local/bin/hostinfo.sh
+echo "INFO: Install host-info.sh script to /usr/local/bin/host-info.sh"
+mv host-info.sh /usr/local/bin
+chown root.root /usr/local/bin/host-info.sh
+chmod +x /usr/local/bin/host-info.sh
 
 echo "INFO: Install control-cloud-init.sh script to /usr/local/bin/control-cloud-init.sh"
 mv control-cloud-init.sh /usr/local/bin
@@ -69,15 +69,15 @@ mv guest-vmtools.service /etc/systemd/system/guest-vmtools.service
 chown root.root /etc/systemd/system/guest-vmtools.service
 chmod 644 /etc/systemd/system/guest-vmtools.service
 
-echo "INFO: Install switch-to-GraphicalUserInterface.sh file to /usr/local/bin/switch-to-GraphicalUserInterface.sh"
-mv switch-to-GraphicalUserInterface.sh /usr/local/bin/switch-to-GraphicalUserInterface.sh
-chown root.root /usr/local/bin/switch-to-GraphicalUserInterface.sh
-chmod +x /usr/local/bin/switch-to-GraphicalUserInterface.sh
+echo "INFO: Install switch-to-graphical-user-interface.sh file to /usr/local/bin/switch-to-graphical-user-interface.sh"
+mv switch-to-graphical-user-interface.sh /usr/local/bin/switch-to-graphical-user-interface.sh
+chown root.root /usr/local/bin/switch-to-graphical-user-interface.sh
+chmod +x /usr/local/bin/switch-to-graphical-user-interface.sh
 
-echo "INFO: Install switch-to-TextUserInterface.sh file to /usr/local/bin/switch-to-TextUserInterface.sh"
-mv switch-to-TextUserInterface.sh /usr/local/bin/switch-to-TextUserInterface.sh
-chown root.root /usr/local/bin/switch-to-TextUserInterface.sh
-chmod +x /usr/local/bin/switch-to-TextUserInterface.sh
+echo "INFO: Install switch-to-text-user-interface.sh file to /usr/local/bin/switch-to-text-user-interface.sh"
+mv switch-to-text-user-interface.sh /usr/local/bin/switch-to-text-user-interface.sh
+chown root.root /usr/local/bin/switch-to-text-user-interface.sh
+chmod +x /usr/local/bin/switch-to-text-user-interface.sh
 
 echo "INFO: Reload Systemd"
 systemctl daemon-reload
