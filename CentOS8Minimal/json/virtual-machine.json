@@ -42,7 +42,7 @@
       "vboxmanage_post": [],
       "boot_wait": "10s",
       "boot_command": [
-        "<tab><bs><bs><bs><bs><bs>inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-virtual-machine.cfg inst.text<enter><wait>"
+        "<up><wait><tab><bs><bs><bs><bs><bs>inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-virtual-machine.cfg inst.text<wait40><enter><wait5>"
       ],
       "shutdown_command": "echo {{user `so_adminpass`}} | sudo -S -i -u {{user `so_adminuser`}} sudo -S shutdown -P now"
     }
