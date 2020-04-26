@@ -101,7 +101,7 @@ echo "INFO: Obtain SO_ISOCHECKSUMIMAGE from ${SO_ISOURLSHA256SUM}"
 export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOIMAGENAME}" ${PARENT_HOME_BASEDIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $1}')"
 
 echo "INFO: Validate JSON with Packer"
-${HOME_BASEDIR}/packer-software/packer.exe ${MACHINEREADABLEPARAMETER} validate json/virtual-machine.json
+packer-software/packer.exe ${MACHINEREADABLEPARAMETER} validate json/virtual-machine.json
 
 
 if [ "${PACKER_DEBUG,,}" == "true" ]
@@ -109,12 +109,12 @@ then
   echo "INFO: Enable Packer debug mode"
   export PACKER_LOG=1
   mkdir -p ${HOME_BASEDIR}/logs
-  export PACKER_LOG_PATH="${HOME_BASEDIR}/logs/packerlog.txt"
+  export PACKER_LOG_PATH="logs/packerlog.txt"
   export PACKERDEBUG="-debug"
 fi
 
 echo "INFO: Run the build with Packer"
-${HOME_BASEDIR}/packer-software/packer.exe build ${PACKERDEBUG} ${MACHINEREADABLEPARAMETER} -force \
+packer-software/packer.exe build ${PACKERDEBUG} ${MACHINEREADABLEPARAMETER} -force \
 -var so_adminuser=${SO_ADMINUSER} \
 -var so_adminpass=${SO_ADMINPASS} \
 -var so_defaultclouduser=${SO_DEFAULTCLOUDUSER} \
