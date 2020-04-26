@@ -37,6 +37,17 @@
       - [5.6.2. Configure the virtual machine](#562-configure-the-virtual-machine)
       - [5.6.3. Use the virtual machine](#563-use-the-virtual-machine)
    - [5.7. Convert vmdk image to work inside VMware ESXI](#57-convert-vmdk-image-to-work-inside-vmware-esxi)
+- [6. Build CentOS 8 Minimal image](#6-build-centos-8-minimal-image)
+   - [6.1. Download and install Packer](#61-download-and-install-packer)
+   - [6.2. Download the iso image](#62-download-the-iso-image)
+   - [6.3. Build the image](#63-build-the-image)
+   - [6.4. Optionally upload to the OpenStack Image Store](#64-optionally-upload-to-the-openstack-image-store)
+   - [6.5. Utility files used in this image](#65-utility-files-used-in-this-image)
+   - [6.6. Virtual machine example in VirtualBox](#66-virtual-machine-example-in-virtualbox)
+      - [6.6.1. Import the virtualized service](#661-import-the-virtualized-service)
+      - [6.6.2. Configure the virtual machine](#662-configure-the-virtual-machine)
+      - [6.6.3. Use the virtual machine](#663-use-the-virtual-machine)
+   - [6.7. Convert vmdk image to work inside VMware ESXI](#67-convert-vmdk-image-to-work-inside-vmware-esxi)
 
 <!-- /MDTOC -->
 
@@ -376,7 +387,6 @@ When build this image the following files in [Files for CentOS7Minimal Directory
 
 * **switch-to-graphical-user-interface.sh**: Process that install and enable the `GNOME Display Manager` and set `Graphical Mode` as the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-graphical-user-interface.sh`. See [switch-to-graphical-user-interface.sh](CentOS7Minimal/files/switch-to-graphical-user-interface.sh "switch-to-graphical-user-interface.sh").
 
-
 * **switch-to-text-user-interface.sh**: Process that disables (not uninstall) the `GNOME Display Manager` and set `Text Mode` as the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-text-user-interface.sh`. See [switch-to-text-user-interface.sh](CentOS7Minimal/files/switch-to-text-user-interface.sh "switch-to-text-user-interface.sh").
 
 
@@ -519,4 +529,299 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.7-1908-Minimal-20191115\CentOS7.7-1908-Minimal-20191115.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.7-1908-Minimal-20191115-esx15.ovf'
+```
+
+
+# 6. Build CentOS 8 Minimal image
+
+This section explains howto build this *Virtual Machine Image*.
+
+
+## 6.1. Download and install Packer
+
+To build the image you need to download and install *Packer* software.
+
+The directory where it install this software is `CentOS8Minimal/packer-software`.
+
+The version is determined by its own configuration file located at [CentOS8Minimal Configuration Directory](CentOS8Minimal/conf/virtual-machine.conf "CentOS8Minimal Configuration Directory").
+
+To perform this task run:
+
+```bash
+CentOS8Minimal/bin/download-and-install-packer.sh
+```
+
+
+## 6.2. Download the iso image
+
+To build the image you need to download the **iso** files for this *Operating System*.
+
+The directory where it download this **iso** files is `isos` at home of this repository.
+
+The version is determined by its own configuration file located at [CentOS8Minimal Configuration Directory](CentOS8Minimal/conf/virtual-machine.conf "CentOS8Minimal Configuration Directory").
+
+To perform this task run:
+
+```bash
+CentOS8Minimal/bin/download-iso.sh
+```
+
+
+## 6.3. Build the image
+
+You need enter the `username` and `userpass` of the *Linux* admin account what is desired, and one optional parameter for the `cloud-init` default user (if this parameter is not provided then the default user is `cloud-user`.
+
+```bash
+CentOS8Minimal/bin/build-virtual-machine.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]
+```
+
+When finished the build then will create the image files **vmdk**, **ovf** and **qcow2** inside the `images` directory at home of this repository.
+
+To understand how the builder works see the configuration files in [CentOS8Minimal Configuration Directory](CentOS8Minimal/conf/virtual-machine.conf "CentOS8Minimal Configuration Directory").
+
+The format name of the generated image files is as follows:
+
+```bash
+${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|qcow2)
+```
+
+Example of **CentOS 8 Minimal** configuration file:
+
+```bash
+# Variables to build Operating System
+export PACKER_VERSION="1.4.5"
+export PACKER_MACHINEREADABLEOUTPUT="False"
+export PACKER_DEBUG="False"
+export PACKER_SSH_TIMEOUT="50m"
+# The location of the core configuration file
+export PACKER_CONFIG="${HOME_BASEDIR}/.packerconfig"
+# The location of the .packer.d config directory
+export PACKER_CONFIG_DIR="${HOME_BASEDIR}"
+export VBOXPATH="/cygdrive/c/Program Files/Oracle/VirtualBox"
+export QEMUPATH="/cygdrive/c/Program Files/qemu"
+export PATH="${VBOXPATH}:${QEMUPATH}:${PATH}"
+export SO_GUESTOSTYPE="RedHat_64"
+# Values for hard_drive_interface are: ide sata or scsi
+export SO_GUESTHDDINTERFACE="sata"
+# The image obtained can be Minimal (for servers) or Desktop (for final users using a GUI)
+export SO_IMAGETYPE="Minimal"
+export SO_DISTRIBUTION="CentOS"
+export SO_MAJORVERSION="8"
+export SO_MINORVERSION="1"
+export SO_NAMEVERSION="1911"
+export SO_SHORTVERSION="${SO_MAJORVERSION}.${SO_MINORVERSION}"
+export SO_FULLVERSION="${SO_SHORTVERSION}-${SO_NAMEVERSION}"
+# The iso file type to download and use can be Minimal or DVD (can exists others but here only use these types)
+export SO_ISOTYPE="boot"
+export SO_ISOIMAGENAME="${SO_DISTRIBUTION}-${SO_MAJORVERSION}.${SO_MINORVERSION}.${SO_NAMEVERSION}-x86_64-${SO_ISOTYPE}.iso"
+export SO_ISOURLIMAGE="http://ftp.uma.es/mirror/${SO_DISTRIBUTION}/${SO_MAJORVERSION}/isos/x86_64/${SO_ISOIMAGENAME}"
+export SO_ISOSHA256SUMNAME="${SO_ISOIMAGENAME%.iso}.sum"
+export SO_ISOCHECKSUMTYPE="sha256"
+export SO_ISOURLSHA256SUM="http://ftp.uma.es/mirror/${SO_DISTRIBUTION}/${SO_MAJORVERSION}/isos/x86_64/CHECKSUM"
+export SO_BUILDDATE="$(date +%Y%m%d)"
+export SO_VMFULLNAME="${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}"
+```
+
+
+## 6.4. Optionally upload to the OpenStack Image Store
+
+If you have one *OpenStack virtualization environment*, you can upload the **qcow2** image file to the *OpenStack Image Store*.
+
+To do the upload you need one appropiated virtualenv and environment variables defined and be registered in that *OpenStack virtualization environment* and launch:
+
+```bash
+CentOS8Minimal/bin/upload-qcow2-to-openstack.sh
+```
+
+
+## 6.5. Utility files used in this image
+
+When build this image the following files in [Files for CentOS8Minimal Directory](CentOS8Minimal/files "Files for CentOS8Minimal Directory") folder are installed and configured.
+
+* **control-cloud-init.service**: Unit to control `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. This unit calls the file `/usr/local/bin/control-cloud-init.sh`. Installed in `/etc/systemd/system/control-cloud-init.service`. See [control-cloud-init.service](CentOS8Minimal/files/control-cloud-init.service "control-cloud-init.service").
+
+* **control-cloud-init.sh**: Process that controls `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. Installed in `/usr/local/bin/control-cloud-init.sh`. See [control-cloud-init.sh](CentOS8Minimal/files/control-cloud-init.sh "control-cloud-init.sh").
+
+* **guest-vmtools.service**: Unit to manage virtual machine tools for *VirtualBox*, *VMware* or *VMware ESXI*. This unit calls the file `/usr/local/bin/guest-vmtools.sh`. Installed in `/etc/systemd/system/guest-vmtools.service`. See [guest-vmtools.service](CentOS8Minimal/files/guest-vmtools.service "guest-vmtools.service").
+
+* **guest-vmtools.sh**: Process that install and configure the *GuestTools* for *VirtualBox* or *VMwareTools* for *VMware* or *VMware ESXI*. Or remove these tools if boot in other virtual environments. Installed in `/usr/local/bin/guest-vmtools.sh`. See [guest-vmtools.sh](CentOS8Minimal/files/guest-vmtools.sh "guest-vmtools.sh").
+
+* **host-info.sh**: Process that informs over basic properties of a host (CPU, memory, etc). Installed in `/usr/local/bin/host-info.sh`. See [host-info.sh](CentOS8Minimal/files/host-info.sh "host-info.sh").
+
+  Execution example:
+  ```bash
+  ===========================================================================
+  HOSTNAME...........: myvm
+  INTERFACES.........:
+  Interface         MAC Address       IP4 Address                                   IP6 Address
+  eth0              08:00:27:34:1c:b6 192.168.56.115/24                             fe80::a00:27ff:fe34:1cb6/64
+  eth1              08:00:27:c1:06:ba 10.0.3.15/24                                  fe80::a00:27ff:fec1:6ba/64
+  CPU CORES..........: 1
+  MEMORY.............:
+                total        used        free      shared  buff/cache   available
+  Mem:           991M        116M        186M         12M        688M        701M
+  Swap:          1.0G          0B        1.0G
+  FILESYSTEMS........:
+  Filesystem                      Size  Used Avail Use% Mounted on
+  devtmpfs                        485M     0  485M   0% /dev
+  tmpfs                           496M     0  496M   0% /dev/shm
+  tmpfs                           496M   13M  483M   3% /run
+  tmpfs                           496M     0  496M   0% /sys/fs/cgroup
+  /dev/mapper/centos_centos-root   18G  906M   18G   5% /
+  /dev/sda1                      1014M   68M  947M   7% /boot
+  tmpfs                           100M     0  100M   0% /run/user/1000
+  SYSTEM UPTIME......: 13:26:36 up 16 min, 1 user, load average: 0.00, 0.08, 0.21
+  RELEASE............: CentOS Linux release 7.7.1908 (Core)
+  KERNEL.............: 3.10.0-1062.4.1.el7.x86_64
+  DATE...............: Thu Nov  7 13:26:36 CET 2019
+  USERS..............: Currently 1 user(s) logged on
+  CURRENT USER.......: adminuser
+  PROCESSES..........: 154 running
+  ===========================================================================
+  ```
+
+* **switch-to-graphical-user-interface.sh**: Process that install and enable the `GNOME Display Manager` and set `Graphical Mode` as the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-graphical-user-interface.sh`. See [switch-to-graphical-user-interface.sh](CentOS8Minimal/files/switch-to-graphical-user-interface.sh "switch-to-graphical-user-interface.sh").
+
+* **switch-to-text-user-interface.sh**: Process that disables (not uninstall) the `GNOME Display Manager` and set `Text Mode` as the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-text-user-interface.sh`. See [switch-to-text-user-interface.sh](CentOS8Minimal/files/switch-to-text-user-interface.sh "switch-to-text-user-interface.sh").
+
+
+## 6.6. Virtual machine example in VirtualBox
+
+Steps to use virtual machines using *VirtualBox*.
+
+
+### 6.6.1. Import the virtualized service
+
+To import virtualized service in *VirtualBox* to create a virtual machine perform the following steps using the `Oracle VM VirtualBox Administrator`.
+
+- Click in `Archive -> Import virtualized service...`
+- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200425.ovf`
+- Name: `myvm`
+- Type of guest OS: `Red Hat (64-bit)`
+- CPU: `1`
+- RAM: `1024 MB`
+- Storage Controller (SATA) -> Virtual Disk Image: `myvm.vmdk`
+- MAC address policy: `Generate new MAC addresses for all network adapters`
+- Additional options: `Import disks as VDI`
+- Click in `Import` button
+
+
+### 6.6.2. Configure the virtual machine
+
+The virtual machine is created and the next steps are to configure it correcty doing double-click in this virtual machine and select `Configuration...` or using the menu `Machine -> Configuration...`.
+
+- General -> Advanced -> Share clipboard: `Bidirectional`
+- General -> Advanced -> Drag and drop: `Bidirectional`
+- System -> Motherboard -> UTC time hardware clock: `Enabled`
+- Screen -> Screen -> Video memory: `16 MB`
+- Display -> Display -> Graphic controller: `VMSVGA`
+- Network -> Network -> Adapter 1 -> Enable network adapter: `Enabled`
+- Network -> Network -> Adapter 1 -> Connected to: `Host-only adapter`
+- Network -> Network -> Adapter 1 -> Name: `VirtualBox Host-Only Ethernet Adapter`
+- Network -> Network -> Adapter 1 -> Advanced -> Promiscuous mode: `Allow all`
+- Network -> Network -> Adapter 2 -> Enable network adapter: `Enabled`
+- Network -> Network -> Adapter 2 -> Connected to: `NAT`
+
+
+### 6.6.3. Use the virtual machine
+
+Once the virtual machine is configured you can click in `Start` button.
+
+To get guest properties of the virtual machine:
+
+- Enter in a *Cygwin64 session*.
+- To get all guest properties.
+```bash
+'/cygdrive/c/Program Files/Oracle/VirtualBox/VBoxManage' guestproperty enumerate myvm
+```
+- To get the assigned IP for adapter 1.
+```bash
+'/cygdrive/c/Program Files/Oracle/VirtualBox/VBoxManage' guestproperty get myvm /VirtualBox/GuestInfo/Net/0/V4/IP
+```
+
+Launch a ssh session to this virtual machine:
+
+```bash
+sshpass -p adminpass ssh adminuser@<assigned_IP_for_adapter_1>
+```
+
+Change the `hostname` for this virtual machine:
+
+```bash
+sudo hostnamectl --static set-hostname myvm
+sudo hostnamectl --transient set-hostname myvm
+```
+
+Get basic properties of this virtual machine:
+
+```bash
+/usr/local/bin/host-info.sh
+```
+
+Switch to `Graphical User Interface` for this virtual machine:
+
+```bash
+sudo /usr/local/bin/switch-to-graphical-user-interface.sh
+# Wait a bit to terminate this execution
+sudo reboot
+```
+
+Or back to `Text User Interface` for this virtual machine:
+
+```bash
+sudo /usr/local/bin/switch-to-text-user-interface.sh
+# Wait a bit to terminate this execution
+sudo reboot
+```
+
+
+## 6.7. Convert vmdk image to work inside VMware ESXI
+
+The image formats obtained **vmdk** or **ovf** are compatible with *VMware Workstation Player* but they are not compatible for *VMware ESXI*.
+
+For this reason you need to use *VMware Workstation Player* for Windows to obtain a compatible virtual machine.
+
+Then follow these steps:
+
+- Open *VMware Workstation Player*
+- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200425.ovf`
+- Name for the new virtual machine: `CentOS8.1-1911-Minimal-20200425`
+- Storage path for the new virtual machine: `C:\VMware\CentOS8.1-1911-Minimal-20200425`
+- Click in `Import` button
+- Click in `Retry` button to relax OVF specifications
+- Click in `Edit virtual machine settings`
+- Options -> General -> Guest Operation System: `Linux`
+- Options -> General -> Guest Operation System -> Version: `Centos 7 64-bit`
+- Options -> VMware Tools -> VMware Tools features -> Syncronize guest time with host: `Enabled`
+- Hardware->Network Adapter -> Network connection -> Bridged: Connected directly to the physical network: `Enabled`
+- Hardware->Network Adapter -> Network connection -> Replicate physical network connection state: `Disabled`
+- Hardware->Network Adapter -> Network connection -> Configure Adapters -> Realtek PCIe GBE Family Controller: `Enabled`
+- Hardware->Network Adapter -> Network connection -> Configure Adapters -> Other adapters: `Disabled`
+
+Then you have an image imported into *VMware Workstation Player*. Here you need to choose the *VMware ESXI* version reading the article <https://kb.vmware.com/s/article/1003746> and follow these steps:
+
+- Enter in a *Cygwin64 session*.
+
+- To get an image for *VMware ESXI* version `6.0` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200425\CentOS8.1-1911-Minimal-20200425.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200425-esx11.ovf'
+```
+
+- To get an image for *VMware ESXI* version `6.5` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200425\CentOS8.1-1911-Minimal-20200425.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200425-esx13.ovf'
+```
+
+- To get an image for *VMware ESXI* version `6.7` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200425\CentOS8.1-1911-Minimal-20200425.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200425-esx14.ovf'
+```
+
+- To get an image for *VMware ESXI* version `6.7 U2` or `6.8.x` or `6.9.x` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200425\CentOS8.1-1911-Minimal-20200425.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200425-esx15.ovf'
 ```

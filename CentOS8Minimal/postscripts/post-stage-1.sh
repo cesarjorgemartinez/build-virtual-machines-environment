@@ -13,17 +13,14 @@ service auditd stop
 echo "INFO: Current date"
 date
 
-echo "INFO: Package cleanups remove old kernels"
-package-cleanup -y -C --oldkernels --count=1
+echo "INFO: Remove old kernels keeping only one"
+dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)
 
-echo "INFO: Remove tools used to build virtual machine drivers"
-yum -y erase -C gcc libmpc mpfr cpp kernel-devel kernel-headers kernel-tools kernel-tools-libs
+echo "INFO: Remove package tools used to build virtual machine drivers"
+dnf -y erase -C kernel-devel kernel-headers kernel-tools kernel-tools-libs
 
 echo "INFO: Erase other rpms"
-yum -y erase -C linux-firmware libsysfs
-
-echo "INFO: Remove unneeded locales in /boot/grub2/locale folder except en* and es*"
-find /boot/grub2/locale -mindepth 1 -maxdepth 1 ! -name 'en*' ! -name 'es*' | xargs -r rm -r
+dnf -y erase -C '*-firmware'
 
 echo "INFO: Remove unneeded locales in /usr/share/locale folder except en_US, es_ES and locale.alias"
 find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en_US' ! -name 'es_ES' ! -name 'locale.alias' | xargs -r rm -r
@@ -31,23 +28,16 @@ find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en_US' ! -name 'es_ES' !
 echo "INFO: Remove unneeded i18n locales in /usr/share/i18n/locales folder except en_US* and es_ES*"
 find /usr/share/i18n/locales -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' | xargs -r rm -r
 
-echo "INFO: Remove default locales in /usr/lib/locale/locale-archive except en_US and es_ES"
-localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r sudo localedef --delete-from-archive
-cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
-build-locale-archive
-
-echo "INFO: Clean yum and rpm caches"
-yum clean all
-rm -rf /var/lib/yum/yumdb
-rm -rf /var/lib/yum/history
-rm -rf /var/cache/yum
+echo "INFO: Clean all caches"
+dnf clean all
+rm -rf /var/lib/dnf/*
+rm -rf /var/cache/*
 rpm --rebuilddb
-rm -f /var/lib/rpm/__db*
 
-echo "INFO: Install host-info.sh script to /usr/local/bin/host-info.sh"
-mv host-info.sh /usr/local/bin
-chown root.root /usr/local/bin/host-info.sh
-chmod +x /usr/local/bin/host-info.sh
+echo "INFO: Install hostinfo.sh script to /usr/local/bin/hostinfo.sh"
+mv hostinfo.sh /usr/local/bin
+chown root.root /usr/local/bin/hostinfo.sh
+chmod +x /usr/local/bin/hostinfo.sh
 
 echo "INFO: Install control-cloud-init.sh script to /usr/local/bin/control-cloud-init.sh"
 mv control-cloud-init.sh /usr/local/bin
@@ -79,7 +69,7 @@ mv switch-to-text-user-interface.sh /usr/local/bin/switch-to-text-user-interface
 chown root.root /usr/local/bin/switch-to-text-user-interface.sh
 chmod +x /usr/local/bin/switch-to-text-user-interface.sh
 
-echo "INFO: Reload Systemd"
+echo "INFO: Reload systemd daemon"
 systemctl daemon-reload
 
 echo "INFO: Enable at boot control-cloud-init.service"
@@ -155,9 +145,12 @@ rm -f /var/log/messages*
 rm -f /var/log/dmesg /var/log/dmesg.old
 /bin/cat /dev/null > /var/log/wtmp
 /bin/cat /dev/null > /var/log/lastlog
+/bin/cat /dev/null > /var/log/secure
+/bin/cat /dev/null > /var/log/cron
 rm -f /var/log/cloud-init*.log
 rm -f /var/log/anaconda/syslog
 rm -f /var/log/grubby*
+rm -f /var/log/firewalld
 
 echo "INFO: Clean bash history"
 rm -f /root/.bash_history
@@ -192,9 +185,12 @@ rm -f /var/log/messages*
 rm -f /var/log/dmesg /var/log/dmesg.old
 /bin/cat /dev/null > /var/log/wtmp
 /bin/cat /dev/null > /var/log/lastlog
+/bin/cat /dev/null > /var/log/secure
+/bin/cat /dev/null > /var/log/cron
 rm -f /var/log/cloud-init*.log
 rm -f /var/log/anaconda/syslog
 rm -f /var/log/grubby*
+rm -f /var/log/firewalld
 
 echo "INFO: Clean bash history"
 rm -f /root/.bash_history

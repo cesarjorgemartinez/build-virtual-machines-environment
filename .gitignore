@@ -87,4 +87,10 @@ CentOS7Minimal/.packer.d/
 CentOS7Minimal/.packerconfig
 CentOS7Minimal/packer_cache/
 CentOS7Minimal/packer-software/
+CentOS8Minimal/logs/
+CentOS8Minimal/output-virtualbox-iso/
+CentOS8Minimal/.packer.d/
+CentOS8Minimal/.packerconfig
+CentOS8Minimal/packer_cache/
+CentOS8Minimal/packer-software/
 
