@@ -1,6 +1,5 @@
 {
   "variables": {
-    "home_basedir": "{{ env `HOME_BASEDIR` }}",
     "so_distribution": "{{ env `SO_DISTRIBUTION` }}",
     "so_majorversion": "{{ env `SO_MAJORVERSION` }}",
     "so_imagetype": "{{ env `SO_IMAGETYPE` }}",
@@ -43,7 +42,7 @@
       "output_directory": "output-virtualbox-iso",
       "vboxmanage": [
         [ "modifyvm", "{{ .Name }}", "--uart1", "0x3F8", "4" ],
-        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ user `home_basedir` }}/logs/systemlogs-{{ .Name }}.txt" ]
+        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs-{{ .Name }}.txt" ]
       ],
       "vboxmanage_post": [
         [ "modifyvm", "{{ .Name }}", "--uart1", "off" ],
