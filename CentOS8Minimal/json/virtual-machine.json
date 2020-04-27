@@ -25,6 +25,8 @@
       "sata_port_count": 30,
       "hard_drive_nonrotational": true,
       "hard_drive_discard": true,
+      "cpus": 1,
+      "memory": 1024,
       "headless": false,
       "keep_registered": false,
       "ssh_username": "packer",
