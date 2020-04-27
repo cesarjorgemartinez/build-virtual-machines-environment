@@ -1,5 +1,6 @@
 {
   "variables": {
+    "home_basedir": "{{env `HOME_BASEDIR`}}",
     "so_distribution": "{{env `SO_DISTRIBUTION`}}",
     "so_majorversion": "{{env `SO_MAJORVERSION`}}",
     "so_imagetype": "{{env `SO_IMAGETYPE`}}",
@@ -40,11 +41,17 @@
       "http_port_max": 10089,
       "skip_export": false,
       "output_directory": "output-virtualbox-iso",
-      "vboxmanage": [],
-      "vboxmanage_post": [],
       "boot_wait": "10s",
+      "vboxmanage": [
+        [ "modifyvm", "{{ .Name }}", "--uart1", "0x3F8", "4" ],
+        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ user `home_basedir` }}\systemlogs-{{ .Name }}.txt" ]
+      ],
+      "vboxmanage_post": [
+        [ "modifyvm", "{{ .Name }}", "--uart1", "off" ],
+        [ "modifyvm", "{{ .Name }}", "--uartmode1", "disconnected" ]
+      ],
       "boot_command": [
-        "<up><wait><tab><bs><bs><bs><bs><bs>inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-virtual-machine.cfg inst.text<wait5><enter><wait>"
+        "<up><wait><tab><bs><bs><bs><bs><bs>console=ttyS0 console=tty0 ignore_loglevel inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-virtual-machine.cfg inst.text<wait5><enter><wait>"
       ],
       "shutdown_command": "echo {{user `so_adminpass`}} | sudo -S -i -u {{user `so_adminuser`}} sudo -S shutdown -P now"
     }
