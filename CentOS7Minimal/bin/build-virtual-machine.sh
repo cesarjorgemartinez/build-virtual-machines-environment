@@ -95,7 +95,12 @@ then
 fi
 
 echo "INFO: Remove previous directories to prevent fails"
-rm -rf ${HOME_BASEDIR}/output-virtualbox-iso ${HOME_BASEDIR}/packer_cache
+rm -rf ${HOME_BASEDIR}/output-virtualbox-iso ${HOME_BASEDIR}/packer_cache ${HOME_BASEDIR}/logs
+
+echo "INFO: Always be verbose"
+export PACKER_LOG=1
+mkdir -p ${HOME_BASEDIR}/logs
+export PACKER_LOG_PATH="logs/packerlog.txt"
 
 echo "INFO: Obtain SO_ISOCHECKSUMIMAGE from ${SO_ISOURLSHA256SUM}"
 export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOIMAGENAME}" ${PARENT_HOME_BASEDIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $1}')"
@@ -103,13 +108,9 @@ export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOIMAGENAME}" ${PARENT_HOME_BASEDIR
 echo "INFO: Validate JSON with Packer"
 packer-software/packer.exe ${MACHINEREADABLEPARAMETER} validate json/virtual-machine.json
 
-
 if [ "${PACKER_DEBUG,,}" == "true" ]
 then
   echo "INFO: Enable Packer debug mode"
-  export PACKER_LOG=1
-  mkdir -p ${HOME_BASEDIR}/logs
-  export PACKER_LOG_PATH="logs/packerlog.txt"
   export PACKERDEBUG="-debug"
 fi
 
