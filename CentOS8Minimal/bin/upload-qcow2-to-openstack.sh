@@ -22,7 +22,8 @@ mkdir -p ${PARENT_HOME_BASEDIR}/images
 cd ${PARENT_HOME_BASEDIR}/images
 
 echo "INFO: Get qcow2 file inside <${PARENT_HOME_BASEDIR}/images>"
-QCOW2_FILENAME=".*${SO_DISTRIBUTION}${SO_FULLVERSION}-${SO_IMAGETYPE}-[0-9]*.qcow2"
+SEARCHFILE=".*${SO_DISTRIBUTION}${SO_FULLVERSION}-${SO_IMAGETYPE}-[0-9]*.qcow2"
+QCOW2_FILENAME="$(find * -type f -regex "${SEARCHFILE}" 2>/dev/null || true)"
 
 if [ "${QCOW2_FILENAME}" == "" ]
 then
