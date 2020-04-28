@@ -34,10 +34,10 @@ rm -rf /var/lib/dnf/*
 rm -rf /var/cache/*
 rpm --rebuilddb
 
-echo "INFO: Install hostinfo.sh script to /usr/local/bin/hostinfo.sh"
-mv hostinfo.sh /usr/local/bin
-chown root.root /usr/local/bin/hostinfo.sh
-chmod +x /usr/local/bin/hostinfo.sh
+echo "INFO: Install host-info.sh script to /usr/local/bin/host-info.sh"
+mv host-info.sh /usr/local/bin
+chown root.root /usr/local/bin/host-info.sh
+chmod +x /usr/local/bin/host-info.sh
 
 echo "INFO: Install control-cloud-init.sh script to /usr/local/bin/control-cloud-init.sh"
 mv control-cloud-init.sh /usr/local/bin
