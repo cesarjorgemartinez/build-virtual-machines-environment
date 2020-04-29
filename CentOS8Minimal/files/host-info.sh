@@ -4,7 +4,6 @@ MYUSER=$(whoami)
 MYHOSTNAME=$(uname -n)
 MYPROCESSES=$(ps -Afl | wc -l)
 MYINTERFACES="$(ip -4 ad | grep 'state' | awk -F ": " '!/^[0-9]*: ?lo/ {print $2}')"
-MYCPUPHYSICAL="$(grep -c ^processor /proc/cpuinfo)"
 
 COLOR_COLUMN="\e[1m"
 COLOR_VALUE="\e[31m"
@@ -21,10 +20,8 @@ do
   ip6=$(ip ad show dev ${ifacename} | grep -Fw inet6 | awk '{print $2}')
   printf "%-18s%-18s%-46s%-46s\n" "${ifacename}" "${mac}" "${ip4}" "${ip6}" | sed -e 's/[[:space:]]*$//'
 done)${RESET_COLORS}
-${COLOR_COLUMN}CPU PHYSICAL${RESET_COLORS}.......: ${COLOR_VALUE}${MYCPUPHYSICAL}${RESET_COLORS}
-${COLOR_COLUMN}CPU VIRTUAL${RESET_COLORS}........: ${COLOR_VALUE}$(nproc --all)${RESET_COLORS}
-${COLOR_COLUMN}CPU DETAIL INFO${RESET_COLORS}....:
-${COLOR_VALUE}$(lscpu | fgrep -e 'CPU' -e 'Thread' -e 'Core' -e 'Socket' -e 'Model name' -e 'NUMA')${RESET_COLORS}
+${COLOR_COLUMN}CPU TOTAL${RESET_COLORS}..........: ${COLOR_VALUE}$(nproc --all)${RESET_COLORS}
+${COLOR_COLUMN}CPU ONLINE${RESET_COLORS}.........: ${COLOR_VALUE}$(nproc)${RESET_COLORS}
 ${COLOR_COLUMN}MEMORY${RESET_COLORS}.............:
 ${COLOR_VALUE}$(free -h)${RESET_COLORS}
 ${COLOR_COLUMN}FILESYSTEMS${RESET_COLORS}........:
@@ -36,5 +33,7 @@ ${COLOR_COLUMN}DATE${RESET_COLORS}...............: ${COLOR_VALUE}$(date)${RESET_
 ${COLOR_COLUMN}USERS${RESET_COLORS}..............: ${COLOR_VALUE}Currently $(users | wc -w) user(s) logged on${RESET_COLORS}
 ${COLOR_COLUMN}CURRENT USER${RESET_COLORS}.......: ${COLOR_VALUE}${MYUSER}${RESET_COLORS}
 ${COLOR_COLUMN}PROCESSES${RESET_COLORS}..........: ${COLOR_VALUE}${MYPROCESSES} running${RESET_COLORS}
+${COLOR_COLUMN}CPU DETAILED INFO${RESET_COLORS}..:
+${COLOR_VALUE}$(lscpu)${RESET_COLORS}
 ==========================================================================="
 
