@@ -141,7 +141,7 @@ find ${HOME_BASEDIR}/output-virtualbox-iso -maxdepth 1 -type f | xargs -r -I '{}
 cd ${PARENT_HOME_BASEDIR}/images
 
 echo "INFO: Get vmdk file inside <${PARENT_HOME_BASEDIR}/images>"
-SEARCHFILE=".*${SO_DISTRIBUTION}${SO_FULLVERSION}-${SO_IMAGETYPE}-[0-9]*.vmdk"
+SEARCHFILE=".*${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-[0-9]*.vmdk"
 VMDK_FILENAME="$(find * -type f -regex "${SEARCHFILE}" 2>/dev/null || true)"
 
 if [ "${VMDK_FILENAME}" == "" ]
