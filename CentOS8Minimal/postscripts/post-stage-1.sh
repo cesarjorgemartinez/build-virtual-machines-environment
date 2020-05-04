@@ -3,15 +3,14 @@
 echo "INFO: Stop auditd service. Not use systemctl to stop because not stop"
 service auditd stop
 
-# echo "INFO: Fix for timezone issues"
-# rm -f /etc/localtime
-# ln -s /usr/share/zoneinfo/Europe/Madrid /etc/localtime
-# hwclock --systohc
-# rm -f /etc/adjtime
-# hwclock --systohc
-
 echo "INFO: Current date"
 date
+
+echo "INFO: Stop systemd-journald service"
+systemctl stop systemd-journald
+
+echo "INFO: Stop sssd service"
+systemctl stop sssd
 
 echo "INFO: Remove old kernels keeping only one"
 dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)
@@ -27,6 +26,9 @@ find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en_US' ! -name 'es_ES' !
 
 echo "INFO: Remove unneeded i18n locales in /usr/share/i18n/locales folder except en_US* and es_ES*"
 find /usr/share/i18n/locales -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' | xargs -r rm -r
+
+echo "INFO: Remove unneeded locales in /usr/share/man folder except es and man*"
+find /usr/share/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs -r rm -r
 
 echo "INFO: Clean all caches"
 dnf clean all
@@ -113,8 +115,8 @@ echo "INFO: Clear out swap and disable until next reboot"
 set +e
 swapuuid=$(/sbin/blkid -o value -l -s UUID -t TYPE=swap)
 case "$?" in
-        2|0) ;;
-        *) exit 1 ;;
+  2|0) ;;
+  *) exit 1 ;;
 esac
 set -e
 if [ "x${swapuuid}" != "x" ]
@@ -126,6 +128,12 @@ then
   dd if=/dev/zero of="${swappart}" bs=1M || echo "dd exit code $? is suppressed"
   /sbin/mkswap -U "${swapuuid}" "${swappart}"
 fi
+
+echo "INFO: Remove unneeded files"
+find /usr/lib64/python3.6 -type f -name "*.pyc" -delete
+rm -rf /run/log/journal/*
+rm -f /usr/share/mime/mime.cache
+rm -rf /var/lib/sss/db/*
 
 echo "INFO: Force logs to rotate"
 /usr/sbin/logrotate -f /etc/logrotate.conf
@@ -151,6 +159,7 @@ rm -f /var/log/cloud-init*.log
 rm -f /var/log/anaconda/syslog
 rm -f /var/log/grubby*
 rm -f /var/log/firewalld
+rm -f /var/log/cache
 
 echo "INFO: Clean bash history"
 rm -f /root/.bash_history
@@ -192,6 +201,7 @@ rm -f /var/log/cloud-init*.log
 rm -f /var/log/anaconda/syslog
 rm -f /var/log/grubby*
 rm -f /var/log/firewalld
+rm -f /var/log/cache
 
 echo "INFO: Clean bash history"
 rm -f /root/.bash_history
