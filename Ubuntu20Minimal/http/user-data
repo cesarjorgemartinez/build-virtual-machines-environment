@@ -1,0 +1,31 @@
+# Configuration file for cloud-init
+autoinstall:
+  version: 1
+  refresh-installer:
+    update: yes
+  locale: en_US.UTF-8
+  keyboard:
+    layout: es,us
+    variant: winkeys
+  identity:
+    username: packer
+    password: '$6$aeYb8Jha$6HA.tG1O6Bv/zb9CN3yACLw3RngGuFWibj68ztdVFjXuWrBzVHMF15aBh9BxUL7yBm3yZjXYi9Hs1Dtps0riE0'
+    hostname: ubuntu
+#  network:
+#    ethernets:
+#      eth0:
+#        dhcp4: true
+#        dhcp6: true
+#      eth1:
+#        dhcp4: true
+#        dhcp6: true
+#      eth2:
+#        dhcp4: true
+#        dhcp6: true
+#      eth3:
+#        dhcp4: true
+#        dhcp6: true
+#    version: 2
+  ssh:
+    install-server: true
+
