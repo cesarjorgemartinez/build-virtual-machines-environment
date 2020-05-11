@@ -9,6 +9,7 @@
     "checksum": "{{ env `SO_ISOCHECKSUMIMAGE` }}",
     "checksum_type": "{{ env `SO_ISOCHECKSUMTYPE` }}",
     "packer_ssh_timeout": "{{ env `PACKER_SSH_TIMEOUT` }}",
+    "packer_ssh_handshake_attempts": "{{ env `PACKER_SSH_HANDSHAKE_ATTEMPTS` }}",
     "vm_fullname": "{{ env `SO_VMFULLNAME` }}"
   },
   "builders": [
@@ -32,6 +33,7 @@
       "ssh_username": "packer",
       "ssh_password": "packer",
       "ssh_timeout": "{{ user `packer_ssh_timeout` }}",
+      "ssh_handshake_attempts": "{{ user `packer_ssh_handshake_attempts` }}",
       "ssh_host_port_min": 2222,
       "ssh_host_port_max": 2229,
       "ssh_skip_nat_mapping": false,
@@ -50,7 +52,9 @@
       ],
       "boot_wait": "10s",
       "boot_command": [
-        "<up><wait><tab><bs><bs><bs><bs><bs>console=ttyS0 console=tty0 ignore_loglevel inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed-virtual-machine.cfg inst.text<wait5><enter><wait>"
+        "<enter><wait><enter><wait><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+        "ignore_loglevel console=ttyS0 console=tty0 autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ --- ",
+        "<enter><wait200>"
       ],
       "shutdown_command": "echo {{ user `so_adminpass` }} | sudo -S -i -u {{ user `so_adminuser` }} sudo -S shutdown -P now"
     }
