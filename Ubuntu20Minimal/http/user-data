@@ -28,4 +28,7 @@ autoinstall:
 #    version: 2
   ssh:
     install-server: true
+runcmd:
+   - timedatectl set-timezone "Europe/Madrid"
+   - timedatectl set-local-rtc false
 
