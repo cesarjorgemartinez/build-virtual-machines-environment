@@ -103,7 +103,7 @@ mkdir -p ${HOME_BASEDIR}/logs
 export PACKER_LOG_PATH="logs/packerlog.txt"
 
 echo "INFO: Obtain SO_ISOCHECKSUMIMAGE from ${SO_ISOURLSHA256SUM}"
-export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOCHECKSUMTYPE^^}.*${SO_ISOIMAGENAME}" ${PARENT_HOME_BASEDIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $4}')"
+export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOIMAGENAME}" ${PARENT_HOME_BASEDIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $1}')"
 
 echo "INFO: Validate JSON with Packer"
 packer-software/packer.exe ${MACHINEREADABLEPARAMETER} validate json/virtual-machine.json
