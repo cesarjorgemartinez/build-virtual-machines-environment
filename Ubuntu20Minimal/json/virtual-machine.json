@@ -52,8 +52,8 @@
       ],
       "boot_wait": "10s",
       "boot_command": [
-        "<enter><wait><enter><wait><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
-        "ignore_loglevel console=ttyS0 console=tty0 autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ --- ",
+        "<enter><enter><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><wait> --- <wait>",
+        "ignore_loglevel vconsole.keymap=es autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/",
         "<enter><wait200>"
       ],
       "shutdown_command": "echo {{ user `so_adminpass` }} | sudo -S -i -u {{ user `so_adminuser` }} sudo -S shutdown -P now"

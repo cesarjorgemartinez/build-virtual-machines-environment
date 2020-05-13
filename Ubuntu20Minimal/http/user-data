@@ -1,4 +1,4 @@
-# Configuration file for cloud-init
+#cloud-config
 autoinstall:
   version: 1
   refresh-installer:
@@ -28,7 +28,8 @@ autoinstall:
 #    version: 2
   ssh:
     install-server: true
+
 runcmd:
-   - timedatectl set-timezone "Europe/Madrid"
-   - timedatectl set-local-rtc false
+  - 'timedatectl set-timezone "Europe/Madrid"'
+  - 'timedatectl set-local-rtc false'
 
