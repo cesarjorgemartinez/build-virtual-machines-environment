@@ -48,6 +48,13 @@
       - [6.6.2. Configure the virtual machine](#662-configure-the-virtual-machine)
       - [6.6.3. Use the virtual machine](#663-use-the-virtual-machine)
    - [6.7. Convert vmdk image to work inside VMware ESXI](#67-convert-vmdk-image-to-work-inside-vmware-esxi)
+- [7. Build Ubuntu 20 Minimal image](#7-build-ubuntu-20-minimal-image)
+   - [7.1. Download and install Packer](#71-download-and-install-packer)
+   - [7.2. Download the iso image](#72-download-the-iso-image)
+   - [7.3. Build the image](#73-build-the-image)
+   - [7.4. Optionally upload to the OpenStack Image Store](#74-optionally-upload-to-the-openstack-image-store)
+   - [7.5. Utility files used in this image](#75-utility-files-used-in-this-image)
+   - [7.7. Convert vmdk image to work inside VMware ESXI](#77-convert-vmdk-image-to-work-inside-vmware-esxi)
 
 <!-- /MDTOC -->
 
@@ -79,6 +86,7 @@ Actually you can build the following Operating Systems:
 
 - **CentOS 7 Minimal**
 - **CentOS 8 Minimal**
+- **Ubuntu 20 Minimal**
 
 
 # 3. Create and configure the environment
@@ -824,4 +832,279 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200425\CentOS8.1-1911-Minimal-20200425.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200425-esx15.ovf'
+```
+
+
+# 7. Build Ubuntu 20 Minimal image
+
+This section explains howto build this *Virtual Machine Image*.
+
+
+## 7.1. Download and install Packer
+
+To build the image you need to download and install *Packer* software.
+
+The directory where it install this software is `Ubuntu20Minimal/packer-software`.
+
+The version is determined by its own configuration file located at [Ubuntu20Minimal Configuration Directory](Ubuntu20Minimal/conf/virtual-machine.conf "Ubuntu20Minimal Configuration Directory").
+
+To perform this task run:
+
+```bash
+Ubuntu20Minimal/bin/download-and-install-packer.sh
+```
+
+
+## 7.2. Download the iso image
+
+To build the image you need to download the **iso** files for this *Operating System*.
+
+The directory where it download this **iso** files is `isos` at home of this repository.
+
+The version is determined by its own configuration file located at [Ubuntu20Minimal Configuration Directory](Ubuntu20Minimal/conf/virtual-machine.conf "Ubuntu20Minimal Configuration Directory").
+
+To perform this task run:
+
+```bash
+Ubuntu20Minimal/bin/download-iso.sh
+```
+
+
+## 7.3. Build the image
+
+You need enter the `username` and `userpass` of the *Linux* admin account what is desired, and one optional parameter for the `cloud-init` default user (if this parameter is not provided then the default user is `cloud-user`.
+
+```bash
+Ubuntu20Minimal/bin/build-virtual-machine.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]
+```
+
+When finished the build then will create the image files **vmdk**, **ovf** and **qcow2** inside the `images` directory at home of this repository.
+
+To understand how the builder works see the configuration files in [Ubuntu20Minimal Configuration Directory](Ubuntu20Minimal/conf/virtual-machine.conf "Ubuntu20Minimal Configuration Directory").
+
+The format name of the generated image files is as follows:
+
+```bash
+${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|qcow2)
+```
+
+Example of **Ubuntu 20 Minimal** configuration file:
+
+```bash
+# Variables to build Operating System
+# For Packer version you can use one release or nightly to use nightly build
+export PACKER_VERSION="1.5.6"
+export PACKER_MACHINEREADABLEOUTPUT="False"
+export PACKER_DEBUG="False"
+export PACKER_SSH_TIMEOUT="20m"
+export PACKER_SSH_HANDSHAKE_ATTEMPTS=30
+# The location of the core configuration file
+export PACKER_CONFIG="${HOME_BASEDIR}/.packerconfig"
+# The location of the .packer.d config directory
+export PACKER_CONFIG_DIR="${HOME_BASEDIR}"
+export VBOXPATH="/cygdrive/c/Program Files/Oracle/VirtualBox"
+export QEMUPATH="/cygdrive/c/Program Files/qemu"
+export PATH="${VBOXPATH}:${QEMUPATH}:${PATH}"
+export SO_GUESTOSTYPE="Ubuntu_64"
+# Values for hard_drive_interface are: ide sata or scsi
+export SO_GUESTHDDINTERFACE="sata"
+# The image obtained can be Minimal (for servers) or Desktop (for final users using a GUI)
+export SO_IMAGETYPE="Minimal"
+export SO_DISTRIBUTION="Ubuntu"
+export SO_MAJORVERSION="20"
+export SO_MINORVERSION="04"
+export SO_NAMEVERSION="server"
+export SO_SHORTVERSION="${SO_MAJORVERSION}.${SO_MINORVERSION}"
+# The iso file type to download and use can be boot or dvd1 (can exists others but here only use these types)
+export SO_ISOTYPE="live-server"
+export SO_ISOIMAGENAME="${SO_DISTRIBUTION,,}-${SO_SHORTVERSION}-${SO_ISOTYPE}-amd64.iso"
+export SO_ISOURLIMAGE="https://releases.ubuntu.com/${SO_SHORTVERSION}/${SO_ISOIMAGENAME}"
+export SO_ISOSHA256SUMNAME="${SO_ISOIMAGENAME%.iso}.sum"
+export SO_ISOCHECKSUMTYPE="sha256"
+export SO_ISOURLSHA256SUM="https://releases.ubuntu.com/${SO_SHORTVERSION}/SHA256SUMS"
+export SO_BUILDDATE="$(date +%Y%m%d)"
+export SO_VMFULLNAME="${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}"
+```
+
+
+## 7.4. Optionally upload to the OpenStack Image Store
+
+If you have one *OpenStack virtualization environment*, you can upload the **qcow2** image file to the *OpenStack Image Store*.
+
+To do the upload you need one appropiated virtualenv and environment variables defined and be registered in that *OpenStack virtualization environment* and launch:
+
+```bash
+Ubuntu20Minimal/bin/upload-qcow2-to-openstack.sh
+```
+
+
+## 7.5. Utility files used in this image
+
+When build this image the following files in [Files for Ubuntu20Minimal Directory](Ubuntu20Minimal/files "Files for Ubuntu20Minimal Directory") folder are installed and configured.
+
+* **control-cloud-init.service**: Unit to control `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. This unit calls the file `/usr/local/bin/control-cloud-init.sh`. Installed in `/etc/systemd/system/control-cloud-init.service`. See [control-cloud-init.service](Ubuntu20Minimal/files/control-cloud-init.service "control-cloud-init.service").
+
+* **control-cloud-init.sh**: Process that controls `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. Installed in `/usr/local/bin/control-cloud-init.sh`. See [control-cloud-init.sh](Ubuntu20Minimal/files/control-cloud-init.sh "control-cloud-init.sh").
+
+* **guest-vmtools.service**: Unit to manage virtual machine tools for *VirtualBox*, *VMware* or *VMware ESXI*. This unit calls the file `/usr/local/bin/guest-vmtools.sh`. Installed in `/etc/systemd/system/guest-vmtools.service`. See [guest-vmtools.service](Ubuntu20Minimal/files/guest-vmtools.service "guest-vmtools.service").
+
+* **guest-vmtools.sh**: Process that install and configure the *GuestTools* for *VirtualBox* or *VMwareTools* for *VMware* or *VMware ESXI*. Or remove these tools if boot in other virtual environments. Installed in `/usr/local/bin/guest-vmtools.sh`. See [guest-vmtools.sh](Ubuntu20Minimal/files/guest-vmtools.sh "guest-vmtools.sh").
+
+* **host-info.sh**: Process that informs over basic properties of a host (CPU, memory, etc). Installed in `/usr/local/bin/host-info.sh`. See [host-info.sh](Ubuntu20Minimal/files/host-info.sh "host-info.sh").
+
+  Execution example:
+  ```bash
+TODO
+  ```
+
+* **switch-to-graphical-user-interface.sh**: Process that install and enable the `GNOME Display Manager` and set `Graphical Mode` as the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-graphical-user-interface.sh`. See [switch-to-graphical-user-interface.sh](Ubuntu20Minimal/files/switch-to-graphical-user-interface.sh "switch-to-graphical-user-interface.sh").
+
+* **switch-to-text-user-interface.sh**: Process that disables (not uninstall) the `GNOME Display Manager` and set `Text Mode` as the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-text-user-interface.sh`. See [switch-to-text-user-interface.sh](Ubuntu20Minimal/files/switch-to-text-user-interface.sh "switch-to-text-user-interface.sh").
+
+
+## 7.6. Virtual machine example in VirtualBox
+
+Steps to use virtual machines using *VirtualBox*.
+
+
+### 7.6.1. Import the virtualized service
+
+To import virtualized service in *VirtualBox* to create a virtual machine perform the following steps using the `Oracle VM VirtualBox Administrator`.
+
+TOREVIEW
+
+- Click in `Archive -> Import virtualized service...`
+- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04-live-server-Minimal-20200514.ovf`
+- Name: `myvm`
+- Type of guest OS: `Ubuntu (64-bit)`
+- CPU: `1`
+- RAM: `1024 MB`
+- Storage Controller (SATA) -> Virtual Disk Image: `myvm.vmdk`
+- MAC address policy: `Generate new MAC addresses for all network adapters`
+- Additional options: `Import disks as VDI`
+- Click in `Import` button
+
+
+### 7.6.2. Configure the virtual machine
+
+The virtual machine is created and the next steps are to configure it correcty doing double-click in this virtual machine and select `Configuration...` or using the menu `Machine -> Configuration...`.
+
+TOREVIEW
+
+- General -> Advanced -> Share clipboard: `Bidirectional`
+- General -> Advanced -> Drag and drop: `Bidirectional`
+- System -> Motherboard -> UTC time hardware clock: `Enabled`
+- Screen -> Screen -> Video memory: `16 MB`
+- Display -> Display -> Graphic controller: `VMSVGA`
+- Network -> Network -> Adapter 1 -> Enable network adapter: `Enabled`
+- Network -> Network -> Adapter 1 -> Connected to: `Host-only adapter`
+- Network -> Network -> Adapter 1 -> Name: `VirtualBox Host-Only Ethernet Adapter`
+- Network -> Network -> Adapter 1 -> Advanced -> Promiscuous mode: `Allow all`
+- Network -> Network -> Adapter 2 -> Enable network adapter: `Enabled`
+- Network -> Network -> Adapter 2 -> Connected to: `NAT`
+
+
+### 7.6.3. Use the virtual machine
+
+Once the virtual machine is configured you can click in `Start` button.
+
+To get guest properties of the virtual machine:
+
+- Enter in a *Cygwin64 session*.
+- To get all guest properties.
+```bash
+'/cygdrive/c/Program Files/Oracle/VirtualBox/VBoxManage' guestproperty enumerate myvm
+```
+- To get the assigned IP for adapter 1.
+```bash
+'/cygdrive/c/Program Files/Oracle/VirtualBox/VBoxManage' guestproperty get myvm /VirtualBox/GuestInfo/Net/0/V4/IP
+```
+
+Launch a ssh session to this virtual machine:
+
+```bash
+sshpass -p adminpass ssh adminuser@<assigned_IP_for_adapter_1>
+```
+
+Change the `hostname` for this virtual machine:
+
+```bash
+sudo hostnamectl --static set-hostname myvm
+sudo hostnamectl --transient set-hostname myvm
+```
+
+Get basic properties of this virtual machine:
+
+```bash
+/usr/local/bin/host-info.sh
+```
+
+Switch to `Graphical User Interface` for this virtual machine:
+
+```bash
+sudo /usr/local/bin/switch-to-graphical-user-interface.sh
+# Wait a bit to terminate this execution
+sudo reboot
+```
+
+Or back to `Text User Interface` for this virtual machine:
+
+```bash
+sudo /usr/local/bin/switch-to-text-user-interface.sh
+# Wait a bit to terminate this execution
+sudo reboot
+```
+
+
+## 7.7. Convert vmdk image to work inside VMware ESXI
+
+The image formats obtained **vmdk** or **ovf** are compatible with *VMware Workstation Player* but they are not compatible for *VMware ESXI*.
+
+For this reason you need to use *VMware Workstation Player* for Windows to obtain a compatible virtual machine.
+
+Then follow these steps:
+
+TOREVIEW
+
+- Open *VMware Workstation Player*
+- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04-live-server-Minimal-20200514.ovf`
+- Name for the new virtual machine: `Ubuntu20.04-live-server-Minimal-20200514`
+- Storage path for the new virtual machine: `C:\VMware\Ubuntu20.04-live-server-Minimal-20200514`
+- Click in `Import` button
+- Click in `Retry` button to relax OVF specifications
+- Click in `Edit virtual machine settings`
+- Options -> General -> Guest Operation System: `Linux`
+- Options -> General -> Guest Operation System -> Version: `Centos 7 64-bit`
+- Options -> VMware Tools -> VMware Tools features -> Syncronize guest time with host: `Enabled`
+- Hardware->Network Adapter -> Network connection -> Bridged: Connected directly to the physical network: `Enabled`
+- Hardware->Network Adapter -> Network connection -> Replicate physical network connection state: `Disabled`
+- Hardware->Network Adapter -> Network connection -> Configure Adapters -> Realtek PCIe GBE Family Controller: `Enabled`
+- Hardware->Network Adapter -> Network connection -> Configure Adapters -> Other adapters: `Disabled`
+
+Then you have an image imported into *VMware Workstation Player*. Here you need to choose the *VMware ESXI* version reading the article <https://kb.vmware.com/s/article/1003746> and follow these steps:
+
+- Enter in a *Cygwin64 session*.
+
+- To get an image for *VMware ESXI* version `6.0` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-live-server-Minimal-20200514\Ubuntu20.04-live-server-Minimal-20200514.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-live-server-Minimal-20200514-esx11.ovf'
+```
+
+- To get an image for *VMware ESXI* version `6.5` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-live-server-Minimal-20200514\Ubuntu20.04-live-server-Minimal-20200514.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-live-server-Minimal-20200514-esx13.ovf'
+```
+
+- To get an image for *VMware ESXI* version `6.7` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-live-server-Minimal-20200514\Ubuntu20.04-live-server-Minimal-20200514.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-live-server-Minimal-20200514-esx14.ovf'
+```
+
+- To get an image for *VMware ESXI* version `6.7 U2` or `6.8.x` or `6.9.x` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-live-server-Minimal-20200514\Ubuntu20.04-live-server-Minimal-20200514.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-live-server-Minimal-20200514-esx15.ovf'
 ```
