@@ -83,19 +83,19 @@ qemuinstaller/
 # for each Operating System build then replicate it
 CentOS7Minimal/logs/
 CentOS7Minimal/output-virtualbox-iso/
-CentOS7Minimal/.packer.d/
+CentOS7Minimal/packer.d/
 CentOS7Minimal/.packerconfig
 CentOS7Minimal/packer_cache/
 CentOS7Minimal/packer-software/
 CentOS8Minimal/logs/
 CentOS8Minimal/output-virtualbox-iso/
-CentOS8Minimal/.packer.d/
+CentOS8Minimal/packer.d/
 CentOS8Minimal/.packerconfig
 CentOS8Minimal/packer_cache/
 CentOS8Minimal/packer-software/
 Ubuntu20Minimal/logs/
 Ubuntu20Minimal/output-virtualbox-iso/
-Ubuntu20Minimal/.packer.d/
+Ubuntu20Minimal/packer.d/
 Ubuntu20Minimal/.packerconfig
 Ubuntu20Minimal/packer_cache/
 Ubuntu20Minimal/packer-software/

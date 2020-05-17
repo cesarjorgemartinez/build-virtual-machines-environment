@@ -257,9 +257,9 @@ export PACKER_MACHINEREADABLEOUTPUT=&quot;False&quot;
 export PACKER_DEBUG=&quot;False&quot;
 export PACKER_SSH_TIMEOUT=&quot;50m&quot;
 # The location of the core configuration file
-export PACKER_CONFIG=&quot;${HOME_BASEDIR}/.packerconfig&quot;
-# The location of the .packer.d config directory
-export PACKER_CONFIG_DIR=&quot;${HOME_BASEDIR}&quot;
+export PACKER_CONFIG=&quot;$(cygpath -m ${HOME_BASEDIR}/.packerconfig)&quot;
+# The location of the packer.d config directory
+export PACKER_CONFIG_DIR=&quot;$(cygpath -m ${HOME_BASEDIR})&quot;
 export VBOXPATH=&quot;/cygdrive/c/Program Files/Oracle/VirtualBox&quot;
 export QEMUPATH=&quot;/cygdrive/c/Program Files/qemu&quot;
 export PATH=&quot;${VBOXPATH}:${QEMUPATH}:${PATH}&quot;
@@ -480,9 +480,9 @@ export PACKER_MACHINEREADABLEOUTPUT=&quot;False&quot;
 export PACKER_DEBUG=&quot;False&quot;
 export PACKER_SSH_TIMEOUT=&quot;50m&quot;
 # The location of the core configuration file
-export PACKER_CONFIG=&quot;${HOME_BASEDIR}/.packerconfig&quot;
-# The location of the .packer.d config directory
-export PACKER_CONFIG_DIR=&quot;${HOME_BASEDIR}&quot;
+export PACKER_CONFIG=&quot;$(cygpath -m ${HOME_BASEDIR}/.packerconfig)&quot;
+# The location of the packer.d config directory
+export PACKER_CONFIG_DIR=&quot;$(cygpath -m ${HOME_BASEDIR})&quot;
 export VBOXPATH=&quot;/cygdrive/c/Program Files/Oracle/VirtualBox&quot;
 export QEMUPATH=&quot;/cygdrive/c/Program Files/qemu&quot;
 export PATH=&quot;${VBOXPATH}:${QEMUPATH}:${PATH}&quot;
@@ -704,9 +704,9 @@ export PACKER_DEBUG=&quot;False&quot;
 export PACKER_SSH_TIMEOUT=&quot;20m&quot;
 export PACKER_SSH_HANDSHAKE_ATTEMPTS=30
 # The location of the core configuration file
-export PACKER_CONFIG=&quot;${HOME_BASEDIR}/.packerconfig&quot;
-# The location of the .packer.d config directory
-export PACKER_CONFIG_DIR=&quot;${HOME_BASEDIR}&quot;
+export PACKER_CONFIG=&quot;$(cygpath -m ${HOME_BASEDIR}/.packerconfig)&quot;
+# The location of the packer.d config directory
+export PACKER_CONFIG_DIR=&quot;$(cygpath -m ${HOME_BASEDIR})&quot;
 export VBOXPATH=&quot;/cygdrive/c/Program Files/Oracle/VirtualBox&quot;
 export QEMUPATH=&quot;/cygdrive/c/Program Files/qemu&quot;
 export PATH=&quot;${VBOXPATH}:${QEMUPATH}:${PATH}&quot;
