@@ -6,6 +6,28 @@
 echo "INFO: Current date"
 date
 
+export DEBIAN_FRONTEND=noninteractive
+
+echo "INFO: Update all packages"
+apt-get update -y
+echo "INFO: Upgrade all packages"
+apt-get full-upgrade -y
+echo "INFO: Refresh snaps"
+snap refresh
+
+echo "INFO: Install utils"
+apt-get install -y --no-install-recommends net-tools acpid jq nmap ncat
+
+echo "INFO: Remove ufw firewall"
+apt-get purge -y ufw
+
+echo "INFO: Enable and start acpid daemon"
+systemctl enable acpid
+systemctl start acpid
+
+
+
+
 # echo "INFO: Stop systemd-journald service"
 # systemctl stop systemd-journald
 
