@@ -27,7 +27,7 @@ ${COLOR_VALUE}$(free -h)${RESET_COLORS}
 ${COLOR_COLUMN}FILESYSTEMS${RESET_COLORS}........:
 ${COLOR_VALUE}$(df -Ph | egrep -v '^overlay|^shm')${RESET_COLORS}
 ${COLOR_COLUMN}SYSTEM UPTIME${RESET_COLORS}......: ${COLOR_VALUE}$(uptime | xargs)${RESET_COLORS}
-${COLOR_COLUMN}RELEASE${RESET_COLORS}............: ${COLOR_VALUE}$(cat /etc/redhat-release)${RESET_COLORS}
+${COLOR_COLUMN}RELEASE${RESET_COLORS}............: ${COLOR_VALUE}$(source /etc/os-release && echo "${NAME} ${VERSION}")${RESET_COLORS}
 ${COLOR_COLUMN}KERNEL${RESET_COLORS}.............: ${COLOR_VALUE}$(uname -r)${RESET_COLORS}
 ${COLOR_COLUMN}DATE${RESET_COLORS}...............: ${COLOR_VALUE}$(date)${RESET_COLORS}
 ${COLOR_COLUMN}USERS${RESET_COLORS}..............: ${COLOR_VALUE}Currently $(users | wc -w) user(s) logged on${RESET_COLORS}
