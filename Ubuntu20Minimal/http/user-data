@@ -45,9 +45,10 @@ autoinstall:
   ssh:
     install-server: true
   late-commands:
-    - sed -i -e 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /target/etc/default/grub
+    - sed -r -i -e 's/(GRUB_TIMEOUT=).*/\11/g' /target/etc/default/grub
+    - sed -r -i -e 's/(ignore_loglevel)/\1 console=ttyS0 console=tty0/g' /target/etc/default/grub
 
 runcmd:
-  - 'timedatectl set-timezone "Europe/Madrid"'
-  - 'timedatectl set-local-rtc false'
+  - timedatectl set-timezone "Europe/Madrid"
+  - timedatectl set-local-rtc false
 
