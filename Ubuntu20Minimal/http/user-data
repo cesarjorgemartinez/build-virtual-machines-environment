@@ -44,6 +44,8 @@ autoinstall:
           dhcp6: true
   ssh:
     install-server: true
+  late-commands:
+    - sed -i -e 's/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=1/' /target/etc/default/grub
 
 runcmd:
   - 'timedatectl set-timezone "Europe/Madrid"'
