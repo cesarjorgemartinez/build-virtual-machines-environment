@@ -748,7 +748,73 @@ export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION
 </li>
 <li><p><strong>host-info.sh</strong>: Process that informs over basic properties of a host (CPU, memory, etc). Installed in <code>/usr/local/bin/host-info.sh</code>. See <a href="Ubuntu20Minimal/files/host-info.sh" title="host-info.sh">host-info.sh</a>.</p>
 <p>Execution example:</p>
-<pre><code class="language-bash">TODO</code></pre>
+<pre><code class="language-bash">===========================================================================
+HOSTNAME...........: ubuntu
+INTERFACES.........:
+Interface         MAC Address       IP4 Address                                   IP6 Address
+eth0              08:00:27:c3:0d:f7 192.168.56.138/24                             fe80::a00:27ff:fec3:df7/64
+eth1              08:00:27:95:ed:5b 10.0.3.15/24                                  fe80::a00:27ff:fe95:ed5b/64
+CPU TOTAL..........: 1
+CPU ONLINE.........: 1
+MEMORY.............:
+              total        used        free      shared  buff/cache   available
+Mem:          981Mi       153Mi       567Mi       0.0Ki       260Mi       681Mi
+Swap:         1.9Gi          0B       1.9Gi
+FILESYSTEMS........:
+Filesystem                         Size  Used Avail Use% Mounted on
+udev                               449M     0  449M   0% /dev
+tmpfs                               99M 1012K   98M   2% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv   19G  4.1G   14G  23% /
+tmpfs                              491M     0  491M   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                              491M     0  491M   0% /sys/fs/cgroup
+/dev/sda2                          976M  103M  806M  12% /boot
+/dev/loop0                          55M   55M     0 100% /snap/core18/1705
+/dev/loop1                          69M   69M     0 100% /snap/lxd/14804
+/dev/loop2                          28M   28M     0 100% /snap/snapd/7264
+tmpfs                               99M     0   99M   0% /run/user/1000
+SYSTEM UPTIME......: 21:28:33 up 24 min, 2 users, load average: 0.00, 0.00, 0.02
+RELEASE............: Ubuntu 20.04 LTS (Focal Fossa)
+KERNEL.............: 5.4.0-29-generic
+DATE...............: Sun 17 May 2020 09:28:33 PM UTC
+USERS..............: Currently 2 user(s) logged on
+CURRENT USER.......: sysadmin
+PROCESSES..........: 162 running
+CPU DETAILED INFO..:
+Architecture:                    x86_64
+CPU op-mode(s):                  32-bit, 64-bit
+Byte Order:                      Little Endian
+Address sizes:                   39 bits physical, 48 bits virtual
+CPU(s):                          1
+On-line CPU(s) list:             0
+Thread(s) per core:              1
+Core(s) per socket:              1
+Socket(s):                       1
+NUMA node(s):                    1
+Vendor ID:                       GenuineIntel
+CPU family:                      6
+Model:                           142
+Model name:                      Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+Stepping:                        10
+CPU MHz:                         1800.003
+BogoMIPS:                        3600.00
+Hypervisor vendor:               KVM
+Virtualization type:             full
+L1d cache:                       32 KiB
+L1i cache:                       32 KiB
+L2 cache:                        256 KiB
+L3 cache:                        6 MiB
+NUMA node0 CPU(s):               0
+Vulnerability Itlb multihit:     KVM: Vulnerable
+Vulnerability L1tf:              Mitigation; PTE Inversion
+Vulnerability Mds:               Mitigation; Clear CPU buffers; SMT Host state unknown
+Vulnerability Meltdown:          Mitigation; PTI
+Vulnerability Spec store bypass: Vulnerable
+Vulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:        Mitigation; Full generic retpoline, STIBP disabled, RSB filling
+Vulnerability Tsx async abort:   Not affected
+Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq monitor ssse3 cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single pti fsgsbase avx2 invpcid rdseed clflushopt md_clear flush_l1d
+===========================================================================</code></pre>
 </li>
 <li><p><strong>switch-to-graphical-user-interface.sh</strong>: Process that install and enable the <code>GNOME Display Manager</code> and set <code>Graphical Mode</code> as the default login. After finish, you need to reboot this host to apply these changes (<code>sudo shutdown -r now</code>). Installed in <code>/usr/local/bin/switch-to-graphical-user-interface.sh</code>. See <a href="Ubuntu20Minimal/files/switch-to-graphical-user-interface.sh" title="switch-to-graphical-user-interface.sh">switch-to-graphical-user-interface.sh</a>.</p>
 </li>
@@ -774,7 +840,6 @@ export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION
 </ul>
 <h3 id="7-6-2-configure-the-virtual-machine">7.6.2. Configure the virtual machine</h3>
 <p>The virtual machine is created and the next steps are to configure it correcty doing double-click in this virtual machine and select <code>Configuration...</code> or using the menu <code>Machine -&gt; Configuration...</code>.</p>
-<p>TOREVIEW</p>
 <ul>
 <li>General -&gt; Advanced -&gt; Share clipboard: <code>Bidirectional</code></li>
 <li>General -&gt; Advanced -&gt; Drag and drop: <code>Bidirectional</code></li>
@@ -817,7 +882,6 @@ sudo reboot</code></pre>
 <p>The image formats obtained <strong>vmdk</strong> or <strong>ovf</strong> are compatible with <em>VMware Workstation Player</em> but they are not compatible for <em>VMware ESXI</em>.</p>
 <p>For this reason you need to use <em>VMware Workstation Player</em> for Windows to obtain a compatible virtual machine.</p>
 <p>Then follow these steps:</p>
-<p>TOREVIEW</p>
 <ul>
 <li>Open <em>VMware Workstation Player</em></li>
 <li>Click in <code>Player-&gt;File-&gt;Open...</code> and select the <strong>ovf</strong> file <code>C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517.ovf</code></li>
@@ -827,7 +891,7 @@ sudo reboot</code></pre>
 <li>Click in <code>Retry</code> button to relax OVF specifications</li>
 <li>Click in <code>Edit virtual machine settings</code></li>
 <li>Options -&gt; General -&gt; Guest Operation System: <code>Linux</code></li>
-<li>Options -&gt; General -&gt; Guest Operation System -&gt; Version: <code>Centos 7 64-bit</code></li>
+<li>Options -&gt; General -&gt; Guest Operation System -&gt; Version: <code>Ubuntu 64-bit</code></li>
 <li>Options -&gt; VMware Tools -&gt; VMware Tools features -&gt; Syncronize guest time with host: <code>Enabled</code></li>
 <li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Bridged: Connected directly to the physical network: <code>Enabled</code></li>
 <li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Replicate physical network connection state: <code>Disabled</code></li>

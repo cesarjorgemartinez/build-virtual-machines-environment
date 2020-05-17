@@ -1008,7 +1008,73 @@ When build this image the following files in [Files for Ubuntu20Minimal Director
 
   Execution example:
   ```bash
-TODO
+  ===========================================================================
+  HOSTNAME...........: ubuntu
+  INTERFACES.........:
+  Interface         MAC Address       IP4 Address                                   IP6 Address
+  eth0              08:00:27:c3:0d:f7 192.168.56.138/24                             fe80::a00:27ff:fec3:df7/64
+  eth1              08:00:27:95:ed:5b 10.0.3.15/24                                  fe80::a00:27ff:fe95:ed5b/64
+  CPU TOTAL..........: 1
+  CPU ONLINE.........: 1
+  MEMORY.............:
+                total        used        free      shared  buff/cache   available
+  Mem:          981Mi       153Mi       567Mi       0.0Ki       260Mi       681Mi
+  Swap:         1.9Gi          0B       1.9Gi
+  FILESYSTEMS........:
+  Filesystem                         Size  Used Avail Use% Mounted on
+  udev                               449M     0  449M   0% /dev
+  tmpfs                               99M 1012K   98M   2% /run
+  /dev/mapper/ubuntu--vg-ubuntu--lv   19G  4.1G   14G  23% /
+  tmpfs                              491M     0  491M   0% /dev/shm
+  tmpfs                              5.0M     0  5.0M   0% /run/lock
+  tmpfs                              491M     0  491M   0% /sys/fs/cgroup
+  /dev/sda2                          976M  103M  806M  12% /boot
+  /dev/loop0                          55M   55M     0 100% /snap/core18/1705
+  /dev/loop1                          69M   69M     0 100% /snap/lxd/14804
+  /dev/loop2                          28M   28M     0 100% /snap/snapd/7264
+  tmpfs                               99M     0   99M   0% /run/user/1000
+  SYSTEM UPTIME......: 21:28:33 up 24 min, 2 users, load average: 0.00, 0.00, 0.02
+  RELEASE............: Ubuntu 20.04 LTS (Focal Fossa)
+  KERNEL.............: 5.4.0-29-generic
+  DATE...............: Sun 17 May 2020 09:28:33 PM UTC
+  USERS..............: Currently 2 user(s) logged on
+  CURRENT USER.......: sysadmin
+  PROCESSES..........: 162 running
+  CPU DETAILED INFO..:
+  Architecture:                    x86_64
+  CPU op-mode(s):                  32-bit, 64-bit
+  Byte Order:                      Little Endian
+  Address sizes:                   39 bits physical, 48 bits virtual
+  CPU(s):                          1
+  On-line CPU(s) list:             0
+  Thread(s) per core:              1
+  Core(s) per socket:              1
+  Socket(s):                       1
+  NUMA node(s):                    1
+  Vendor ID:                       GenuineIntel
+  CPU family:                      6
+  Model:                           142
+  Model name:                      Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+  Stepping:                        10
+  CPU MHz:                         1800.003
+  BogoMIPS:                        3600.00
+  Hypervisor vendor:               KVM
+  Virtualization type:             full
+  L1d cache:                       32 KiB
+  L1i cache:                       32 KiB
+  L2 cache:                        256 KiB
+  L3 cache:                        6 MiB
+  NUMA node0 CPU(s):               0
+  Vulnerability Itlb multihit:     KVM: Vulnerable
+  Vulnerability L1tf:              Mitigation; PTE Inversion
+  Vulnerability Mds:               Mitigation; Clear CPU buffers; SMT Host state unknown
+  Vulnerability Meltdown:          Mitigation; PTI
+  Vulnerability Spec store bypass: Vulnerable
+  Vulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+  Vulnerability Spectre v2:        Mitigation; Full generic retpoline, STIBP disabled, RSB filling
+  Vulnerability Tsx async abort:   Not affected
+  Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq monitor ssse3 cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single pti fsgsbase avx2 invpcid rdseed clflushopt md_clear flush_l1d
+  ===========================================================================
   ```
 
 * **switch-to-graphical-user-interface.sh**: Process that install and enable the `GNOME Display Manager` and set `Graphical Mode` as the default login. After finish, you need to reboot this host to apply these changes (`sudo shutdown -r now`). Installed in `/usr/local/bin/switch-to-graphical-user-interface.sh`. See [switch-to-graphical-user-interface.sh](Ubuntu20Minimal/files/switch-to-graphical-user-interface.sh "switch-to-graphical-user-interface.sh").
@@ -1042,8 +1108,6 @@ TOREVIEW
 ### 7.6.2. Configure the virtual machine
 
 The virtual machine is created and the next steps are to configure it correcty doing double-click in this virtual machine and select `Configuration...` or using the menu `Machine -> Configuration...`.
-
-TOREVIEW
 
 - General -> Advanced -> Share clipboard: `Bidirectional`
 - General -> Advanced -> Drag and drop: `Bidirectional`
@@ -1118,8 +1182,6 @@ For this reason you need to use *VMware Workstation Player* for Windows to obtai
 
 Then follow these steps:
 
-TOREVIEW
-
 - Open *VMware Workstation Player*
 - Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517.ovf`
 - Name for the new virtual machine: `Ubuntu20.04-server-Minimal-20200517`
@@ -1128,7 +1190,7 @@ TOREVIEW
 - Click in `Retry` button to relax OVF specifications
 - Click in `Edit virtual machine settings`
 - Options -> General -> Guest Operation System: `Linux`
-- Options -> General -> Guest Operation System -> Version: `Centos 7 64-bit`
+- Options -> General -> Guest Operation System -> Version: `Ubuntu 64-bit`
 - Options -> VMware Tools -> VMware Tools features -> Syncronize guest time with host: `Enabled`
 - Hardware->Network Adapter -> Network connection -> Bridged: Connected directly to the physical network: `Enabled`
 - Hardware->Network Adapter -> Network connection -> Replicate physical network connection state: `Disabled`
