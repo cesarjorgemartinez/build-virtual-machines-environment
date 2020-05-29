@@ -51,4 +51,7 @@ autoinstall:
 runcmd:
   - timedatectl set-timezone "Europe/Madrid"
   - timedatectl set-local-rtc false
+  - /usr/sbin/locale-gen en_US.UTF-8
+  - /usr/sbin/locale-gen es_ES.UTF-8
+  - /usr/bin/localectl set-locale en_US.UTF-8
 

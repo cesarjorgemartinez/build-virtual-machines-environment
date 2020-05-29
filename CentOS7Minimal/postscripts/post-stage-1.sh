@@ -176,7 +176,7 @@ dd if=/dev/zero | dd of=/bigemptyfile bs=4096k || echo "dd exit code $? is suppr
 rm -f /bigemptyfile
 sync
 
-echo "INFO: Print to serial console a list of RPMs ordered by size" >> /dev/ttyS0
+echo "INFO: Print to serial console a list of packages ordered by size" >> /dev/ttyS0
 rpm -qa --qf '%{archivesize} %{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort -rg >> /dev/ttyS0
 echo "INFO: Print to serial console a list of all files ordered by size" >> /dev/ttyS0
 find / -type f -print0 | xargs -0 du -h | sort -rh >> /dev/ttyS0
