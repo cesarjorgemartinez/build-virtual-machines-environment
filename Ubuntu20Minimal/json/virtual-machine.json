@@ -23,7 +23,7 @@
       "disk_size": 20480,
       "guest_additions_mode": "disable",
       "hard_drive_interface": "{{ user `so_guesthddinterface` }}",
-      "sata_port_count": 30,
+      "sata_port_count": 12,
       "hard_drive_nonrotational": true,
       "hard_drive_discard": true,
       "cpus": 1,
