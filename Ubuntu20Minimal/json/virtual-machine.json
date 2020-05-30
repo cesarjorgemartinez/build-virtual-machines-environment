@@ -50,7 +50,7 @@
         [ "modifyvm", "{{ .Name }}", "--uart1", "off" ],
         [ "modifyvm", "{{ .Name }}", "--uartmode1", "disconnected" ]
       ],
-      "boot_wait": "10s",
+      "boot_wait": "5s",
       "boot_command": [
         "<enter><enter><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><wait> ",
         "vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel ",
