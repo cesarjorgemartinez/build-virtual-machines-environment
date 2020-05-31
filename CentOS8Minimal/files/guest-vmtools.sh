@@ -53,7 +53,7 @@ else
         export KERN_DIR=/usr/src/kernels/$(uname -r)
       elif [ "${SO_ID}" == "ubuntu" ]
       then
-        sudo apt-get install -y -qq bzip2 gcc make perl dkms
+        sudo apt-get install -y -qq bzip2 gcc make perl dkms linux-headers-$(uname -r)
       else
         echo "ERROR: Operating System type not supported"
         exit 1
