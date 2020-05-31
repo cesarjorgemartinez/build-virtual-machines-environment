@@ -16,7 +16,7 @@ echo "INFO: Refresh snaps"
 snap refresh
 
 echo "INFO: Install utils"
-apt-get install -y --no-install-recommends net-tools acpid jq nmap ncat
+apt-get install -y --no-install-recommends virt-what net-tools acpid jq nmap ncat
 
 echo "INFO: Remove ufw firewall"
 apt-get purge -y ufw
