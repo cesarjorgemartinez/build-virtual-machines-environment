@@ -49,15 +49,16 @@ H
 }
 x
 }' /etc/xdg/autostart/gnome-initial-setup-first-login.desktop
-  echo "INFO: Change the default login from Text to Graphical in systemd"
-  sudo systemctl set-default graphical.target
-  echo "INFO: Enable GNOME service at boot time"
-  sudo systemctl enable gdm.service
   echo "INFO: Remove nomodeset option in /etc/default/grub. It is needed for use graphical interfaces correctly"
   sudo sed -r -i -e 's/nomodeset\s+//g' /etc/default/grub
   echo "INFO: Save grub2 changes"
   grub2-mkconfig -o /boot/grub2/grub.cfg
 fi
+
+echo "INFO: Change the default login from Text to Graphical in systemd"
+sudo systemctl set-default graphical.target
+echo "INFO: Enable GNOME service at boot time"
+sudo systemctl enable gdm.service
 
 MACHINETYPE="$(sudo virt-what)"
 if [ "$(echo "${MACHINETYPE}" | grep '^virtualbox$')" != "" ]
