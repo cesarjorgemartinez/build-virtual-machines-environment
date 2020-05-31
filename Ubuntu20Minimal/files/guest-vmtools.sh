@@ -13,7 +13,7 @@ then
   [[ "${SO_VERSION_ID}" == "8" ]] && PKG_MANAGER=dnf
 elif [ "${SO_ID}" == "ubuntu" ]
 then
- export DEBIAN_FRONTEND=noninteractive
+  export DEBIAN_FRONTEND=noninteractive
 else
   echo "ERROR: Operating System type not supported"
   exit 1
