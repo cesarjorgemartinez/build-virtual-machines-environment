@@ -23,8 +23,6 @@ fi
 
 echo "INFO: Change the default login from Graphical to Text in systemd"
 sudo systemctl set-default multi-user.target
-echo "INFO: Disable GNOME service at boot time"
-sudo systemctl disable gdm.service
 
 if [ "${SO_ID}" == "centos" ]
 then

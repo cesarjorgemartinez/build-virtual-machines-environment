@@ -57,8 +57,6 @@ fi
 
 echo "INFO: Change the default login from Text to Graphical in systemd"
 sudo systemctl set-default graphical.target
-echo "INFO: Enable GNOME service at boot time"
-sudo systemctl enable gdm.service
 
 MACHINETYPE="$(sudo virt-what)"
 if [ "$(echo "${MACHINETYPE}" | grep '^virtualbox$')" != "" ]
