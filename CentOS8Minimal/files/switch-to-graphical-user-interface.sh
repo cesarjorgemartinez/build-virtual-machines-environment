@@ -28,7 +28,7 @@ then
 elif [ "${SO_ID}" == "ubuntu" ]
 then
   echo "INFO: Install GNOME Vanilla Desktop. It takes a bit of time..."
-  sudo apt-get install -y -qq gnome-session gdm3 gnome-shell-extensions
+  sudo apt-get install -y -qq gnome-session gdm3 gnome-shell-extensions gnome-terminal
 else
   echo "ERROR: Operating System type not supported"
   exit 1
