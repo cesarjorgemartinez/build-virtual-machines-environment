@@ -26,6 +26,9 @@ autoinstall:
       eth3:
         dhcp4: true
         dhcp6: true
+      eth4:
+        dhcp4: true
+        dhcp6: true
   network:
     network:
       version: 2
@@ -40,6 +43,9 @@ autoinstall:
           dhcp4: true
           dhcp6: true
         eth3:
+          dhcp4: true
+          dhcp6: true
+        eth4:
           dhcp4: true
           dhcp6: true
   ssh:

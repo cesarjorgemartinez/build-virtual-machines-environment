@@ -68,14 +68,14 @@ The image formats that are generated are the following:
 - **ovf:** For *VirtualBox*, *VMware* and *VMware ESXI*.
 - **qcow2:** For *OpenStack* (*kvm*) and *Nutanix*.
 
-The virtualization system *VirtualBox* also uses the **vdi** format. but it is not necessary since the *VirtualBox* itself converts the **vmdk** format into **vdi**.
+The virtualization system *VirtualBox* also uses the **vdi** format but it is not necessary since the *VirtualBox* itself converts the **vmdk** format into **vdi**.
 
 You can deploy and boot directly these images in these virtualization systems without doing anything special or extra, thanks to the use of two *systemd* units:
 
 - **control-cloud-init.service**: By default the cloud-init units are enabled. But if the virtual machine boots in a virtualization system that is not *OpenStack*, then disable the cloud-init units.
 - **guest-vmtools.service**: If the virtual machine boots inside *VirtualBox* then install its *GuestTools* disabling others. If the virtual machine boots inside *VMware* or *VMware ESXI* then install its *VMwareTools* disabling others.
 
-These images are ideal to work as servers in *Cloud*, *traditional* or *development* environments, and is very useful to work with **Docker**, because the size of the image created is very small and clean. These images are builded with a *Linux* admin account provided as parameter at the time of build. The `cloud-init` software use other account provided as optional parameter at the time of build (not created because the `cloud-init` do this work at the first boot of the virtual machine) that by default is *cloud-user*.
+These images are ideal to work as servers in *Cloud*, *traditional* or *development* environments, and is very useful to work with **Docker**, because the size of the image created is very small and clean. These images are builded with a *Linux* admin account provided as parameter at the time of build. The `cloud-init` software use other account provided as optional parameter at the time of build (not created because the `cloud-init` do this work at the first boot of the virtual machine) that by default is *cloud-user*. Also these images come with five network intefaces named `eth0`, `eth1`, `eth2`, `eth3` and `eth4` by default.
 
 To work with this software you need **Windows 10 for 64 bits** and **CygWin 64 bits** to use **Linux-Bash** commands.
 

@@ -102,13 +102,13 @@
 <li><strong>ovf:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>VMware ESXI</em>.</li>
 <li><strong>qcow2:</strong> For <em>OpenStack</em> (<em>kvm</em>) and <em>Nutanix</em>.</li>
 </ul>
-<p>The virtualization system <em>VirtualBox</em> also uses the <strong>vdi</strong> format. but it is not necessary since the <em>VirtualBox</em> itself converts the <strong>vmdk</strong> format into <strong>vdi</strong>.</p>
+<p>The virtualization system <em>VirtualBox</em> also uses the <strong>vdi</strong> format but it is not necessary since the <em>VirtualBox</em> itself converts the <strong>vmdk</strong> format into <strong>vdi</strong>.</p>
 <p>You can deploy and boot directly these images in these virtualization systems without doing anything special or extra, thanks to the use of two <em>systemd</em> units:</p>
 <ul>
 <li><strong>control-cloud-init.service</strong>: By default the cloud-init units are enabled. But if the virtual machine boots in a virtualization system that is not <em>OpenStack</em>, then disable the cloud-init units.</li>
 <li><strong>guest-vmtools.service</strong>: If the virtual machine boots inside <em>VirtualBox</em> then install its <em>GuestTools</em> disabling others. If the virtual machine boots inside <em>VMware</em> or <em>VMware ESXI</em> then install its <em>VMwareTools</em> disabling others.</li>
 </ul>
-<p>These images are ideal to work as servers in <em>Cloud</em>, <em>traditional</em> or <em>development</em> environments, and is very useful to work with <strong>Docker</strong>, because the size of the image created is very small and clean. These images are builded with a <em>Linux</em> admin account provided as parameter at the time of build. The <code>cloud-init</code> software use other account provided as optional parameter at the time of build (not created because the <code>cloud-init</code> do this work at the first boot of the virtual machine) that by default is <em>cloud-user</em>.</p>
+<p>These images are ideal to work as servers in <em>Cloud</em>, <em>traditional</em> or <em>development</em> environments, and is very useful to work with <strong>Docker</strong>, because the size of the image created is very small and clean. These images are builded with a <em>Linux</em> admin account provided as parameter at the time of build. The <code>cloud-init</code> software use other account provided as optional parameter at the time of build (not created because the <code>cloud-init</code> do this work at the first boot of the virtual machine) that by default is <em>cloud-user</em>. Also these images come with five network intefaces named <code>eth0</code>, <code>eth1</code>, <code>eth2</code>, <code>eth3</code> and <code>eth4</code> by default.</p>
 <p>To work with this software you need <strong>Windows 10 for 64 bits</strong> and <strong>CygWin 64 bits</strong> to use <strong>Linux-Bash</strong> commands.</p>
 <h1 id="2-operating-systems-that-can-be-built">2. Operating Systems that can be built</h1>
 <p>Actually you can build the following Operating Systems:</p>
