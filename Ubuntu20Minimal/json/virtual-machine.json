@@ -21,7 +21,7 @@
       "iso_checksum": "{{ user `checksum` }}",
       "iso_checksum_type": "{{ user `checksum_type` }}",
       "vm_name": "{{ user `vm_fullname` }}",
-      "disk_size": "{{ user `SO_GUESTDISKSIZE` }}",
+      "disk_size": "{{ user `so_guestdisksize` }}",
       "guest_additions_mode": "disable",
       "hard_drive_interface": "{{ user `so_guesthddinterface` }}",
       "sata_port_count": 12,
