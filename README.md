@@ -544,6 +544,12 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 - Enter in a *Cygwin64 session*.
 
+- To get an image for *VMware ESXI* version `5.5` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.8-2003-Minimal-20200517\CentOS7.8-2003-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517-esx10.ovf'
+```
+
 - To get an image for *VMware ESXI* version `6.0` launch:
 
 ```
@@ -566,6 +572,12 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.8-2003-Minimal-20200517\CentOS7.8-2003-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517-esx15.ovf'
+```
+
+- To get an image for *VMware ESXI* version `7.0.x` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.8-2003-Minimal-20200517\CentOS7.8-2003-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517-esx17.ovf'
 ```
 
 
@@ -857,7 +869,7 @@ Then follow these steps:
 - Click in `Retry` button to relax OVF specifications
 - Click in `Edit virtual machine settings`
 - Options -> General -> Guest Operation System: `Linux`
-- Options -> General -> Guest Operation System -> Version: `Centos 7 64-bit`
+- Options -> General -> Guest Operation System -> Version: `Centos 8 64-bit`
 - Options -> VMware Tools -> VMware Tools features -> Syncronize guest time with host: `Enabled`
 - Hardware->Network Adapter -> Network connection -> Bridged: Connected directly to the physical network: `Enabled`
 - Hardware->Network Adapter -> Network connection -> Replicate physical network connection state: `Disabled`
@@ -867,6 +879,12 @@ Then follow these steps:
 Then you have an image imported into *VMware Workstation Player*. Here you need to choose the *VMware ESXI* version reading the article <https://kb.vmware.com/s/article/1003746> and follow these steps:
 
 - Enter in a *Cygwin64 session*.
+
+- To get an image for *VMware ESXI* version `5.5` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200504\CentOS8.1-1911-Minimal-20200504.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504-esx10.ovf'
+```
 
 - To get an image for *VMware ESXI* version `6.0` launch:
 
@@ -890,6 +908,12 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200504\CentOS8.1-1911-Minimal-20200504.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504-esx15.ovf'
+```
+
+- To get an image for *VMware ESXI* version `7.0.x` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200504\CentOS8.1-1911-Minimal-20200504.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504-esx17.ovf'
 ```
 
 
@@ -1207,6 +1231,12 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 - Enter in a *Cygwin64 session*.
 
+- To get an image for *VMware ESXI* version `5.5` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-server-Minimal-20200517\Ubuntu20.04-server-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517-esx10.ovf'
+```
+
 - To get an image for *VMware ESXI* version `6.0` launch:
 
 ```
@@ -1229,4 +1259,10 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-server-Minimal-20200517\Ubuntu20.04-server-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517-esx15.ovf'
+```
+
+- To get an image for *VMware ESXI* version `7.0.x` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-server-Minimal-20200517\Ubuntu20.04-server-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517-esx17.ovf'
 ```
