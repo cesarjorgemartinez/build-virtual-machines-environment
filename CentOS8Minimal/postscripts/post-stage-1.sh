@@ -6,14 +6,17 @@ service auditd stop
 echo "INFO: Current date"
 date
 
-echo "INFO: Stop systemd-journald service"
-systemctl stop systemd-journald
+echo "INFO: Stop SystemD journal services"
+systemctl stop systemd-journald.service
+systemctl stop systemd-journal-flush.service
+systemctl stop systemd-journald.socket
+systemctl stop systemd-journald-dev-log.socket
 
 echo "INFO: Stop sssd service"
 systemctl stop sssd
 
 echo "INFO: Remove old kernels keeping only one"
-dnf remove $(dnf repoquery --installonly --latest-limit=-1 -q)
+dnf -y remove $(dnf repoquery --installonly --latest-limit=-1 -q)
 
 echo "INFO: Remove package tools used to build virtual machine drivers"
 dnf -y erase -C kernel-devel kernel-headers kernel-tools kernel-tools-libs
@@ -21,14 +24,17 @@ dnf -y erase -C kernel-devel kernel-headers kernel-tools kernel-tools-libs
 echo "INFO: Erase other rpms"
 dnf -y erase -C '*-firmware'
 
-echo "INFO: Remove unneeded locales in /usr/share/locale folder except en_US, es_ES and locale.alias"
-find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en_US' ! -name 'es_ES' ! -name 'locale.alias' | xargs -r rm -r
+echo "INFO: Remove unneeded locales in /usr/share/locale folder except en, en_US, es, es_ES and locale.alias"
+find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en' ! -name 'en_US' ! -name 'es' ! -name 'es_ES' ! -name 'locale.alias' | xargs -r rm -r
 
-echo "INFO: Remove unneeded i18n locales in /usr/share/i18n/locales folder except en_US* and es_ES*"
-find /usr/share/i18n/locales -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' | xargs -r rm -r
+echo "INFO: Remove unneeded i18n locales in /usr/share/i18n/locales folder except en_US and es_ES and C"
+find /usr/share/i18n/locales -mindepth 1 -maxdepth 1 ! -name 'en_US' ! -name 'es_ES' ! -name 'C' | xargs -r rm -r
 
 echo "INFO: Remove unneeded locales in /usr/share/man folder except es and man*"
 find /usr/share/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs -r rm -r
+
+echo "INFO: Remove unneeded locales in /usr/lib/locale folder except en_US*, es_ES* and C*"
+find /usr/lib/locale -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' ! -name 'C*' | xargs -r rm -r
 
 echo "INFO: Clean all caches"
 dnf clean all
@@ -125,12 +131,12 @@ then
   # Swap is disabled till reboot
   swappart=$(readlink -f /dev/disk/by-uuid/$swapuuid)
   /sbin/swapoff "${swappart}"
-  dd if=/dev/zero of="${swappart}" bs=1M || echo "dd exit code $? is suppressed"
+  dd if=/dev/zero of="${swappart}" bs=4096k || echo "dd exit code $? is suppressed"
   /sbin/mkswap -U "${swapuuid}" "${swappart}"
 fi
 
 echo "INFO: Remove unneeded files"
-find /usr/lib64/python3.6 -type f -name "*.pyc" -delete
+find / -type f -name "*.pyc" -delete || true
 rm -rf /run/log/journal/*
 rm -f /usr/share/mime/mime.cache
 rm -rf /var/lib/sss/db/*
@@ -173,8 +179,12 @@ sync
 
 echo "INFO: Clean caches free xfs inodes and fill free space with zeroes..."
 echo 3 > /proc/sys/vm/drop_caches
+dd if=/dev/zero of=/boot/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
+rm -f /boot/bigemptyfile
+sync
 xfs_fsr -v
-dd if=/dev/zero | dd of=/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
+sync
+dd if=/dev/zero of=/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
 rm -f /bigemptyfile
 sync
 

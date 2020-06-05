@@ -13,6 +13,11 @@ service auditd stop
 echo "INFO: Current date"
 date
 
+echo "INFO: Stop SystemD journal services"
+systemctl stop systemd-journald.service
+systemctl stop systemd-journal-flush.service
+systemctl stop systemd-journald.socket
+
 echo "INFO: Package cleanups remove old kernels"
 package-cleanup -y -C --oldkernels --count=1
 
@@ -25,11 +30,14 @@ yum -y erase -C linux-firmware libsysfs
 echo "INFO: Remove unneeded locales in /boot/grub2/locale folder except en* and es*"
 find /boot/grub2/locale -mindepth 1 -maxdepth 1 ! -name 'en*' ! -name 'es*' | xargs -r rm -r
 
-echo "INFO: Remove unneeded locales in /usr/share/locale folder except en_US, es_ES and locale.alias"
-find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en_US' ! -name 'es_ES' ! -name 'locale.alias' | xargs -r rm -r
+echo "INFO: Remove unneeded locales in /usr/share/locale folder except en, en_US, es, es_ES and locale.alias"
+find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en' ! -name 'en_US' ! -name 'es' ! -name 'es_ES' ! -name 'locale.alias' | xargs -r rm -r
 
-echo "INFO: Remove unneeded i18n locales in /usr/share/i18n/locales folder except en_US* and es_ES*"
-find /usr/share/i18n/locales -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' | xargs -r rm -r
+echo "INFO: Remove unneeded i18n locales in /usr/share/i18n/locales folder except en_US and es_ES and C"
+find /usr/share/i18n/locales -mindepth 1 -maxdepth 1 ! -name 'en_US' ! -name 'es_ES' ! -name 'C' | xargs -r rm -r
+
+echo "INFO: Remove unneeded locales in /usr/share/man folder except es and man*"
+find /usr/share/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs -r rm -r
 
 echo "INFO: Remove default locales in /usr/lib/locale/locale-archive except en_US and es_ES"
 localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r sudo localedef --delete-from-archive
@@ -133,9 +141,14 @@ then
   # Swap is disabled till reboot
   swappart=$(readlink -f /dev/disk/by-uuid/$swapuuid)
   /sbin/swapoff "${swappart}"
-  dd if=/dev/zero of="${swappart}" bs=1M || echo "dd exit code $? is suppressed"
+  dd if=/dev/zero of="${swappart}" bs=4096k || echo "dd exit code $? is suppressed"
   /sbin/mkswap -U "${swapuuid}" "${swappart}"
 fi
+
+echo "INFO: Remove unneeded files"
+find / -type f -name "*.pyc" -delete || true
+rm -rf /run/log/journal/*
+rm -f /usr/share/mime/mime.cache
 
 echo "INFO: Force logs to rotate"
 /usr/sbin/logrotate -f /etc/logrotate.conf
@@ -171,8 +184,12 @@ sync
 
 echo "INFO: Clean caches free xfs inodes and fill free space with zeroes..."
 echo 3 > /proc/sys/vm/drop_caches
+dd if=/dev/zero of=/boot/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
+rm -f /boot/bigemptyfile
+sync
 xfs_fsr -v
-dd if=/dev/zero | dd of=/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
+sync
+dd if=/dev/zero of=/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
 rm -f /bigemptyfile
 sync
 

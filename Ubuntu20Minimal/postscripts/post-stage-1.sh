@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 
-echo "INFO: Stop systemd-journald-audit.socket"
-systemctl stop systemd-journald-audit.socket
-
-echo "INFO: Stop systemd-journald.service"
+echo "INFO: Stop SystemD journal services"
 systemctl stop systemd-journald.service
-
-echo "INFO: Stop systemd-journald-dev-log.socket"
-systemctl stop systemd-journald-dev-log.socket
-
-echo "INFO: Stop systemd-journald.socket"
+systemctl stop systemd-journal-flush.service
 systemctl stop systemd-journald.socket
+systemctl stop systemd-journald-dev-log.socket
+systemctl stop systemd-journald-audit.socket
 
 echo "INFO: Current date"
 date
@@ -18,37 +13,43 @@ date
 export DEBIAN_FRONTEND=noninteractive
 
 echo "INFO: Update all packages"
-apt-get update -y
+apt-get -y update --no-install-recommends
 echo "INFO: Upgrade all packages"
-apt-get full-upgrade -y
+apt-get -y full-upgrade --no-install-recommends
 
 echo "INFO: Install utils"
-apt-get install -y --no-install-recommends virt-what net-tools acpid jq nmap ncat
+apt-get -y install --no-install-recommends virt-what net-tools acpid jq nmap ncat glances
 
 echo "INFO: Remove ufw firewall"
-apt-get purge -y ufw
+apt-get -y purge ufw
 
 echo "INFO: Enable and start acpid daemon"
 systemctl enable acpid
 systemctl start acpid
 
 echo "INFO: Autoremove unused things"
-apt-get purge -y -qq snapd squashfs-tools
-apt-get --purge -y -qq autoremove
+snap remove --purge lxd
+snap remove --purge core18
+snap remove --purge snapd
+apt-get -y purge -qq snapd squashfs-tools
+apt-get -y --purge -qq autoremove
 
 echo "INFO: Clean all caches"
 apt-get clean
 find /var/cache -type f -delete
 
-echo "INFO: Remove unneeded locales in /usr/share/locale folder except en_US, es_ES and locale.alias"
-find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en_US' ! -name 'es_ES' ! -name 'locale.alias' | xargs -r rm -r
+echo "INFO: Remove unneeded locales in /usr/share/locale folder except en, en_US, es, es_ES and locale.alias"
+find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en' ! -name 'en_US' ! -name 'es' ! -name 'es_ES' ! -name 'locale.alias' | xargs -r rm -r
 
-echo "INFO: Remove unneeded i18n locales in /usr/share/i18n/locales folder except en_US* and es_ES*"
-find /usr/share/i18n/locales -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' | xargs -r rm -r
+echo "INFO: Remove unneeded i18n locales in /usr/share/i18n/locales folder except en_US and es_ES and C"
+find /usr/share/i18n/locales -mindepth 1 -maxdepth 1 ! -name 'en_US' ! -name 'es_ES' ! -name 'C' | xargs -r rm -r
 
 echo "INFO: Remove unneeded locales in /usr/share/man folder except es and man*"
 find /usr/share/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs -r rm -r
 find /var/cache/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs -r rm -r
+
+echo "INFO: Remove unneeded locales in /usr/lib/locale folder except en_US*, es_ES* and C*"
+find /usr/lib/locale -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' ! -name 'C*' | xargs -r rm -r
 
 echo "INFO: Install host-info.sh script to /usr/local/bin/host-info.sh"
 mv host-info.sh /usr/local/bin
@@ -135,13 +136,12 @@ then
   # Swap is disabled till reboot
   swappart=$(readlink -f /dev/disk/by-uuid/$swapuuid)
   /sbin/swapoff "${swappart}"
-  dd if=/dev/zero of="${swappart}" bs=1M || echo "dd exit code $? is suppressed"
+  dd if=/dev/zero of="${swappart}" bs=4096k || echo "dd exit code $? is suppressed"
   /sbin/mkswap -U "${swapuuid}" "${swappart}"
 fi
 
 echo "INFO: Remove unneeded files"
-find /usr/lib -type f -name "*.pyc" -delete
-find /usr/share -type f -name "*.pyc" -delete
+find / -type f -name "*.pyc" -delete || true
 rm -rf /var/log/journal/*
 rm -f /usr/share/mime/mime.cache
 
@@ -177,11 +177,13 @@ sync
 
 echo "INFO: Clean caches free xfs inodes and fill free space with zeroes..."
 echo 3 > /proc/sys/vm/drop_caches
-xfs_fsr -v
-dd if=/dev/zero | dd of=/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
-rm -f /bigemptyfile
-dd if=/dev/zero | dd of=/boot/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
+dd if=/dev/zero of=/boot/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
 rm -f /boot/bigemptyfile
+sync
+xfs_fsr -v
+sync
+dd if=/dev/zero of=/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
+rm -f /bigemptyfile
 sync
 
 echo "INFO: Print to serial console a list of packages ordered by size" >> /dev/ttyS0

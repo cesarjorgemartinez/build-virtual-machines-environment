@@ -24,11 +24,11 @@ fi
 if [ "${SO_ID}" == "centos" ]
 then
   echo "INFO: Install the Server with GUI (environment-id graphical-server-environment, using GNOME Display Manager) group. It takes a bit of time..."
-  sudo ${PKG_MANAGER} group install -q -y "graphical-server-environment"
+  sudo ${PKG_MANAGER} group -y install -q "graphical-server-environment"
 elif [ "${SO_ID}" == "ubuntu" ]
 then
   echo "INFO: Install GNOME Vanilla Desktop. It takes a bit of time..."
-  sudo apt-get install -y -qq gnome-session gdm3 gnome-shell-extensions gnome-terminal
+  sudo apt-get -y install -qq gnome-session gdm3 gnome-shell-extensions gnome-terminal
 else
   echo "ERROR: Operating System type not supported"
   exit 1
