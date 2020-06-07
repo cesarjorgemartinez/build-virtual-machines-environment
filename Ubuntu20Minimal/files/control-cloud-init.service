@@ -1,10 +1,8 @@
 [Unit]
-Description=Control cloud-init to enable in OpenStack and disable in VMware or VirtualBox
+Description=Control cloud-init to enable in OpenStack or KVM or AWS and mask in VMware or VirtualBox or other virtualization systems
 DefaultDependencies=no
 After=systemd-remount-fs.service
-Before=NetworkManager.service network.service network-pre.target
-Before=shutdown.target sysinit.target
-Before=cloud-config.service cloud-final.service cloud-init-local.service cloud-init.service cloud-config.target
+Before=cloud-init-local.service
 Conflicts=shutdown.target
 
 [Service]
