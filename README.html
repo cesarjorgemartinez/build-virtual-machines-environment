@@ -95,17 +95,17 @@
 
 
 <h1 id="1-introduction">1. Introduction</h1>
-<p>This project helps to build automatically multiple <em>Virtual Machine Images of Operating Systems</em> that are <strong>compatible</strong> with different virtualization systems, as <em>OpenStack</em> (<em>kvm</em>), <em>VirtualBox</em>, <em>VMware</em>, <em>VMware ESXI</em>, <em>Nutanix</em>, etc.</p>
+<p>This project helps to build automatically multiple <em>Virtual Machine Images of Operating Systems</em> that are <strong>compatible</strong> with different virtualization systems, as <em>OpenStack</em>, <em>KVM</em>, <em>VirtualBox</em>, <em>VMware</em>, <em>VMware ESXI</em>, <em>Nutanix</em>, etc.</p>
 <p>The image formats that are generated are the following:</p>
 <ul>
 <li><strong>vmdk:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>VMware ESXI</em>.</li>
 <li><strong>ovf:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>VMware ESXI</em>.</li>
-<li><strong>qcow2:</strong> For <em>OpenStack</em> (<em>kvm</em>) and <em>Nutanix</em>.</li>
+<li><strong>qcow2:</strong> For <em>OpenStack</em>, <em>KVM</em> and <em>Nutanix</em>.</li>
 </ul>
 <p>The virtualization system <em>VirtualBox</em> also uses the <strong>vdi</strong> format but it is not necessary since the <em>VirtualBox</em> itself converts the <strong>vmdk</strong> format into <strong>vdi</strong>.</p>
 <p>You can deploy and boot directly these images in these virtualization systems without doing anything special or extra, thanks to the use of two <em>systemd</em> units:</p>
 <ul>
-<li><strong>control-cloud-init.service</strong>: By default the cloud-init units are enabled. But if the virtual machine boots in a virtualization system that is not <em>OpenStack</em>, then disable the cloud-init units.</li>
+<li><strong>control-cloud-init.service</strong>: If the virtual machine boots in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> then lets execute <code>cloud-init</code>. If the virtual machine boots in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems then mask <code>cloud-init</code>.</li>
 <li><strong>guest-vmtools.service</strong>: If the virtual machine boots inside <em>VirtualBox</em> then install its <em>GuestTools</em> disabling others. If the virtual machine boots inside <em>VMware</em> or <em>VMware ESXI</em> then install its <em>VMwareTools</em> disabling others.</li>
 </ul>
 <p>These images are ideal to work as servers in <em>Cloud</em>, <em>traditional</em> or <em>development</em> environments, and is very useful to work with <strong>Docker</strong>, because the size of the image created is very small and clean. These images are builded with a <em>Linux</em> admin account provided as parameter at the time of build. The <code>cloud-init</code> software use other account provided as optional parameter at the time of build (not created because the <code>cloud-init</code> do this work at the first boot of the virtual machine) that by default is <em>cloud-user</em>. Also these images come with six network intefaces named <code>eth0</code>, <code>eth1</code>, <code>eth2</code>, <code>eth3</code>, <code>eth4</code> and <code>eth5</code> by default.</p>
@@ -292,9 +292,9 @@ export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION
 <h2 id="5-5-utility-files-used-in-this-image">5.5. Utility files used in this image</h2>
 <p>When build this image the following files in <a href="CentOS7Minimal/files" title="Files for CentOS7Minimal Directory">Files for CentOS7Minimal Directory</a> folder are installed and configured.</p>
 <ul>
-<li><p><strong>control-cloud-init.service</strong>: Unit to control <code>cloud-init</code> to enable in <em>OpenStack</em> and disable in other virtualization systems. This unit calls the file <code>/usr/local/bin/control-cloud-init.sh</code>. Installed in <code>/etc/systemd/system/control-cloud-init.service</code>. See <a href="CentOS7Minimal/files/control-cloud-init.service" title="control-cloud-init.service">control-cloud-init.service</a>.</p>
+<li><p><strong>control-cloud-init.service</strong>: Unit to control <code>cloud-init</code> to enable in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> and mask in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems. This unit calls the file <code>/usr/local/bin/control-cloud-init.sh</code>. Installed in <code>/etc/systemd/system/control-cloud-init.service</code>. See <a href="CentOS7Minimal/files/control-cloud-init.service" title="control-cloud-init.service">control-cloud-init.service</a>.</p>
 </li>
-<li><p><strong>control-cloud-init.sh</strong>: Process that controls <code>cloud-init</code> to enable in <em>OpenStack</em> and disable in other virtualization systems. Installed in <code>/usr/local/bin/control-cloud-init.sh</code>. See <a href="CentOS7Minimal/files/control-cloud-init.sh" title="control-cloud-init.sh">control-cloud-init.sh</a>.</p>
+<li><p><strong>control-cloud-init.sh</strong>: Process that controls <code>cloud-init</code> to enable in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> and mask in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems. Installed in <code>/usr/local/bin/control-cloud-init.sh</code>. See <a href="CentOS7Minimal/files/control-cloud-init.sh" title="control-cloud-init.sh">control-cloud-init.sh</a>.</p>
 </li>
 <li><p><strong>guest-vmtools.service</strong>: Unit to manage virtual machine tools for <em>VirtualBox</em>, <em>VMware</em> or <em>VMware ESXI</em>. This unit calls the file <code>/usr/local/bin/guest-vmtools.sh</code>. Installed in <code>/etc/systemd/system/guest-vmtools.service</code>. See <a href="CentOS7Minimal/files/guest-vmtools.service" title="guest-vmtools.service">guest-vmtools.service</a>.</p>
 </li>
@@ -524,9 +524,9 @@ export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION
 <h2 id="6-5-utility-files-used-in-this-image">6.5. Utility files used in this image</h2>
 <p>When build this image the following files in <a href="CentOS8Minimal/files" title="Files for CentOS8Minimal Directory">Files for CentOS8Minimal Directory</a> folder are installed and configured.</p>
 <ul>
-<li><p><strong>control-cloud-init.service</strong>: Unit to control <code>cloud-init</code> to enable in <em>OpenStack</em> and disable in other virtualization systems. This unit calls the file <code>/usr/local/bin/control-cloud-init.sh</code>. Installed in <code>/etc/systemd/system/control-cloud-init.service</code>. See <a href="CentOS8Minimal/files/control-cloud-init.service" title="control-cloud-init.service">control-cloud-init.service</a>.</p>
+<li><p><strong>control-cloud-init.service</strong>: Unit to control <code>cloud-init</code> to enable in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> and mask in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems. This unit calls the file <code>/usr/local/bin/control-cloud-init.sh</code>. Installed in <code>/etc/systemd/system/control-cloud-init.service</code>. See <a href="CentOS8Minimal/files/control-cloud-init.service" title="control-cloud-init.service">control-cloud-init.service</a>.</p>
 </li>
-<li><p><strong>control-cloud-init.sh</strong>: Process that controls <code>cloud-init</code> to enable in <em>OpenStack</em> and disable in other virtualization systems. Installed in <code>/usr/local/bin/control-cloud-init.sh</code>. See <a href="CentOS8Minimal/files/control-cloud-init.sh" title="control-cloud-init.sh">control-cloud-init.sh</a>.</p>
+<li><p><strong>control-cloud-init.sh</strong>: Process that controls <code>cloud-init</code> to enable in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> and mask in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems. Installed in <code>/usr/local/bin/control-cloud-init.sh</code>. See <a href="CentOS8Minimal/files/control-cloud-init.sh" title="control-cloud-init.sh">control-cloud-init.sh</a>.</p>
 </li>
 <li><p><strong>guest-vmtools.service</strong>: Unit to manage virtual machine tools for <em>VirtualBox</em>, <em>VMware</em> or <em>VMware ESXI</em>. This unit calls the file <code>/usr/local/bin/guest-vmtools.sh</code>. Installed in <code>/etc/systemd/system/guest-vmtools.service</code>. See <a href="CentOS8Minimal/files/guest-vmtools.service" title="guest-vmtools.service">guest-vmtools.service</a>.</p>
 </li>
@@ -756,9 +756,9 @@ export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION
 <h2 id="7-5-utility-files-used-in-this-image">7.5. Utility files used in this image</h2>
 <p>When build this image the following files in <a href="Ubuntu20Minimal/files" title="Files for Ubuntu20Minimal Directory">Files for Ubuntu20Minimal Directory</a> folder are installed and configured.</p>
 <ul>
-<li><p><strong>control-cloud-init.service</strong>: Unit to control <code>cloud-init</code> to enable in <em>OpenStack</em> and disable in other virtualization systems. This unit calls the file <code>/usr/local/bin/control-cloud-init.sh</code>. Installed in <code>/etc/systemd/system/control-cloud-init.service</code>. See <a href="Ubuntu20Minimal/files/control-cloud-init.service" title="control-cloud-init.service">control-cloud-init.service</a>.</p>
+<li><p><strong>control-cloud-init.service</strong>: Unit to control <code>cloud-init</code> to enable in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> and mask in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems. This unit calls the file <code>/usr/local/bin/control-cloud-init.sh</code>. Installed in <code>/etc/systemd/system/control-cloud-init.service</code>. See <a href="Ubuntu20Minimal/files/control-cloud-init.service" title="control-cloud-init.service">control-cloud-init.service</a>.</p>
 </li>
-<li><p><strong>control-cloud-init.sh</strong>: Process that controls <code>cloud-init</code> to enable in <em>OpenStack</em> and disable in other virtualization systems. Installed in <code>/usr/local/bin/control-cloud-init.sh</code>. See <a href="Ubuntu20Minimal/files/control-cloud-init.sh" title="control-cloud-init.sh">control-cloud-init.sh</a>.</p>
+<li><p><strong>control-cloud-init.sh</strong>: Process that controls <code>cloud-init</code> to enable in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> and mask in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems. Installed in <code>/usr/local/bin/control-cloud-init.sh</code>. See <a href="Ubuntu20Minimal/files/control-cloud-init.sh" title="control-cloud-init.sh">control-cloud-init.sh</a>.</p>
 </li>
 <li><p><strong>guest-vmtools.service</strong>: Unit to manage virtual machine tools for <em>VirtualBox</em>, <em>VMware</em> or <em>VMware ESXI</em>. This unit calls the file <code>/usr/local/bin/guest-vmtools.sh</code>. Installed in <code>/etc/systemd/system/guest-vmtools.service</code>. See <a href="Ubuntu20Minimal/files/guest-vmtools.service" title="guest-vmtools.service">guest-vmtools.service</a>.</p>
 </li>

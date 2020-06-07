@@ -61,18 +61,18 @@
 
 # 1. Introduction
 
-This project helps to build automatically multiple *Virtual Machine Images of Operating Systems* that are **compatible** with different virtualization systems, as *OpenStack* (*kvm*), *VirtualBox*, *VMware*, *VMware ESXI*, *Nutanix*, etc.
+This project helps to build automatically multiple *Virtual Machine Images of Operating Systems* that are **compatible** with different virtualization systems, as *OpenStack*, *KVM*, *VirtualBox*, *VMware*, *VMware ESXI*, *Nutanix*, etc.
 
 The image formats that are generated are the following:
 - **vmdk:** For *VirtualBox*, *VMware* and *VMware ESXI*.
 - **ovf:** For *VirtualBox*, *VMware* and *VMware ESXI*.
-- **qcow2:** For *OpenStack* (*kvm*) and *Nutanix*.
+- **qcow2:** For *OpenStack*, *KVM* and *Nutanix*.
 
 The virtualization system *VirtualBox* also uses the **vdi** format but it is not necessary since the *VirtualBox* itself converts the **vmdk** format into **vdi**.
 
 You can deploy and boot directly these images in these virtualization systems without doing anything special or extra, thanks to the use of two *systemd* units:
 
-- **control-cloud-init.service**: By default the cloud-init units are enabled. But if the virtual machine boots in a virtualization system that is not *OpenStack*, then disable the cloud-init units.
+- **control-cloud-init.service**: If the virtual machine boots in *OpenStack* or *KVM* or *AWS* then lets execute `cloud-init`. If the virtual machine boots in *VMware* or *VirtualBox* or other virtualization systems then mask `cloud-init`.
 - **guest-vmtools.service**: If the virtual machine boots inside *VirtualBox* then install its *GuestTools* disabling others. If the virtual machine boots inside *VMware* or *VMware ESXI* then install its *VMwareTools* disabling others.
 
 These images are ideal to work as servers in *Cloud*, *traditional* or *development* environments, and is very useful to work with **Docker**, because the size of the image created is very small and clean. These images are builded with a *Linux* admin account provided as parameter at the time of build. The `cloud-init` software use other account provided as optional parameter at the time of build (not created because the `cloud-init` do this work at the first boot of the virtual machine) that by default is *cloud-user*. Also these images come with six network intefaces named `eth0`, `eth1`, `eth2`, `eth3`, `eth4` and `eth5` by default.
@@ -354,9 +354,9 @@ CentOS7Minimal/bin/upload-qcow2-to-openstack.sh
 
 When build this image the following files in [Files for CentOS7Minimal Directory](CentOS7Minimal/files "Files for CentOS7Minimal Directory") folder are installed and configured.
 
-* **control-cloud-init.service**: Unit to control `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. This unit calls the file `/usr/local/bin/control-cloud-init.sh`. Installed in `/etc/systemd/system/control-cloud-init.service`. See [control-cloud-init.service](CentOS7Minimal/files/control-cloud-init.service "control-cloud-init.service").
+* **control-cloud-init.service**: Unit to control `cloud-init` to enable in *OpenStack* or *KVM* or *AWS* and mask in *VMware* or *VirtualBox* or other virtualization systems. This unit calls the file `/usr/local/bin/control-cloud-init.sh`. Installed in `/etc/systemd/system/control-cloud-init.service`. See [control-cloud-init.service](CentOS7Minimal/files/control-cloud-init.service "control-cloud-init.service").
 
-* **control-cloud-init.sh**: Process that controls `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. Installed in `/usr/local/bin/control-cloud-init.sh`. See [control-cloud-init.sh](CentOS7Minimal/files/control-cloud-init.sh "control-cloud-init.sh").
+* **control-cloud-init.sh**: Process that controls `cloud-init` to enable in *OpenStack* or *KVM* or *AWS* and mask in *VMware* or *VirtualBox* or other virtualization systems. Installed in `/usr/local/bin/control-cloud-init.sh`. See [control-cloud-init.sh](CentOS7Minimal/files/control-cloud-init.sh "control-cloud-init.sh").
 
 * **guest-vmtools.service**: Unit to manage virtual machine tools for *VirtualBox*, *VMware* or *VMware ESXI*. This unit calls the file `/usr/local/bin/guest-vmtools.sh`. Installed in `/etc/systemd/system/guest-vmtools.service`. See [guest-vmtools.service](CentOS7Minimal/files/guest-vmtools.service "guest-vmtools.service").
 
@@ -690,9 +690,9 @@ CentOS8Minimal/bin/upload-qcow2-to-openstack.sh
 
 When build this image the following files in [Files for CentOS8Minimal Directory](CentOS8Minimal/files "Files for CentOS8Minimal Directory") folder are installed and configured.
 
-* **control-cloud-init.service**: Unit to control `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. This unit calls the file `/usr/local/bin/control-cloud-init.sh`. Installed in `/etc/systemd/system/control-cloud-init.service`. See [control-cloud-init.service](CentOS8Minimal/files/control-cloud-init.service "control-cloud-init.service").
+* **control-cloud-init.service**: Unit to control `cloud-init` to enable in *OpenStack* or *KVM* or *AWS* and mask in *VMware* or *VirtualBox* or other virtualization systems. This unit calls the file `/usr/local/bin/control-cloud-init.sh`. Installed in `/etc/systemd/system/control-cloud-init.service`. See [control-cloud-init.service](CentOS8Minimal/files/control-cloud-init.service "control-cloud-init.service").
 
-* **control-cloud-init.sh**: Process that controls `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. Installed in `/usr/local/bin/control-cloud-init.sh`. See [control-cloud-init.sh](CentOS8Minimal/files/control-cloud-init.sh "control-cloud-init.sh").
+* **control-cloud-init.sh**: Process that controls `cloud-init` to enable in *OpenStack* or *KVM* or *AWS* and mask in *VMware* or *VirtualBox* or other virtualization systems. Installed in `/usr/local/bin/control-cloud-init.sh`. See [control-cloud-init.sh](CentOS8Minimal/files/control-cloud-init.sh "control-cloud-init.sh").
 
 * **guest-vmtools.service**: Unit to manage virtual machine tools for *VirtualBox*, *VMware* or *VMware ESXI*. This unit calls the file `/usr/local/bin/guest-vmtools.sh`. Installed in `/etc/systemd/system/guest-vmtools.service`. See [guest-vmtools.service](CentOS8Minimal/files/guest-vmtools.service "guest-vmtools.service").
 
@@ -1026,9 +1026,9 @@ Ubuntu20Minimal/bin/upload-qcow2-to-openstack.sh
 
 When build this image the following files in [Files for Ubuntu20Minimal Directory](Ubuntu20Minimal/files "Files for Ubuntu20Minimal Directory") folder are installed and configured.
 
-* **control-cloud-init.service**: Unit to control `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. This unit calls the file `/usr/local/bin/control-cloud-init.sh`. Installed in `/etc/systemd/system/control-cloud-init.service`. See [control-cloud-init.service](Ubuntu20Minimal/files/control-cloud-init.service "control-cloud-init.service").
+* **control-cloud-init.service**: Unit to control `cloud-init` to enable in *OpenStack* or *KVM* or *AWS* and mask in *VMware* or *VirtualBox* or other virtualization systems. This unit calls the file `/usr/local/bin/control-cloud-init.sh`. Installed in `/etc/systemd/system/control-cloud-init.service`. See [control-cloud-init.service](Ubuntu20Minimal/files/control-cloud-init.service "control-cloud-init.service").
 
-* **control-cloud-init.sh**: Process that controls `cloud-init` to enable in *OpenStack* and disable in other virtualization systems. Installed in `/usr/local/bin/control-cloud-init.sh`. See [control-cloud-init.sh](Ubuntu20Minimal/files/control-cloud-init.sh "control-cloud-init.sh").
+* **control-cloud-init.sh**: Process that controls `cloud-init` to enable in *OpenStack* or *KVM* or *AWS* and mask in *VMware* or *VirtualBox* or other virtualization systems. Installed in `/usr/local/bin/control-cloud-init.sh`. See [control-cloud-init.sh](Ubuntu20Minimal/files/control-cloud-init.sh "control-cloud-init.sh").
 
 * **guest-vmtools.service**: Unit to manage virtual machine tools for *VirtualBox*, *VMware* or *VMware ESXI*. This unit calls the file `/usr/local/bin/guest-vmtools.sh`. Installed in `/etc/systemd/system/guest-vmtools.service`. See [guest-vmtools.service](Ubuntu20Minimal/files/guest-vmtools.service "guest-vmtools.service").
 
