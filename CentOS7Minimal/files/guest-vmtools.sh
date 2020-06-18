@@ -76,8 +76,8 @@ else
     sudo /opt/VBoxGuestAdditions-*/uninstall.sh 2>/dev/null || true
     sudo rm -rf /opt/VBoxGuestAdditions* /var/log/vboxadd*.log*
     echo "INFO: Install VMware packages"
-    [[ "${SO_ID}" == "centos" ]] && sudo ${PKG_MANAGER} -y install -q open-vm-tools open-vm-tools-desktop
-    [[ "${SO_ID}" == "ubuntu" ]] && sudo apt-get -y install -qq open-vm-tools open-vm-tools-desktop
+    [[ "${SO_ID}" == "centos" ]] && sudo ${PKG_MANAGER} -y install -q open-vm-tools open-vm-tools-desktop perl
+    [[ "${SO_ID}" == "ubuntu" ]] && sudo apt-get -y install -qq open-vm-tools open-vm-tools-desktop perl
     sudo systemctl restart vmtoolsd.service
   elif [ "$(echo "${MACHINETYPE}" | grep '^kvm$')" != "" ]
   then
