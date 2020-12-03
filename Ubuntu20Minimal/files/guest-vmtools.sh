@@ -53,7 +53,7 @@ else
         export KERN_DIR=/usr/src/kernels/$(uname -r)
       elif [ "${SO_ID}" == "ubuntu" ]
       then
-        sudo apt-get -y install -qq bzip2 gcc make perl dkms linux-headers-$(uname -r)
+        sudo apt-get -y install -qq --no-install-recommends bzip2 gcc make perl dkms linux-headers-$(uname -r)
       else
         echo "ERROR: Operating System type not supported"
         exit 1
@@ -76,8 +76,10 @@ else
     sudo /opt/VBoxGuestAdditions-*/uninstall.sh 2>/dev/null || true
     sudo rm -rf /opt/VBoxGuestAdditions* /var/log/vboxadd*.log*
     echo "INFO: Install VMware packages"
-    [[ "${SO_ID}" == "centos" ]] && sudo ${PKG_MANAGER} -y install -q open-vm-tools open-vm-tools-desktop perl
-    [[ "${SO_ID}" == "ubuntu" ]] && sudo apt-get -y install -qq open-vm-tools open-vm-tools-desktop perl
+    [[ "${SO_ID}" == "centos" ]] && sudo ${PKG_MANAGER} -y install -q open-vm-tools open-vm-tools-desktop perl python3-pip
+    [[ "${SO_ID}" == "ubuntu" ]] && sudo apt-get -y install -qq --no-install-recommends open-vm-tools open-vm-tools-desktop perl python3-pip
+    echo "INFO: Install VMware GuestInfo datasource for cloud-init"
+    curl -sSL https://raw.githubusercontent.com/vmware/cloud-init-vmware-guestinfo/master/install.sh | sudo sh -
     sudo systemctl restart vmtoolsd.service
   elif [ "$(echo "${MACHINETYPE}" | grep '^kvm$')" != "" ]
   then
