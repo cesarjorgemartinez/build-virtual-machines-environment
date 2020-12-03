@@ -12,6 +12,9 @@ then
   sudo systemctl mask cloud-config.target
   sudo systemctl mask cloud-init.target
   sudo rm -rf /var/log/cloud-init*.log
+  echo "INFO: Default disable Guest OS Customization with cloud-init"
+  grep -qs '^disable_vmware_customization:' /etc/cloud/cloud.cfg || echo -e '\ndisable_vmware_customization: true' | sudo tee -a /etc/cloud/cloud.cfg > /dev/null
+  sudo sed -r -i -e 's/^(disable_vmware_customization:).*/\1 true/g' /etc/cloud/cloud.cfg
 elif virt-what | grep -qs '^vmware$'
 then
   echo "INFO: Virtual environment VMware"
