@@ -1,57 +1,6 @@
 {
-  "variables": {
-    "so_distribution": "{{ env `SO_DISTRIBUTION` }}",
-    "so_majorversion": "{{ env `SO_MAJORVERSION` }}",
-    "so_imagetype": "{{ env `SO_IMAGETYPE` }}",
-    "guest_os_type": "{{ env `SO_GUESTOSTYPE` }}",
-    "so_guestdisksize": "{{ env `SO_GUESTDISKSIZE` }}",
-    "so_guesthddinterface": "{{ env `SO_GUESTHDDINTERFACE` }}",
-    "iso": "../isos/{{ env `SO_ISOIMAGENAME` }}",
-    "checksum": "{{ env `SO_ISOCHECKSUMIMAGE` }}",
-    "checksum_type": "{{ env `SO_ISOCHECKSUMTYPE` }}",
-    "packer_ssh_timeout": "{{ env `PACKER_SSH_TIMEOUT` }}",
-    "packer_ssh_handshake_attempts": "{{ env `PACKER_SSH_HANDSHAKE_ATTEMPTS` }}",
-    "vm_fullname": "{{ env `SO_VMFULLNAME` }}"
-  },
   "builders": [
     {
-      "type": "virtualbox-iso",
-      "guest_os_type": "{{ user `guest_os_type` }}",
-      "iso_url": "{{ user `iso` }}",
-      "iso_checksum": "{{ user `checksum` }}",
-      "iso_checksum_type": "{{ user `checksum_type` }}",
-      "vm_name": "{{ user `vm_fullname` }}",
-      "disk_size": "{{ user `so_guestdisksize` }}",
-      "guest_additions_mode": "disable",
-      "hard_drive_interface": "{{ user `so_guesthddinterface` }}",
-      "sata_port_count": 12,
-      "hard_drive_nonrotational": true,
-      "hard_drive_discard": true,
-      "cpus": 1,
-      "memory": 1024,
-      "headless": false,
-      "keep_registered": false,
-      "ssh_username": "packer",
-      "ssh_password": "packer",
-      "ssh_timeout": "{{ user `packer_ssh_timeout` }}",
-      "ssh_handshake_attempts": "{{ user `packer_ssh_handshake_attempts` }}",
-      "ssh_host_port_min": 2222,
-      "ssh_host_port_max": 2229,
-      "ssh_skip_nat_mapping": false,
-      "http_directory": "http",
-      "http_port_min": 10082,
-      "http_port_max": 10089,
-      "skip_export": false,
-      "output_directory": "output-virtualbox-iso",
-      "vboxmanage": [
-        [ "modifyvm", "{{ .Name }}", "--uart1", "0x3F8", "4" ],
-        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs-{{ .Name }}.txt" ]
-      ],
-      "vboxmanage_post": [
-        [ "modifyvm", "{{ .Name }}", "--uart1", "off" ],
-        [ "modifyvm", "{{ .Name }}", "--uartmode1", "disconnected" ]
-      ],
-      "boot_wait": "5s",
       "boot_command": [
         "<enter><enter><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><wait> ",
         "vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel ",
@@ -60,44 +9,80 @@
         "vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel",
         "<enter><wait200>"
       ],
-      "shutdown_command": "echo {{ user `so_adminpass` }} | sudo -S -i -u {{ user `so_adminuser` }} sudo -S shutdown -P now"
+      "boot_wait": "5s",
+      "cpus": 1,
+      "disk_size": "{{ user `so_guestdisksize` }}",
+      "guest_additions_mode": "disable",
+      "guest_os_type": "{{ user `guest_os_type` }}",
+      "hard_drive_discard": true,
+      "hard_drive_interface": "{{ user `so_guesthddinterface` }}",
+      "hard_drive_nonrotational": true,
+      "headless": false,
+      "host_port_max": 2229,
+      "host_port_min": 2222,
+      "http_directory": "http",
+      "http_port_max": 10089,
+      "http_port_min": 10082,
+      "iso_checksum": "{{ user `iso_image_checksum_type` }}:{{ user `iso_image_checksum` }}",
+      "iso_url": "{{ user `iso_image_url` }}",
+      "keep_registered": false,
+      "memory": 1024,
+      "output_directory": "output-virtualbox-iso",
+      "sata_port_count": 12,
+      "shutdown_command": "echo {{ user `so_adminpass` }} | sudo -S -i -u {{ user `so_adminuser` }} sudo -S shutdown -P now",
+      "skip_export": false,
+      "skip_nat_mapping": false,
+      "ssh_handshake_attempts": "{{ user `packer_ssh_handshake_attempts` }}",
+      "ssh_password": "packer",
+      "ssh_timeout": "{{ user `packer_ssh_timeout` }}",
+      "ssh_username": "packer",
+      "type": "virtualbox-iso",
+      "vboxmanage": [
+        [ "modifyvm", "{{ .Name }}", "--uart1", "0x3F8", "4" ],
+        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs-{{ .Name }}.txt" ]
+      ],
+      "vboxmanage_post": [
+        [ "modifyvm", "{{ .Name }}", "--uart1", "off" ],
+        [ "modifyvm", "{{ .Name }}", "--uartmode1", "disconnected" ]
+      ],
+      "vm_name": "{{ user `vm_fullname` }}"
     }
   ],
   "provisioners": [
     {
-      "type": "file",
+      "destination": "host-info.sh",
       "source": "files/host-info.sh",
-      "destination": "host-info.sh"
+      "type": "file"
     },
     {
-      "type": "file",
+      "destination": "control-cloud-init.service",
       "source": "files/control-cloud-init.service",
-      "destination": "control-cloud-init.service"
+      "type": "file"
     },
     {
-      "type": "file",
+      "destination": "control-cloud-init.sh",
       "source": "files/control-cloud-init.sh",
-      "destination": "control-cloud-init.sh"
+      "type": "file"
     },
     {
-      "type": "file",
+      "destination": "guest-vmtools.service",
       "source": "files/guest-vmtools.service",
-      "destination": "guest-vmtools.service"
+      "type": "file"
     },
     {
-      "type": "file",
+      "destination": "guest-vmtools.sh",
       "source": "files/guest-vmtools.sh",
-      "destination": "guest-vmtools.sh"
+      "type": "file"
     },
     {
-      "type": "file",
+      "destination": "switch-to-graphical-user-interface.sh",
       "source": "files/switch-to-graphical-user-interface.sh",
-      "destination": "switch-to-graphical-user-interface.sh"
+      "type": "file"
     },
     {
-      "type": "file",
+      "destination": "switch-to-text-user-interface.sh",
       "source": "files/switch-to-text-user-interface.sh",
-      "destination": "switch-to-text-user-interface.sh"
+      "type": "file"
     },
     {
       "environment_vars": [
@@ -111,6 +96,20 @@
       ],
       "type": "shell"
     }
-  ]
+  ],
+  "variables": {
+    "guest_os_type": "{{ env `SO_GUESTOSTYPE` }}",
+    "iso_image_checksum": "{{ env `SO_ISOCHECKSUMIMAGE` }}",
+    "iso_image_checksum_type": "{{ env `SO_ISOCHECKSUMTYPE` }}",
+    "iso_image_url": "../isos/{{ env `SO_ISOIMAGENAME` }}",
+    "packer_ssh_handshake_attempts": "{{ env `PACKER_SSH_HANDSHAKE_ATTEMPTS` }}",
+    "packer_ssh_timeout": "{{ env `PACKER_SSH_TIMEOUT` }}",
+    "so_distribution": "{{ env `SO_DISTRIBUTION` }}",
+    "so_guestdisksize": "{{ env `SO_GUESTDISKSIZE` }}",
+    "so_guesthddinterface": "{{ env `SO_GUESTHDDINTERFACE` }}",
+    "so_imagetype": "{{ env `SO_IMAGETYPE` }}",
+    "so_majorversion": "{{ env `SO_MAJORVERSION` }}",
+    "vm_fullname": "{{ env `SO_VMFULLNAME` }}"
+  }
 }
 
