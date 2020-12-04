@@ -14,6 +14,7 @@
 <!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:0 -->
 
 - [1. Introduction](#1-introduction)
+   - [1.2. Tested software versions](#12-tested-software-versions)
 - [2. Operating Systems that can be built](#2-operating-systems-that-can-be-built)
 - [3. Create and configure the environment](#3-create-and-configure-the-environment)
    - [3.1. Install VirtualBox](#31-install-virtualbox)
@@ -54,6 +55,10 @@
    - [7.3. Build the image](#73-build-the-image)
    - [7.4. Optionally upload to the OpenStack Image Store](#74-optionally-upload-to-the-openstack-image-store)
    - [7.5. Utility files used in this image](#75-utility-files-used-in-this-image)
+   - [7.6. Virtual machine example in VirtualBox](#76-virtual-machine-example-in-virtualbox)
+      - [7.6.1. Import the virtualized service](#761-import-the-virtualized-service)
+      - [7.6.2. Configure the virtual machine](#762-configure-the-virtual-machine)
+      - [7.6.3. Use the virtual machine](#763-use-the-virtual-machine)
    - [7.7. Convert vmdk image to work inside VMware ESXI](#77-convert-vmdk-image-to-work-inside-vmware-esxi)
 
 <!-- /MDTOC -->
@@ -80,13 +85,20 @@ These images are ideal to work as servers in *Cloud*, *traditional* or *developm
 To work with this software you need **Windows 10 for 64 bits** and **CygWin 64 bits** to use **Linux-Bash** commands.
 
 
+## 1.2. Tested software versions
+
+This project has been tested with the following software versions:
+
+- TODO
+
+
 # 2. Operating Systems that can be built
 
 Actually you can build the following Operating Systems:
 
-- **CentOS 7 Minimal**
-- **CentOS 8 Minimal**
-- **Ubuntu 20 Minimal**
+- **CentOS 7 Minimal**: `CentOS 7.9 (2009)`
+- **CentOS 8 Minimal**: `CentOS 8.2 (2004)`
+- **Ubuntu 20 Minimal**: `Ubuntu 20.04.1 (server)`
 
 
 # 3. Create and configure the environment
@@ -151,7 +163,7 @@ You need to do the following tasks:
 - Launch this:
 ```bash
 curl -O https://cygwin.com/setup-x86_64.exe
-./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,python-crypto,python-paramiko,python2-boto,python2-certifi,python2-pip,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,python2-nacl,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip,sshpass"
+./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,python-crypto,python-paramiko,python2-boto,python2-certifi,python2-pip,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,python2-nacl,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip,sshpass,jq"
 ```
 
 
@@ -303,7 +315,7 @@ Example of **CentOS 7 Minimal** configuration file:
 ```bash
 # Variables to build Operating System
 # For Packer version you can use one release or nightly to use nightly build
-export PACKER_VERSION="1.5.6"
+export PACKER_VERSION="1.6.5"
 export PACKER_MACHINEREADABLEOUTPUT="False"
 export PACKER_DEBUG="False"
 export PACKER_SSH_TIMEOUT="50m"
@@ -324,8 +336,8 @@ export SO_GUESTHDDINTERFACE="sata"
 export SO_IMAGETYPE="Minimal"
 export SO_DISTRIBUTION="CentOS"
 export SO_MAJORVERSION="7"
-export SO_MINORVERSION="8"
-export SO_NAMEVERSION="2003"
+export SO_MINORVERSION="9"
+export SO_NAMEVERSION="2009"
 export SO_SHORTVERSION="${SO_MAJORVERSION}.${SO_MINORVERSION}"
 # The iso file type to download and use can be Minimal or DVD (can exists others but here only use these types)
 export SO_ISOTYPE="Minimal"
@@ -437,7 +449,7 @@ Steps to use virtual machines using *VirtualBox*.
 To import virtualized service in *VirtualBox* to create a virtual machine perform the following steps using the `Oracle VM VirtualBox Administrator`.
 
 - Click in `Archive -> Import virtualized service...`
-- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517.ovf`
+- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204.ovf`
 - Name: `myvm`
 - Type of guest OS: `Red Hat (64-bit)`
 - CPU: `1`
@@ -526,9 +538,9 @@ For this reason you need to use *VMware Workstation Player* for Windows to obtai
 Then follow these steps:
 
 - Open *VMware Workstation Player*
-- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517.ovf`
-- Name for the new virtual machine: `CentOS7.8-2003-Minimal-20200517`
-- Storage path for the new virtual machine: `C:\VMware\CentOS7.8-2003-Minimal-20200517`
+- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204.ovf`
+- Name for the new virtual machine: `CentOS7.9-2009-Minimal-20201204`
+- Storage path for the new virtual machine: `C:\VMware\CentOS7.9-2009-Minimal-20201204`
 - Click in `Import` button
 - Click in `Retry` button to relax OVF specifications
 - Click in `Edit virtual machine settings`
@@ -547,37 +559,37 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 - To get an image for *VMware ESXI* version `5.5` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.8-2003-Minimal-20200517\CentOS7.8-2003-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517-esx10.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx10.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.0` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.8-2003-Minimal-20200517\CentOS7.8-2003-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517-esx11.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx11.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.5` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.8-2003-Minimal-20200517\CentOS7.8-2003-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517-esx13.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx13.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.7` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.8-2003-Minimal-20200517\CentOS7.8-2003-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517-esx14.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx14.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.7 U2` or `6.8.x` or `6.9.x` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.8-2003-Minimal-20200517\CentOS7.8-2003-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517-esx15.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx15.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `7.0.x` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.8-2003-Minimal-20200517\CentOS7.8-2003-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.8-2003-Minimal-20200517-esx17.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx17.ovf'
 ```
 
 
@@ -639,7 +651,7 @@ Example of **CentOS 8 Minimal** configuration file:
 ```bash
 # Variables to build Operating System
 # For Packer version you can use one release or nightly to use nightly build
-export PACKER_VERSION="1.5.6"
+export PACKER_VERSION="1.6.5"
 export PACKER_MACHINEREADABLEOUTPUT="False"
 export PACKER_DEBUG="False"
 export PACKER_SSH_TIMEOUT="50m"
@@ -660,8 +672,8 @@ export SO_GUESTHDDINTERFACE="sata"
 export SO_IMAGETYPE="Minimal"
 export SO_DISTRIBUTION="CentOS"
 export SO_MAJORVERSION="8"
-export SO_MINORVERSION="1"
-export SO_NAMEVERSION="1911"
+export SO_MINORVERSION="2"
+export SO_NAMEVERSION="2004"
 export SO_SHORTVERSION="${SO_MAJORVERSION}.${SO_MINORVERSION}"
 # The iso file type to download and use can be boot or dvd1 (can exists others but here only use these types)
 export SO_ISOTYPE="boot"
@@ -773,7 +785,7 @@ Steps to use virtual machines using *VirtualBox*.
 To import virtualized service in *VirtualBox* to create a virtual machine perform the following steps using the `Oracle VM VirtualBox Administrator`.
 
 - Click in `Archive -> Import virtualized service...`
-- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504.ovf`
+- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204.ovf`
 - Name: `myvm`
 - Type of guest OS: `Red Hat (64-bit)`
 - CPU: `1`
@@ -862,9 +874,9 @@ For this reason you need to use *VMware Workstation Player* for Windows to obtai
 Then follow these steps:
 
 - Open *VMware Workstation Player*
-- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504.ovf`
-- Name for the new virtual machine: `CentOS8.1-1911-Minimal-20200504`
-- Storage path for the new virtual machine: `C:\VMware\CentOS8.1-1911-Minimal-20200504`
+- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204.ovf`
+- Name for the new virtual machine: `CentOS8.2-2004-Minimal-20201204`
+- Storage path for the new virtual machine: `C:\VMware\CentOS8.2-2004-Minimal-20201204`
 - Click in `Import` button
 - Click in `Retry` button to relax OVF specifications
 - Click in `Edit virtual machine settings`
@@ -883,37 +895,37 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 - To get an image for *VMware ESXI* version `5.5` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200504\CentOS8.1-1911-Minimal-20200504.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504-esx10.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx10.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.0` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200504\CentOS8.1-1911-Minimal-20200504.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504-esx11.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx11.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.5` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200504\CentOS8.1-1911-Minimal-20200504.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504-esx13.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx13.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.7` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200504\CentOS8.1-1911-Minimal-20200504.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504-esx14.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx14.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.7 U2` or `6.8.x` or `6.9.x` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200504\CentOS8.1-1911-Minimal-20200504.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504-esx15.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx15.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `7.0.x` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.1-1911-Minimal-20200504\CentOS8.1-1911-Minimal-20200504.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.1-1911-Minimal-20200504-esx17.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx17.ovf'
 ```
 
 
@@ -975,7 +987,7 @@ Example of **Ubuntu 20 Minimal** configuration file:
 ```bash
 # Variables to build Operating System
 # For Packer version you can use one release or nightly to use nightly build
-export PACKER_VERSION="1.5.6"
+export PACKER_VERSION="1.6.5"
 export PACKER_MACHINEREADABLEOUTPUT="False"
 export PACKER_DEBUG="False"
 export PACKER_SSH_TIMEOUT="20m"
@@ -996,7 +1008,7 @@ export SO_GUESTHDDINTERFACE="sata"
 export SO_IMAGETYPE="Minimal"
 export SO_DISTRIBUTION="Ubuntu"
 export SO_MAJORVERSION="20"
-export SO_MINORVERSION="04"
+export SO_MINORVERSION="04.1"
 export SO_NAMEVERSION="server"
 export SO_SHORTVERSION="${SO_MAJORVERSION}.${SO_MINORVERSION}"
 # The iso file type to download and use can be boot or dvd1 (can exists others but here only use these types)
@@ -1124,7 +1136,7 @@ To import virtualized service in *VirtualBox* to create a virtual machine perfor
 TOREVIEW
 
 - Click in `Archive -> Import virtualized service...`
-- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517.ovf`
+- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204.ovf`
 - Name: `myvm`
 - Type of guest OS: `Ubuntu (64-bit)`
 - CPU: `1`
@@ -1213,9 +1225,9 @@ For this reason you need to use *VMware Workstation Player* for Windows to obtai
 Then follow these steps:
 
 - Open *VMware Workstation Player*
-- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517.ovf`
-- Name for the new virtual machine: `Ubuntu20.04-server-Minimal-20200517`
-- Storage path for the new virtual machine: `C:\VMware\Ubuntu20.04-server-Minimal-20200517`
+- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204.ovf`
+- Name for the new virtual machine: `Ubuntu20.04.1-server-Minimal-20201204`
+- Storage path for the new virtual machine: `C:\VMware\Ubuntu20.04.1-server-Minimal-20201204`
 - Click in `Import` button
 - Click in `Retry` button to relax OVF specifications
 - Click in `Edit virtual machine settings`
@@ -1234,35 +1246,35 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 - To get an image for *VMware ESXI* version `5.5` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-server-Minimal-20200517\Ubuntu20.04-server-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517-esx10.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx10.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.0` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-server-Minimal-20200517\Ubuntu20.04-server-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517-esx11.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx11.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.5` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-server-Minimal-20200517\Ubuntu20.04-server-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517-esx13.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx13.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.7` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-server-Minimal-20200517\Ubuntu20.04-server-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517-esx14.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx14.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.7 U2` or `6.8.x` or `6.9.x` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-server-Minimal-20200517\Ubuntu20.04-server-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517-esx15.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx15.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `7.0.x` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04-server-Minimal-20200517\Ubuntu20.04-server-Minimal-20200517.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04-server-Minimal-20200517-esx17.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx17.ovf'
 ```
