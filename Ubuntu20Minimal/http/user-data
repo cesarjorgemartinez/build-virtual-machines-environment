@@ -2,6 +2,8 @@
 autoinstall:
   version: 1
   refresh-installer:
+    # Uncomment to use channel edge to get the last installer
+    # channel: edge
     update: yes
   locale: en_US.UTF-8
   keyboard:
@@ -56,6 +58,9 @@ autoinstall:
           dhcp6: true
   ssh:
     install-server: true
+    allow-pw: true
+  user-data:
+    disable_root: true
   storage:
     config:
     - {ptable: gpt, path: /dev/sda, wipe: superblock, preserve: false, name: '', grub_device: true, type: disk, id: disk-sda}
