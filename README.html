@@ -298,7 +298,9 @@ export SO_ISOSHA256SUMNAME=&quot;${SO_ISOIMAGENAME%.iso}.sum&quot;
 export SO_ISOCHECKSUMTYPE=&quot;sha256&quot;
 export SO_ISOURLSHA256SUM=&quot;http://ftp.uma.es/mirror/${SO_DISTRIBUTION}/${SO_MAJORVERSION}.${SO_MINORVERSION}.${SO_NAMEVERSION}/isos/x86_64/sha256sum.txt&quot;
 export SO_BUILDDATE=&quot;$(date +%Y%m%d)&quot;
-export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}&quot;</code></pre>
+export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}&quot;
+# The time to wait after booting the initial virtual machine before typing the boot_command
+export SO_BOOT_WAIT=&quot;10s&quot;</code></pre>
 <h2 id="5-4-optionally-upload-to-the-openstack-image-store">5.4. Optionally upload to the OpenStack Image Store</h2>
 <p>If you have one <em>OpenStack virtualization environment</em>, you can upload the <strong>qcow2</strong> image file to the <em>OpenStack Image Store</em>.</p>
 <p>To do the upload you need one appropiated virtualenv and environment variables defined and be registered in that <em>OpenStack virtualization environment</em> and launch:</p>
@@ -530,7 +532,9 @@ export SO_ISOSHA256SUMNAME=&quot;${SO_ISOIMAGENAME%.iso}.sum&quot;
 export SO_ISOCHECKSUMTYPE=&quot;sha256&quot;
 export SO_ISOURLSHA256SUM=&quot;http://ftp.uma.es/mirror/${SO_DISTRIBUTION}/${SO_MAJORVERSION}/isos/x86_64/CHECKSUM&quot;
 export SO_BUILDDATE=&quot;$(date +%Y%m%d)&quot;
-export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}&quot;</code></pre>
+export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}&quot;
+# The time to wait after booting the initial virtual machine before typing the boot_command
+export SO_BOOT_WAIT=&quot;10s&quot;</code></pre>
 <h2 id="6-4-optionally-upload-to-the-openstack-image-store">6.4. Optionally upload to the OpenStack Image Store</h2>
 <p>If you have one <em>OpenStack virtualization environment</em>, you can upload the <strong>qcow2</strong> image file to the <em>OpenStack Image Store</em>.</p>
 <p>To do the upload you need one appropiated virtualenv and environment variables defined and be registered in that <em>OpenStack virtualization environment</em> and launch:</p>
@@ -762,7 +766,9 @@ export SO_ISOSHA256SUMNAME=&quot;${SO_ISOIMAGENAME%.iso}.sum&quot;
 export SO_ISOCHECKSUMTYPE=&quot;sha256&quot;
 export SO_ISOURLSHA256SUM=&quot;https://releases.ubuntu.com/${SO_SHORTVERSION}/SHA256SUMS&quot;
 export SO_BUILDDATE=&quot;$(date +%Y%m%d)&quot;
-export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}&quot;</code></pre>
+export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}&quot;
+# The time to wait after booting the initial virtual machine before typing the boot_command
+export SO_BOOT_WAIT=&quot;5s&quot;</code></pre>
 <h2 id="7-4-optionally-upload-to-the-openstack-image-store">7.4. Optionally upload to the OpenStack Image Store</h2>
 <p>If you have one <em>OpenStack virtualization environment</em>, you can upload the <strong>qcow2</strong> image file to the <em>OpenStack Image Store</em>.</p>
 <p>To do the upload you need one appropiated virtualenv and environment variables defined and be registered in that <em>OpenStack virtualization environment</em> and launch:</p>

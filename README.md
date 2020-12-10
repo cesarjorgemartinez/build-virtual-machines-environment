@@ -348,6 +348,8 @@ export SO_ISOCHECKSUMTYPE="sha256"
 export SO_ISOURLSHA256SUM="http://ftp.uma.es/mirror/${SO_DISTRIBUTION}/${SO_MAJORVERSION}.${SO_MINORVERSION}.${SO_NAMEVERSION}/isos/x86_64/sha256sum.txt"
 export SO_BUILDDATE="$(date +%Y%m%d)"
 export SO_VMFULLNAME="${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}"
+# The time to wait after booting the initial virtual machine before typing the boot_command
+export SO_BOOT_WAIT="10s"
 ```
 
 
@@ -684,6 +686,8 @@ export SO_ISOCHECKSUMTYPE="sha256"
 export SO_ISOURLSHA256SUM="http://ftp.uma.es/mirror/${SO_DISTRIBUTION}/${SO_MAJORVERSION}/isos/x86_64/CHECKSUM"
 export SO_BUILDDATE="$(date +%Y%m%d)"
 export SO_VMFULLNAME="${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}"
+# The time to wait after booting the initial virtual machine before typing the boot_command
+export SO_BOOT_WAIT="10s"
 ```
 
 
@@ -1020,6 +1024,8 @@ export SO_ISOCHECKSUMTYPE="sha256"
 export SO_ISOURLSHA256SUM="https://releases.ubuntu.com/${SO_SHORTVERSION}/SHA256SUMS"
 export SO_BUILDDATE="$(date +%Y%m%d)"
 export SO_VMFULLNAME="${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}"
+# The time to wait after booting the initial virtual machine before typing the boot_command
+export SO_BOOT_WAIT="5s"
 ```
 
 
