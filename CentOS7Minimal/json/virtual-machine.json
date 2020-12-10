@@ -5,7 +5,7 @@
         "<up><wait><tab><bs><bs><bs><bs><bs>console=ttyS0 console=tty0 ignore_loglevel ",
         "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/kickstart-virtual-machine.cfg inst.text<wait5><enter><wait>"
       ],
-      "boot_wait": "10s",
+      "boot_wait": "{{ user `so_boot_wait` }}",
       "cpus": 1,
       "disk_size": "{{ user `so_guestdisksize` }}",
       "guest_additions_mode": "disable",
@@ -101,6 +101,7 @@
     "iso_image_url": "../isos/{{ env `SO_ISOIMAGENAME` }}",
     "packer_ssh_handshake_attempts": "{{ env `PACKER_SSH_HANDSHAKE_ATTEMPTS` }}",
     "packer_ssh_timeout": "{{ env `PACKER_SSH_TIMEOUT` }}",
+    "so_boot_wait": "{{ env `SO_BOOT_WAIT` }}",
     "so_distribution": "{{ env `SO_DISTRIBUTION` }}",
     "so_guestdisksize": "{{ env `SO_GUESTDISKSIZE` }}",
     "so_guesthddinterface": "{{ env `SO_GUESTHDDINTERFACE` }}",

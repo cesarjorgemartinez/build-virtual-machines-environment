@@ -9,7 +9,7 @@
         "vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel",
         "<enter><wait200>"
       ],
-      "boot_wait": "5s",
+      "boot_wait": "{{ user `so_boot_wait` }}",
       "cpus": 1,
       "disk_size": "{{ user `so_guestdisksize` }}",
       "guest_additions_mode": "disable",
@@ -105,6 +105,7 @@
     "iso_image_url": "../isos/{{ env `SO_ISOIMAGENAME` }}",
     "packer_ssh_handshake_attempts": "{{ env `PACKER_SSH_HANDSHAKE_ATTEMPTS` }}",
     "packer_ssh_timeout": "{{ env `PACKER_SSH_TIMEOUT` }}",
+    "so_boot_wait": "{{ env `SO_BOOT_WAIT` }}",
     "so_distribution": "{{ env `SO_DISTRIBUTION` }}",
     "so_guestdisksize": "{{ env `SO_GUESTDISKSIZE` }}",
     "so_guesthddinterface": "{{ env `SO_GUESTHDDINTERFACE` }}",
