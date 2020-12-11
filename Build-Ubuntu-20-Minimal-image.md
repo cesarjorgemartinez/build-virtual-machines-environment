@@ -235,7 +235,7 @@ Steps to use virtual machines using *VirtualBox*.
 To import virtualized service in *VirtualBox* to create a virtual machine perform the following steps using the `Oracle VM VirtualBox Administrator`.
 
 - Click in `Archive -> Import virtualized service...`
-- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204.ovf`
+- Click in `Select a virtualized service file to import...` in `Service to import`. Example `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201211.ovf`
 - Name: `myvm`
 - Type of guest OS: `Ubuntu (64-bit)`
 - CPU: `1`
@@ -324,9 +324,9 @@ For this reason you need to use *VMware Workstation Player* for Windows to obtai
 Then follow these steps:
 
 - Open *VMware Workstation Player*
-- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204.ovf`
-- Name for the new virtual machine: `Ubuntu20.04.1-server-Minimal-20201204`
-- Storage path for the new virtual machine: `C:\VMware\Ubuntu20.04.1-server-Minimal-20201204`
+- Click in `Player->File->Open...` and select the **ovf** file `C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201211.ovf`
+- Name for the new virtual machine: `Ubuntu20.04.1-server-Minimal-20201211`
+- Storage path for the new virtual machine: `C:\VMware\Ubuntu20.04.1-server-Minimal-20201211`
 - Click in `Import` button
 - Click in `Retry` button to relax OVF specifications
 - Click in `Edit virtual machine settings`
@@ -345,41 +345,41 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 - To get an image for *VMware ESXI* version `5.5, HW version 10` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx10.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201211\Ubuntu20.04.1-server-Minimal-20201211.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201211-esx10.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.0, HW version 11` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx11.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201211\Ubuntu20.04.1-server-Minimal-20201211.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201211-esx11.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.5, HW version 13` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx13.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201211\Ubuntu20.04.1-server-Minimal-20201211.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201211-esx13.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.7, HW version 14` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx14.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201211\Ubuntu20.04.1-server-Minimal-20201211.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201211-esx14.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `6.7 U2, HW version 15` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx15.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201211\Ubuntu20.04.1-server-Minimal-20201211.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201211-esx15.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `7.0  (7.0.0), HW version 17` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx17.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201211\Ubuntu20.04.1-server-Minimal-20201211.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201211-esx17.ovf'
 ```
 
 - To get an image for *VMware ESXI* version `7.0 U1 (7.0.1), HW version 18` launch:
 
 ```
-'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=18 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx18.ovf'
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=18 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201211\Ubuntu20.04.1-server-Minimal-20201211.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201211-esx18.ovf'
 ```

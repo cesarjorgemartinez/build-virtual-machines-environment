@@ -34,197 +34,265 @@
 <!-- MDTOC maxdepth:6 firsth1:1 numbering:0 flatten:0 bullets:1 updateOnSave:0 -->
 
 <ul>
-<li><a href="#1-introduction">1. Introduction</a><ul>
-<li><a href="#12-tested-software-versions">1.2. Tested software versions</a></li>
+<li><a href="#1-build-centos-8-minimal-image">1. Build CentOS 8 Minimal image</a><ul>
+<li><a href="#11-download-and-install-packer">1.1. Download and install Packer</a></li>
+<li><a href="#12-download-the-iso-image">1.2. Download the iso image</a></li>
+<li><a href="#13-build-the-image">1.3. Build the image</a></li>
+<li><a href="#14-optionally-upload-to-the-openstack-image-store">1.4. Optionally upload to the OpenStack Image Store</a></li>
+<li><a href="#15-utility-files-used-in-this-image">1.5. Utility files used in this image</a></li>
+<li><a href="#16-virtual-machine-example-in-virtualbox">1.6. Virtual machine example in VirtualBox</a><ul>
+<li><a href="#161-import-the-virtualized-service">1.6.1. Import the virtualized service</a></li>
+<li><a href="#162-configure-the-virtual-machine">1.6.2. Configure the virtual machine</a></li>
+<li><a href="#163-use-the-virtual-machine">1.6.3. Use the virtual machine</a></li>
 </ul>
 </li>
-<li><a href="#2-operating-systems-that-can-be-built">2. Operating Systems that can be built</a></li>
-<li><a href="#3-create-and-configure-the-environment">3. Create and configure the environment</a><ul>
-<li><a href="#31-install-virtualbox">3.1. Install VirtualBox</a></li>
-<li><a href="#32-install-vmware-workstation-player">3.2. Install VMware Workstation Player</a></li>
-<li><a href="#33-install-cygwin-64-bits">3.3. Install CygWin 64 bits</a></li>
-<li><a href="#34-disable-windows-python-installation">3.4. Disable Windows Python installation</a></li>
-<li><a href="#35-install-needed-cygwin-packages">3.5. Install needed CygWin packages</a></li>
-<li><a href="#36-install-python-system-pip-packages">3.6. Install Python system pip packages</a></li>
-<li><a href="#37-configure-your-git-environment-to-work-with-github">3.7. Configure your Git environment to work with github</a></li>
-<li><a href="#38-howto-generate-sha-512-password-hashes-with-python3-in-cygwin-command-line">3.8. Howto generate SHA-512 password hashes with Python3 in CygWin command line</a></li>
+<li><a href="#17-convert-vmdk-image-to-work-inside-vmware-esxi">1.7. Convert vmdk image to work inside VMware ESXI</a></li>
 </ul>
 </li>
-<li><a href="#4-getting-started">4. Getting started</a><ul>
-<li><a href="#41-clone-and-enter-into-the-git-root-directory-of-this-repository">4.1. Clone and enter into the git root directory of this repository</a></li>
-<li><a href="#42-install-qemu-for-windows">4.2. Install QEMU for Windows</a></li>
-</ul>
-</li>
-<li><a href="#5-build-centos-7-minimal-image">5. Build CentOS 7 Minimal image</a></li>
-<li><a href="#6-build-centos-8-minimal-image">6. Build CentOS 8 Minimal image</a></li>
-<li><a href="#7-build-ubuntu-20-minimal-image">7. Build Ubuntu 20 Minimal image</a></li>
 </ul>
 <!-- /MDTOC -->
 
 
-<h1 id="1-introduction">1. Introduction</h1>
-<p>This project helps to build automatically multiple <em>Virtual Machine Images of Operating Systems</em> that are <strong>compatible</strong> with different virtualization systems, as <em>OpenStack</em>, <em>KVM</em>, <em>VirtualBox</em>, <em>VMware</em>, <em>VMware ESXI</em>, <em>Nutanix</em>, etc.</p>
-<p>The image formats that are generated are the following:</p>
+<h1 id="1-build-centos-8-minimal-image">1. Build CentOS 8 Minimal image</h1>
+<p>This section explains howto build this <em>Virtual Machine Image</em>.</p>
+<h2 id="1-1-download-and-install-packer">1.1. Download and install Packer</h2>
+<p>To build the image you need to download and install <em>Packer</em> software.</p>
+<p>The directory where it install this software is <code>CentOS8Minimal/packer-software</code>.</p>
+<p>The version is determined by its own configuration file located at <a href="CentOS8Minimal/conf/virtual-machine.conf" title="CentOS8Minimal Configuration Directory">CentOS8Minimal Configuration Directory</a>.</p>
+<p>To perform this task run:</p>
+<pre><code class="language-bash">CentOS8Minimal/bin/download-and-install-packer.sh</code></pre>
+<h2 id="1-2-download-the-iso-image">1.2. Download the iso image</h2>
+<p>To build the image you need to download the <strong>iso</strong> files for this <em>Operating System</em>.</p>
+<p>The directory where it download this <strong>iso</strong> files is <code>isos</code> at home of this repository.</p>
+<p>The version is determined by its own configuration file located at <a href="CentOS8Minimal/conf/virtual-machine.conf" title="CentOS8Minimal Configuration Directory">CentOS8Minimal Configuration Directory</a>.</p>
+<p>To perform this task run:</p>
+<pre><code class="language-bash">CentOS8Minimal/bin/download-iso.sh</code></pre>
+<h2 id="1-3-build-the-image">1.3. Build the image</h2>
+<p>You need enter the <code>username</code> and <code>userpass</code> of the <em>Linux</em> admin account what is desired, and one optional parameter for the <code>cloud-init</code> default user (if this parameter is not provided then the default user is <code>cloud-user</code>.</p>
+<pre><code class="language-bash">CentOS8Minimal/bin/build-virtual-machine.sh --adminuser adminuser --adminpass adminpass [--defaultclouduser defaultclouduser]</code></pre>
+<p>When finished the build then will create the image files <strong>vmdk</strong>, <strong>ovf</strong> and <strong>qcow2</strong> inside the <code>images</code> directory at home of this repository.</p>
+<p>To understand how the builder works see the configuration files in <a href="CentOS8Minimal/conf/virtual-machine.conf" title="CentOS8Minimal Configuration Directory">CentOS8Minimal Configuration Directory</a>.</p>
+<p>The format name of the generated image files is as follows:</p>
+<pre><code class="language-bash">${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.(vmdk|ovf|qcow2)</code></pre>
+<p>Example of <strong>CentOS 8 Minimal</strong> configuration file:</p>
+<pre><code class="language-bash"># Variables to build Operating System
+# For Packer version you can use one release or nightly to use nightly build
+export PACKER_VERSION=&quot;1.6.5&quot;
+export PACKER_MACHINEREADABLEOUTPUT=&quot;False&quot;
+export PACKER_DEBUG=&quot;False&quot;
+export PACKER_SSH_TIMEOUT=&quot;50m&quot;
+export PACKER_SSH_HANDSHAKE_ATTEMPTS=10
+# The location of the core configuration file
+export PACKER_CONFIG=&quot;$(cygpath -m ${HOME_BASEDIR}/.packerconfig)&quot;
+# The location of the packer.d config directory
+export PACKER_CONFIG_DIR=&quot;$(cygpath -m ${HOME_BASEDIR})&quot;
+export VBOXPATH=&quot;/cygdrive/c/Program Files/Oracle/VirtualBox&quot;
+export QEMUPATH=&quot;/cygdrive/c/Program Files/qemu&quot;
+export PATH=&quot;${VBOXPATH}:${QEMUPATH}:${PATH}&quot;
+export SO_GUESTOSTYPE=&quot;RedHat_64&quot;
+# Disk size of virtual machine in MB
+export SO_GUESTDISKSIZE=40960
+# Values for hard_drive_interface are: ide sata or scsi
+export SO_GUESTHDDINTERFACE=&quot;sata&quot;
+# The image obtained can be Minimal (for servers) or Desktop (for final users using a GUI)
+export SO_IMAGETYPE=&quot;Minimal&quot;
+export SO_DISTRIBUTION=&quot;CentOS&quot;
+export SO_MAJORVERSION=&quot;8&quot;
+export SO_MINORVERSION=&quot;3&quot;
+export SO_NAMEVERSION=&quot;2011&quot;
+export SO_SHORTVERSION=&quot;${SO_MAJORVERSION}.${SO_MINORVERSION}&quot;
+# The iso file type to download and use can be boot or dvd1 (can exists others but here only use these types)
+export SO_ISOTYPE=&quot;boot&quot;
+export SO_ISOIMAGENAME=&quot;${SO_DISTRIBUTION}-${SO_MAJORVERSION}.${SO_MINORVERSION}.${SO_NAMEVERSION}-x86_64-${SO_ISOTYPE}.iso&quot;
+export SO_ISOURLIMAGE=&quot;http://ftp.uma.es/mirror/${SO_DISTRIBUTION}/${SO_MAJORVERSION}/isos/x86_64/${SO_ISOIMAGENAME}&quot;
+export SO_ISOSHA256SUMNAME=&quot;${SO_ISOIMAGENAME%.iso}.sum&quot;
+export SO_ISOCHECKSUMTYPE=&quot;sha256&quot;
+export SO_ISOURLSHA256SUM=&quot;http://ftp.uma.es/mirror/${SO_DISTRIBUTION}/${SO_MAJORVERSION}/isos/x86_64/CHECKSUM&quot;
+export SO_BUILDDATE=&quot;$(date +%Y%m%d)&quot;
+export SO_VMFULLNAME=&quot;${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}&quot;
+# The time to wait after booting the initial virtual machine before typing the boot_command
+export SO_BOOT_WAIT=&quot;10s&quot;</code></pre>
+<h2 id="1-4-optionally-upload-to-the-openstack-image-store">1.4. Optionally upload to the OpenStack Image Store</h2>
+<p>If you have one <em>OpenStack virtualization environment</em>, you can upload the <strong>qcow2</strong> image file to the <em>OpenStack Image Store</em>.</p>
+<p>To do the upload you need one appropiated virtualenv and environment variables defined and be registered in that <em>OpenStack virtualization environment</em> and launch:</p>
+<pre><code class="language-bash">CentOS8Minimal/bin/upload-qcow2-to-openstack.sh</code></pre>
+<h2 id="1-5-utility-files-used-in-this-image">1.5. Utility files used in this image</h2>
+<p>When build this image the following files in <a href="CentOS8Minimal/files" title="Files for CentOS8Minimal Directory">Files for CentOS8Minimal Directory</a> folder are installed and configured.</p>
 <ul>
-<li><strong>vmdk:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>VMware ESXI</em>.</li>
-<li><strong>ovf:</strong> For <em>VirtualBox</em>, <em>VMware</em> and <em>VMware ESXI</em>.</li>
-<li><strong>qcow2:</strong> For <em>OpenStack</em>, <em>KVM</em> and <em>Nutanix</em>.</li>
+<li><p><strong>control-cloud-init.service</strong>: Unit to control <code>cloud-init</code> to enable in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> and mask in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems. This unit calls the file <code>/usr/local/bin/control-cloud-init.sh</code>. Installed in <code>/etc/systemd/system/control-cloud-init.service</code>. See <a href="CentOS8Minimal/files/control-cloud-init.service" title="control-cloud-init.service">control-cloud-init.service</a>.</p>
+</li>
+<li><p><strong>control-cloud-init.sh</strong>: Process that controls <code>cloud-init</code> to enable in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> and mask in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems. Installed in <code>/usr/local/bin/control-cloud-init.sh</code>. See <a href="CentOS8Minimal/files/control-cloud-init.sh" title="control-cloud-init.sh">control-cloud-init.sh</a>.</p>
+</li>
+<li><p><strong>guest-vmtools.service</strong>: Unit to manage virtual machine tools for <em>VirtualBox</em>, <em>VMware</em> or <em>VMware ESXI</em>. This unit calls the file <code>/usr/local/bin/guest-vmtools.sh</code>. Installed in <code>/etc/systemd/system/guest-vmtools.service</code>. See <a href="CentOS8Minimal/files/guest-vmtools.service" title="guest-vmtools.service">guest-vmtools.service</a>.</p>
+</li>
+<li><p><strong>guest-vmtools.sh</strong>: Process that install and configure the <em>GuestTools</em> for <em>VirtualBox</em> or <em>VMwareTools</em> for <em>VMware</em> or <em>VMware ESXI</em>. Or remove these tools if boot in other virtual environments. Installed in <code>/usr/local/bin/guest-vmtools.sh</code>. See <a href="CentOS8Minimal/files/guest-vmtools.sh" title="guest-vmtools.sh">guest-vmtools.sh</a>.</p>
+</li>
+<li><p><strong>host-info.sh</strong>: Process that informs over basic properties of a host (CPU, memory, etc). Installed in <code>/usr/local/bin/host-info.sh</code>. See <a href="CentOS8Minimal/files/host-info.sh" title="host-info.sh">host-info.sh</a>.</p>
+<p>Execution example:</p>
+<pre><code class="language-bash">===========================================================================
+HOSTNAME...........: centos
+INTERFACES.........:
+Interface         MAC Address       IP4 Address                                   IP6 Address
+eth0              08:00:27:a2:dc:4b 192.168.56.144/24                             fe80::a00:27ff:fea2:dc4b/64
+eth1              08:00:27:bc:b1:4a 10.0.3.15/24                                  fe80::a00:27ff:febc:b14a/64
+CPU TOTAL..........: 1
+CPU ONLINE.........: 1
+MEMORY.............:
+              total        used        free      shared  buff/cache   available
+Mem:          808Mi       218Mi        51Mi       5.0Mi       538Mi       445Mi
+Swap:         2.1Gi       6.0Mi       2.1Gi
+FILESYSTEMS........:
+Filesystem                  Size  Used Avail Use% Mounted on
+devtmpfs                    390M     0  390M   0% /dev
+tmpfs                       405M     0  405M   0% /dev/shm
+tmpfs                       405M   11M  394M   3% /run
+tmpfs                       405M     0  405M   0% /sys/fs/cgroup
+/dev/mapper/cl_centos-root   37G  1.4G   36G   4% /
+/dev/sda1                  1014M   81M  934M   8% /boot
+tmpfs                        81M     0   81M   0% /run/user/1000
+tmpfs                        81M     0   81M   0% /run/user/0
+/dev/loop0                   59M   59M     0 100% /mnt/VBoxGuestAdditionsISO
+SYSTEM UPTIME......: 22:32:48 up 1 min, 2 users, load average: 1.22, 0.51, 0.19
+RELEASE............: CentOS Linux 8
+KERNEL.............: 4.18.0-240.1.1.el8_3.x86_64
+DATE...............: Fri Dec 11 22:32:48 CET 2020
+USERS..............: Currently 2 user(s) logged on
+CURRENT USER.......: adminuser
+PROCESSES..........: 155 running
+CPU DETAILED INFO..:
+Architecture:        x86_64
+CPU op-mode(s):      32-bit, 64-bit
+Byte Order:          Little Endian
+CPU(s):              1
+On-line CPU(s) list: 0
+Thread(s) per core:  1
+Core(s) per socket:  1
+Socket(s):           1
+NUMA node(s):        1
+Vendor ID:           GenuineIntel
+CPU family:          6
+Model:               142
+Model name:          Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
+Stepping:            10
+CPU MHz:             1800.003
+BogoMIPS:            3600.00
+Hypervisor vendor:   KVM
+Virtualization type: full
+L1d cache:           32K
+L1i cache:           32K
+L2 cache:            256K
+L3 cache:            6144K
+NUMA node0 CPU(s):   0
+Flags:               fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq monitor ssse3 cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single pti fsgsbase avx2 invpcid rdseed clflushopt md_clear flush_l1d
+===========================================================================</code></pre>
+</li>
+<li><p><strong>switch-to-graphical-user-interface.sh</strong>: Process that install and enable the <code>GNOME Display Manager</code> and set <code>Graphical Mode</code> as the default login. After finish, you need to reboot this host to apply these changes (<code>sudo shutdown -r now</code>). Installed in <code>/usr/local/bin/switch-to-graphical-user-interface.sh</code>. See <a href="CentOS8Minimal/files/switch-to-graphical-user-interface.sh" title="switch-to-graphical-user-interface.sh">switch-to-graphical-user-interface.sh</a>.</p>
+</li>
+<li><p><strong>switch-to-text-user-interface.sh</strong>: Process that disables (not uninstall) the <code>GNOME Display Manager</code> and set <code>Text Mode</code> as the default login. After finish, you need to reboot this host to apply these changes (<code>sudo shutdown -r now</code>). Installed in <code>/usr/local/bin/switch-to-text-user-interface.sh</code>. See <a href="CentOS8Minimal/files/switch-to-text-user-interface.sh" title="switch-to-text-user-interface.sh">switch-to-text-user-interface.sh</a>.</p>
+</li>
 </ul>
-<p>The virtualization system <em>VirtualBox</em> also uses the <strong>vdi</strong> format but it is not necessary since the <em>VirtualBox</em> itself converts the <strong>vmdk</strong> format into <strong>vdi</strong>.</p>
-<p>You can deploy and boot directly these images in these virtualization systems without doing anything special or extra, thanks to the use of two <em>systemd</em> units:</p>
+<h2 id="1-6-virtual-machine-example-in-virtualbox">1.6. Virtual machine example in VirtualBox</h2>
+<p>Steps to use virtual machines using <em>VirtualBox</em>.</p>
+<h3 id="1-6-1-import-the-virtualized-service">1.6.1. Import the virtualized service</h3>
+<p>To import virtualized service in <em>VirtualBox</em> to create a virtual machine perform the following steps using the <code>Oracle VM VirtualBox Administrator</code>.</p>
 <ul>
-<li><strong>control-cloud-init.service</strong>: If the virtual machine boots in <em>OpenStack</em> or <em>KVM</em> or <em>AWS</em> then lets execute <code>cloud-init</code>. If the virtual machine boots in <em>VMware</em> or <em>VirtualBox</em> or other virtualization systems then mask <code>cloud-init</code>.</li>
-<li><strong>guest-vmtools.service</strong>: If the virtual machine boots inside <em>VirtualBox</em> then install its <em>GuestTools</em> disabling others. If the virtual machine boots inside <em>VMware</em> or <em>VMware ESXI</em> then install its <em>VMwareTools</em> disabling others.</li>
+<li>Click in <code>Archive -&gt; Import virtualized service...</code></li>
+<li>Click in <code>Select a virtualized service file to import...</code> in <code>Service to import</code>. Example <code>C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS8.3-2011-Minimal-20201211.ovf</code></li>
+<li>Name: <code>myvm</code></li>
+<li>Type of guest OS: <code>Red Hat (64-bit)</code></li>
+<li>CPU: <code>1</code></li>
+<li>RAM: <code>1024 MB</code></li>
+<li>Storage Controller (SATA) -&gt; Virtual Disk Image: <code>myvm.vdi</code></li>
+<li>MAC address policy: <code>Generate new MAC addresses for all network adapters</code></li>
+<li>Additional options: <code>Import disks as VDI</code></li>
+<li>Click in <code>Import</code> button</li>
 </ul>
-<p>These images are ideal to work as servers in <em>Cloud</em>, <em>traditional</em> or <em>development</em> environments, and is very useful to work with <strong>Docker</strong>, because the size of the image created is very small and clean. These images are builded with a <em>Linux</em> admin account provided as parameter at the time of build. The <code>cloud-init</code> software use other account provided as optional parameter at the time of build (not created because the <code>cloud-init</code> do this work at the first boot of the virtual machine) that by default is <em>cloud-user</em>. Also these images come with six network intefaces named <code>eth0</code>, <code>eth1</code>, <code>eth2</code>, <code>eth3</code>, <code>eth4</code> and <code>eth5</code> by default.</p>
-<p>To work with this software you need <strong>Windows 10 64 bits</strong> and <strong>CygWin 64 bits</strong> to use <strong>Linux-Bash</strong> commands.</p>
-<h2 id="1-2-tested-software-versions">1.2. Tested software versions</h2>
-<p>This project has been tested with the following software versions:</p>
+<h3 id="1-6-2-configure-the-virtual-machine">1.6.2. Configure the virtual machine</h3>
+<p>The virtual machine is created and the next steps are to configure it correcty doing double-click in this virtual machine and select <code>Configuration...</code> or using the menu <code>Machine -&gt; Configuration...</code>.</p>
 <ul>
-<li><strong>Windows</strong>: <code>10 64 bits updated</code></li>
-<li><strong>VirtualBox</strong>: <code>6.1.16</code></li>
-<li><strong>CygWin 64 bits</strong>: <code>64 bits 3.1.7(0.340/5/3)</code></li>
-<li><strong>QEMU for Windows</strong>: <code>qemu-w64-setup-20201124 qemu-img version 5.1.92 (v5.2.0-rc2-11843-gf571c4ffb5-dirty)</code></li>
-<li><strong>VMware Workstation Player</strong>: <code>16.1.0 build-17198959</code></li>
-<li><strong>VMware ESXI</strong>: <code>6.5</code> and <code>6.7</code></li>
-<li><strong>OpenStack</strong> (<code>curl https://&lt;identity_endpoint&gt;:13000/v3</code>): <code>3.7 Newton</code></li>
-<li><strong>Nutanix</strong>: <code>community edition 5.18</code></li>
+<li>General -&gt; Advanced -&gt; Share clipboard: <code>Bidirectional</code></li>
+<li>General -&gt; Advanced -&gt; Drag and drop: <code>Bidirectional</code></li>
+<li>System -&gt; Motherboard -&gt; UTC time hardware clock: <code>Enabled</code></li>
+<li>Screen -&gt; Screen -&gt; Video memory: <code>16 MB</code></li>
+<li>Display -&gt; Display -&gt; Graphic controller: <code>VMSVGA</code></li>
+<li>Network -&gt; Network -&gt; Adapter 1 -&gt; Enable network adapter: <code>Enabled</code></li>
+<li>Network -&gt; Network -&gt; Adapter 1 -&gt; Connected to: <code>Host-only adapter</code></li>
+<li>Network -&gt; Network -&gt; Adapter 1 -&gt; Name: <code>VirtualBox Host-Only Ethernet Adapter</code></li>
+<li>Network -&gt; Network -&gt; Adapter 1 -&gt; Advanced -&gt; Promiscuous mode: <code>Allow all</code></li>
+<li>Network -&gt; Network -&gt; Adapter 2 -&gt; Enable network adapter: <code>Enabled</code></li>
+<li>Network -&gt; Network -&gt; Adapter 2 -&gt; Connected to: <code>NAT</code></li>
 </ul>
-<h1 id="2-operating-systems-that-can-be-built">2. Operating Systems that can be built</h1>
-<p>Actually you can build the following Operating Systems:</p>
-<ul>
-<li><strong>CentOS 7 Minimal</strong>: <code>CentOS 7.9 (2009)</code></li>
-<li><strong>CentOS 8 Minimal</strong>: <code>CentOS 8.2 (2004)</code> and <code>CentOS 8.3 (2011)</code></li>
-<li><strong>Ubuntu 20 Minimal</strong>: <code>Ubuntu 20.04.1 (server)</code></li>
-</ul>
-<h1 id="3-create-and-configure-the-environment">3. Create and configure the environment</h1>
-<p>You need to do the next tasks.</p>
-<h2 id="3-1-install-virtualbox">3.1. Install VirtualBox</h2>
-<p>Go to this URL <a href="https://www.virtualbox.org/wiki/Downloads">https://www.virtualbox.org/wiki/Downloads</a> and install latest <em>VirtualBox</em> for Windows. You need to ensure that in addition to installing <em>VirtualBox</em> you also install <em>Oracle VM VirtualBox Extension Pack</em>.</p>
-<h2 id="3-2-install-vmware-workstation-player">3.2. Install VMware Workstation Player</h2>
-<p>Go to this URL <a href="https://www.vmware.com/go/downloadworkstationplayer">https://www.vmware.com/go/downloadworkstationplayer</a> and install latest <em>VMware Workstation Player</em> for Windows.</p>
-<p>This is optional step only if you will be use <em>VMware</em> or <em>VMware ESXI</em>.</p>
-<h2 id="3-3-install-cygwin-64-bits">3.3. Install CygWin 64 bits</h2>
-<p>To install <strong>CygWin 64 bits</strong> you need to do the following tasks:</p>
-<ul>
-<li>With a browser download <a href="https://cygwin.com/setup-x86_64.exe">https://cygwin.com/setup-x86_64.exe</a>.</li>
-<li>Install this doing right button of the mouse over this downloaded file, and <code>Run as admistrator</code>.</li>
-<li>Following.</li>
-<li>Install from Internet.</li>
-<li>Following.</li>
-<li>Local Package Directory: <code>C:\cygwin64\mypackages</code>.</li>
-<li>Use System Proxy Settings.</li>
-<li>Choose A Download Site, choose one and:</li>
-<li>Following.</li>
-<li>Use default packages (Don&apos;t select others).</li>
-<li>Following.</li>
-<li>Following.</li>
-<li>Finalize.</li>
-</ul>
-<p>When terminate these tasks, then:</p>
-<ul>
-<li>In <code>Cygwin64 Terminal Desktop Icon</code> click on right button of the mouse and select <code>properties</code>.</li>
-<li>Click in <code>Advanced options</code>.</li>
-<li>Set <code>Run as administrator</code> and click <code>Accept</code> and <code>Accept</code>.</li>
-</ul>
-<h2 id="3-4-disable-windows-python-installation">3.4. Disable Windows Python installation</h2>
-<p>To prevent that <em>CygWin</em> use the <em>Python</em> installed in <em>Windows</em> (if exist), do the following to disable access to <em>Windows Python installation</em>:</p>
+<h3 id="1-6-3-use-the-virtual-machine">1.6.3. Use the virtual machine</h3>
+<p>Once the virtual machine is configured you can click in <code>Start</code> button.</p>
+<p>To get guest properties of the virtual machine:</p>
 <ul>
 <li>Enter in a <em>Cygwin64 session</em>.</li>
-<li>Launch this:<pre><code class="language-bash">echo $&apos;PATH=$(echo $PATH | tr \&apos;:\&apos; \&apos;\\n\&apos; | grep -v &quot;/cygdrive/.*/Python[23]&quot; | paste -sd:)&apos; &gt;&gt; .bash_profile
-exit</code></pre>
+<li>To get all guest properties.<pre><code class="language-bash">&apos;/cygdrive/c/Program Files/Oracle/VirtualBox/VBoxManage&apos; guestproperty enumerate myvm</code></pre>
+</li>
+<li>To get the assigned IP for adapter 1.<pre><code class="language-bash">&apos;/cygdrive/c/Program Files/Oracle/VirtualBox/VBoxManage&apos; guestproperty get myvm /VirtualBox/GuestInfo/Net/0/V4/IP</code></pre>
 </li>
 </ul>
-<h2 id="3-5-install-needed-cygwin-packages">3.5. Install needed CygWin packages</h2>
-<p>You need to do the following tasks:</p>
+<p>Launch a ssh session to this virtual machine:</p>
+<pre><code class="language-bash">sshpass -p adminpass ssh adminuser@&lt;assigned_IP_for_adapter_1&gt;</code></pre>
+<p>Change the <code>hostname</code> for this virtual machine:</p>
+<pre><code class="language-bash">sudo hostnamectl --static set-hostname myvm
+sudo hostnamectl --transient set-hostname myvm</code></pre>
+<p>Get basic properties of this virtual machine:</p>
+<pre><code class="language-bash">/usr/local/bin/host-info.sh</code></pre>
+<p>Switch to <code>Graphical User Interface</code> for this virtual machine:</p>
+<pre><code class="language-bash">sudo /usr/local/bin/switch-to-graphical-user-interface.sh
+# Wait a bit to terminate this execution
+sudo reboot</code></pre>
+<p>Or back to <code>Text User Interface</code> for this virtual machine:</p>
+<pre><code class="language-bash">sudo /usr/local/bin/switch-to-text-user-interface.sh
+# Wait a bit to terminate this execution
+sudo reboot</code></pre>
+<h2 id="1-7-convert-vmdk-image-to-work-inside-vmware-esxi">1.7. Convert vmdk image to work inside VMware ESXI</h2>
+<p>The image formats obtained <strong>vmdk</strong> or <strong>ovf</strong> are compatible with <em>VMware Workstation Player</em> but they are not compatible for <em>VMware ESXI</em>.</p>
+<p>For this reason you need to use <em>VMware Workstation Player</em> for Windows to obtain a compatible virtual machine.</p>
+<p>Then follow these steps:</p>
 <ul>
-<li>Enter in a <em>Cygwin64 session</em>.</li>
-<li>Launch this:<pre><code class="language-bash">curl -O https://cygwin.com/setup-x86_64.exe
-./setup-x86_64.exe -q --upgrade-also --packages=&quot;bash,python2,python2-devel,python2-setuptools,python2-crypto,python2-paramiko,python2-boto,python2-certifi,python2-pip,python2-nacl,python3,python38,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip,sshpass,jq,expect&quot;</code></pre>
-</li>
+<li>Open <em>VMware Workstation Player</em></li>
+<li>Click in <code>Player-&gt;File-&gt;Open...</code> and select the <strong>ovf</strong> file <code>C:\cygwin64\home\user\automate-virtual-machine-linux-images\images\CentOS8.3-2011-Minimal-20201211.ovf</code></li>
+<li>Name for the new virtual machine: <code>CentOS8.3-2011-Minimal-20201211</code></li>
+<li>Storage path for the new virtual machine: <code>C:\VMware\CentOS8.3-2011-Minimal-20201211</code></li>
+<li>Click in <code>Import</code> button</li>
+<li>Click in <code>Retry</code> button to relax OVF specifications</li>
+<li>Click in <code>Edit virtual machine settings</code></li>
+<li>Options -&gt; General -&gt; Guest Operation System: <code>Linux</code></li>
+<li>Options -&gt; General -&gt; Guest Operation System -&gt; Version: <code>Centos 8 64-bit</code></li>
+<li>Options -&gt; VMware Tools -&gt; VMware Tools features -&gt; Syncronize guest time with host: <code>Enabled</code></li>
+<li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Bridged: Connected directly to the physical network: <code>Enabled</code></li>
+<li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Replicate physical network connection state: <code>Disabled</code></li>
+<li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Configure Adapters -&gt; Realtek PCIe GBE Family Controller: <code>Enabled</code></li>
+<li>Hardware-&gt;Network Adapter -&gt; Network connection -&gt; Configure Adapters -&gt; Other adapters: <code>Disabled</code></li>
 </ul>
-<h2 id="3-6-install-python-system-pip-packages">3.6. Install Python system pip packages</h2>
-<p>To work with <em>Python</em> install basic <em>pip</em> packages in a system level:</p>
-<p>TODO: Check if this tasks are obsoleted using last CygWin version. In a existing CygWin installation is not necessary.</p>
+<p>Then you have an image imported into <em>VMware Workstation Player</em>. Here you need to choose the <em>VMware ESXI</em> version reading the article <a href="https://kb.vmware.com/s/article/1003746">https://kb.vmware.com/s/article/1003746</a> and follow these steps:</p>
 <ul>
-<li>Enter in a <em>Cygwin64 session</em>.</li>
-<li>Launch this:<pre><code class="language-bash">easy_install-2.7 pip
-pip install --upgrade pip
-pip install --upgrade setuptools
-pip install --upgrade wheel
-pip install --upgrade virtualenv
-pip install --upgrade terrafile</code></pre>
-</li>
-</ul>
-<h2 id="3-7-configure-your-git-environment-to-work-with-github">3.7. Configure your Git environment to work with github</h2>
-<p>To work with <a href="https://github.com">https://github.com</a> you need to do the next tasks. Example to use <em>Git</em> with <em>SSH</em>.</p>
-<ul>
-<li><p>Get your public and private <em>SSH keys</em> of your <em>GitHub account</em>.</p>
-</li>
 <li><p>Enter in a <em>Cygwin64 session</em>.</p>
 </li>
-</ul>
-<pre><code class="language-bash">mkdir -p ~/.ssh
-echo &quot;StrictHostKeyChecking no
-UserKnownHostsFile /dev/null
-ServerAliveInterval 30
-ServerAliveCountMax 3
-ControlMaster no
-
-Host github.com
-  IdentityFile ~/.ssh/id_rsa_private_github
-&quot; &gt; ~/.ssh/config</code></pre>
-<ul>
-<li><p>Store your public key to <code>~/.ssh/id_rsa_private_github.pub</code> and your private key to <code>~/.ssh/id_rsa_private_github</code>.</p>
-</li>
-<li><p>Set good permissions in the <em>SSH</em> config folder.</p>
+<li><p>To get an image for <em>VMware ESXI</em> version <code>5.5, HW version 10</code> launch:</p>
 </li>
 </ul>
-<pre><code class="language-bash">chmod 600 ~/.ssh/*
-chmod 700 ~/.ssh</code></pre>
-<ul>
-<li>Configure your Git client settings. You need the <code>user.name</code> and <code>user.email</code> of your <em>GitHub account</em>. Enter in a <em>Cygwin64 session</em>.</li>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS8.3-2011-Minimal-20201211\CentOS8.3-2011-Minimal-20201211.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS8.3-2011-Minimal-20201211-esx10.ovf&apos;</code></pre><ul>
+<li>To get an image for <em>VMware ESXI</em> version <code>6.0, HW version 11</code> launch:</li>
 </ul>
-<pre><code class="language-bash">git config --system color.ui &quot;true&quot;
-git config --system alias.lg &quot;log --graph --pretty=format:&apos;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&apos; --abbrev-commit --date=relative&quot;
-git config --system user.name &quot;&lt;your user.name&gt;&quot;
-git config --system user.email &quot;&lt;your user.email&gt;&quot;
-git config --system http.sslVerify false</code></pre>
-<h2 id="3-8-howto-generate-sha-512-password-hashes-with-python3-in-cygwin-command-line">3.8. Howto generate SHA-512 password hashes with Python3 in CygWin command line</h2>
-<p>To generate <code>SHA-512</code> password hashes you need to do the following tasks:</p>
-<ul>
-<li><p>Enter in a <em>Cygwin64 session</em>.</p>
-</li>
-<li><p>Launch this command where <code>password</code> is the plain text password:</p>
-</li>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS8.3-2011-Minimal-20201211\CentOS8.3-2011-Minimal-20201211.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS8.3-2011-Minimal-20201211-esx11.ovf&apos;</code></pre><ul>
+<li>To get an image for <em>VMware ESXI</em> version <code>6.5, HW version 13</code> launch:</li>
 </ul>
-<pre><code class="language-bash">python3 -c &apos;import crypt; print(crypt.crypt(&quot;password&quot;, crypt.mksalt(crypt.METHOD_SHA512)))&apos;</code></pre>
-<h1 id="4-getting-started">4. Getting started</h1>
-<p>After you have completed the previous sections, follow the next steps.</p>
-<h2 id="4-1-clone-and-enter-into-the-git-root-directory-of-this-repository">4.1. Clone and enter into the git root directory of this repository</h2>
-<p>Do the following tasks:</p>
-<pre><code class="language-bash">git clone git@github.com:cesarjorgemartinez/automate-virtual-machine-linux-images.git
-cd automate-virtual-machine-linux-images</code></pre>
-<h2 id="4-2-install-qemu-for-windows">4.2. Install QEMU for Windows</h2>
-<p>The <em>QEMU for Windows</em> is needed to convert the <strong>vmdk</strong> to <strong>qcow2</strong> image format. Launch this command:</p>
-<pre><code class="language-bash">download-and-install-qemu.sh</code></pre>
-<p>Then a <em>QEMU for Windows</em> installer window appears and do the following:</p>
-<ul>
-<li>Please select a language: Select your language, as example <code>English / English</code></li>
-<li>Click in OK</li>
-<li>Next</li>
-<li>I Agree</li>
-<li>Next</li>
-<li>Install</li>
-<li>Finish</li>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS8.3-2011-Minimal-20201211\CentOS8.3-2011-Minimal-20201211.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS8.3-2011-Minimal-20201211-esx13.ovf&apos;</code></pre><ul>
+<li>To get an image for <em>VMware ESXI</em> version <code>6.7, HW version 14</code> launch:</li>
 </ul>
-<h1 id="5-build-centos-7-minimal-image">5. Build CentOS 7 Minimal image</h1>
-<p>This section explains howto build this <em>Virtual Machine Image</em>: <a href="Build-CentOS-7-Minimal-image.md" title="Build CentOS 7 Minimal image">Build CentOS 7 Minimal image</a>.</p>
-<h1 id="6-build-centos-8-minimal-image">6. Build CentOS 8 Minimal image</h1>
-<p>This section explains howto build this <em>Virtual Machine Image</em>: <a href="Build-CentOS-8-Minimal-image.md" title="Build CentOS 8 Minimal image">Build CentOS 8 Minimal image</a>.</p>
-<h1 id="7-build-ubuntu-20-minimal-image">7. Build Ubuntu 20 Minimal image</h1>
-<p>This section explains howto build this <em>Virtual Machine Image</em>: <a href="Build-Ubuntu-20-Minimal-image.md" title="Build Ubuntu 20 Minimal image">Build Ubuntu 20 Minimal image</a>.</p>
-</article></div><div style="background-color: #b4b2b2;width: 50px;height:50px;line-height: 50px;text-align: center;position: fixed;bottom: 10px;right: 10px;padding-top:5px;" onclick="document.documentElement.scrollTop = document.body.scrollTop =0;">
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS8.3-2011-Minimal-20201211\CentOS8.3-2011-Minimal-20201211.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS8.3-2011-Minimal-20201211-esx14.ovf&apos;</code></pre><ul>
+<li>To get an image for <em>VMware ESXI</em> version <code>6.7 U2, HW version 15</code> launch:</li>
+</ul>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS8.3-2011-Minimal-20201211\CentOS8.3-2011-Minimal-20201211.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS8.3-2011-Minimal-20201211-esx15.ovf&apos;</code></pre><ul>
+<li>To get an image for <em>VMware ESXI</em> version <code>7.0  (7.0.0), HW version 17</code> launch:</li>
+</ul>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS8.3-2011-Minimal-20201211\CentOS8.3-2011-Minimal-20201211.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS8.3-2011-Minimal-20201211-esx17.ovf&apos;</code></pre><ul>
+<li>To get an image for <em>VMware ESXI</em> version <code>7.0 U1 (7.0.1), HW version 18</code> launch:</li>
+</ul>
+<pre><code>&apos;/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool&apos; --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=18 --skipManifestCheck --skipManifestGeneration &apos;C:\VMware\CentOS8.3-2011-Minimal-20201211\CentOS8.3-2011-Minimal-20201211.vmx&apos; &apos;C:\cygwin64\home\&apos;${USERNAME}&apos;\automate-virtual-machine-linux-images\images\CentOS8.3-2011-Minimal-20201211-esx18.ovf&apos;</code></pre></article></div><div style="background-color: #b4b2b2;width: 50px;height:50px;line-height: 50px;text-align: center;position: fixed;bottom: 10px;right: 10px;padding-top:5px;" onclick="document.documentElement.scrollTop = document.body.scrollTop =0;">
   <svg t="1533629773982" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1035" xlink="http://www.w3.org/1999/xlink" width="40" height="40"><defs><style type="text/css">@font-face { font-family: uc-nexus-iconfont; src: url("chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.woff") format("woff"), url("chrome-extension://pogijhnlcfmcppgimcaccdkmbedjkmhi/res/font_9qmmi8b8jsxxbt9.ttf") format("truetype"); }
   </style></defs><path d="M536.255427 195.182354c-7.804756-7.804756-17.966187-11.615549-28.311813-11.615549-9.43693 0-18.874883 3.449565-26.496467 10.163477-2.360767 1.452071-4.356214 3.267417-6.352685 5.262864L218.47792 455.611735c-15.607466 15.60542-15.607466 40.834011 0 56.43943 15.607466 15.607466 41.558511 15.607466 57.167001 0l193.46013-192.733583 0 600.526219c0 22.1423 17.787108 39.927361 39.927361 39.927361 22.140253 0 39.927361-17.785062 39.927361-39.927361L548.959773 319.317583 737.15704 508.422522c15.607466 15.607466 40.469714 15.607466 56.078203 0 15.607466-15.607466 15.425318-40.834011-0.182149-56.441477L536.255427 195.182354 536.255427 195.182354z" p-id="1036" fill="#333"/><path d="M101.784174 143.097092l816.674071 0c22.140253 0 39.925315-17.785062 39.925315-39.927361 0-22.140253-17.784038-39.925315-39.925315-39.925315L101.784174 63.244416c-22.140253 0-39.927361 17.785062-39.927361 39.925315C61.856813 125.31203 79.643921 143.097092 101.784174 143.097092L101.784174 143.097092z" p-id="1037" fill="#333"/></svg>
 </div>
