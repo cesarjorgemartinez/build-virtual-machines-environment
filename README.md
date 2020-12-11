@@ -105,7 +105,7 @@ This project has been tested with the following software versions:
 Actually you can build the following Operating Systems:
 
 - **CentOS 7 Minimal**: `CentOS 7.9 (2009)`
-- **CentOS 8 Minimal**: `CentOS 8.2 (2004)`
+- **CentOS 8 Minimal**: `CentOS 8.2 (2004)` and `CentOS 8.3 (2011)`
 - **Ubuntu 20 Minimal**: `Ubuntu 20.04.1 (server)`
 
 
