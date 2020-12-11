@@ -90,14 +90,14 @@ To work with this software you need **Windows 10 64 bits** and **CygWin 64 bits*
 
 This project has been tested with the following software versions:
 
-- *Windows*: `10 64 bits updated`
-- *VirtualBox*: `6.1.16`
-- *CygWin 64 bits*: `64 bits 3.1.7(0.340/5/3)`
-- *QEMU for Windows*: `qemu-w64-setup-20201124 qemu-img version 5.1.92 (v5.2.0-rc2-11843-gf571c4ffb5-dirty)`
-- *VMware Workstation Player*: `16.1.0 build-17198959`
-- *VMware ESXI*: `6.5` and `6.7`
-- *OpenStack* (`curl https://<identity_endpoint>:13000/v3`): `3.7 Newton`
-- *Nutanix*: `community edition 5.18`
+- **Windows**: `10 64 bits updated`
+- **VirtualBox**: `6.1.16`
+- **CygWin 64 bits**: `64 bits 3.1.7(0.340/5/3)`
+- **QEMU for Windows**: `qemu-w64-setup-20201124 qemu-img version 5.1.92 (v5.2.0-rc2-11843-gf571c4ffb5-dirty)`
+- **VMware Workstation Player**: `16.1.0 build-17198959`
+- **VMware ESXI**: `6.5` and `6.7`
+- **OpenStack** (`curl https://<identity_endpoint>:13000/v3`): `3.7 Newton`
+- **Nutanix**: `community edition 5.18`
 
 
 # 2. Operating Systems that can be built
