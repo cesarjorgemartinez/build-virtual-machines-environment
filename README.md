@@ -24,6 +24,7 @@
    - [3.5. Install needed CygWin packages](#35-install-needed-cygwin-packages)
    - [3.6. Install Python system pip packages](#36-install-python-system-pip-packages)
    - [3.7. Configure your Git environment to work with github](#37-configure-your-git-environment-to-work-with-github)
+   - [3.8. Howto generate SHA-512 password hashes with Python3 in CygWin command line](#38-howto-generate-sha-512-password-hashes-with-python3-in-cygwin-command-line)
 - [4. Getting started](#4-getting-started)
    - [4.1. Clone and enter into the git root directory of this repository](#41-clone-and-enter-into-the-git-root-directory-of-this-repository)
    - [4.2. Install QEMU for Windows](#42-install-qemu-for-windows)
@@ -82,14 +83,21 @@ You can deploy and boot directly these images in these virtualization systems wi
 
 These images are ideal to work as servers in *Cloud*, *traditional* or *development* environments, and is very useful to work with **Docker**, because the size of the image created is very small and clean. These images are builded with a *Linux* admin account provided as parameter at the time of build. The `cloud-init` software use other account provided as optional parameter at the time of build (not created because the `cloud-init` do this work at the first boot of the virtual machine) that by default is *cloud-user*. Also these images come with six network intefaces named `eth0`, `eth1`, `eth2`, `eth3`, `eth4` and `eth5` by default.
 
-To work with this software you need **Windows 10 for 64 bits** and **CygWin 64 bits** to use **Linux-Bash** commands.
+To work with this software you need **Windows 10 64 bits** and **CygWin 64 bits** to use **Linux-Bash** commands.
 
 
 ## 1.2. Tested software versions
 
 This project has been tested with the following software versions:
 
-- TODO
+- *Windows*: `10 64 bits updated`
+- *VirtualBox*: `6.1.16`
+- *CygWin 64 bits*: `64 bits 3.1.7(0.340/5/3)`
+- *QEMU for Windows*: `qemu-w64-setup-20201124 qemu-img version 5.1.92 (v5.2.0-rc2-11843-gf571c4ffb5-dirty)`
+- *VMware Workstation Player*: `16.1.0 build-17198959`
+- *VMware ESXI*: `6.5` and `6.7`
+- *OpenStack* (`curl https://<identity_endpoint>:13000/v3`): `3.7 Newton`
+- *Nutanix*: `community edition 5.18`
 
 
 # 2. Operating Systems that can be built
@@ -150,7 +158,7 @@ To prevent that *CygWin* use the *Python* installed in *Windows* (if exist), do 
 - Enter in a *Cygwin64 session*.
 - Launch this:
 ```bash
-echo $'PATH=$(echo $PATH | tr \':\' \'\\n\' | grep -v "/cygdrive/.*/Python[23]7" | paste -sd:)' >> .bash_profile
+echo $'PATH=$(echo $PATH | tr \':\' \'\\n\' | grep -v "/cygdrive/.*/Python[23]" | paste -sd:)' >> .bash_profile
 exit
 ```
 
@@ -163,13 +171,15 @@ You need to do the following tasks:
 - Launch this:
 ```bash
 curl -O https://cygwin.com/setup-x86_64.exe
-./setup-x86_64.exe -q --packages="bash,python,python-devel,python-setuptools,python-crypto,python-paramiko,python2-boto,python2-certifi,python2-pip,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,python2-nacl,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip,sshpass,jq,expect"
+./setup-x86_64.exe -q --upgrade-also --packages="bash,python2,python2-devel,python2-setuptools,python2-crypto,python2-paramiko,python2-boto,python2-certifi,python2-pip,python2-nacl,python3,python38,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip,sshpass,jq,expect"
 ```
 
 
 ## 3.6. Install Python system pip packages
 
 To work with *Python* install basic *pip* packages in a system level:
+
+TODO: Check if this tasks are obsoleted using last CygWin version. In a existing CygWin installation is not necessary.
 
 - Enter in a *Cygwin64 session*.
 - Launch this:
@@ -221,6 +231,19 @@ git config --system alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(ye
 git config --system user.name "<your user.name>"
 git config --system user.email "<your user.email>"
 git config --system http.sslVerify false
+```
+
+
+## 3.8. Howto generate SHA-512 password hashes with Python3 in CygWin command line
+
+To generate `SHA-512` password hashes you need to do the following tasks:
+
+- Enter in a *Cygwin64 session*.
+
+- Launch this command where `password` is the plain text password:
+
+```bash
+python3 -c 'import crypt; print(crypt.crypt("password", crypt.mksalt(crypt.METHOD_SHA512)))'
 ```
 
 
@@ -384,30 +407,32 @@ When build this image the following files in [Files for CentOS7Minimal Directory
   HOSTNAME...........: centos
   INTERFACES.........:
   Interface         MAC Address       IP4 Address                                   IP6 Address
-  eth0              08:00:27:af:7d:d5 192.168.56.135/24                             fe80::a00:27ff:feaf:7dd5/64
-  eth1              08:00:27:d8:38:b4 10.0.3.15/24                                  fe80::a00:27ff:fed8:38b4/64
+  eth0              08:00:27:fc:3e:83 192.168.56.142/24                             fe80::a00:27ff:fefc:3e83/64
+  eth1              08:00:27:38:99:ed 10.0.3.15/24                                  fe80::a00:27ff:fe38:99ed/64
   CPU TOTAL..........: 1
   CPU ONLINE.........: 1
   MEMORY.............:
                 total        used        free      shared  buff/cache   available
-  Mem:           990M         94M        658M        6.5M        237M        752M
+  Mem:           990M        141M        246M         12M        603M        683M
   Swap:          2.0G          0B        2.0G
   FILESYSTEMS........:
   Filesystem                      Size  Used Avail Use% Mounted on
   devtmpfs                        485M     0  485M   0% /dev
   tmpfs                           496M     0  496M   0% /dev/shm
-  tmpfs                           496M  6.6M  489M   2% /run
+  tmpfs                           496M   13M  483M   3% /run
   tmpfs                           496M     0  496M   0% /sys/fs/cgroup
-  /dev/mapper/centos_centos-root   17G  874M   17G   6% /
-  /dev/sda1                      1014M   68M  947M   7% /boot
+  /dev/mapper/centos_centos-root   37G  895M   37G   3% /
+  /dev/sda1                      1014M   69M  946M   7% /boot
   tmpfs                           100M     0  100M   0% /run/user/1000
-  SYSTEM UPTIME......: 14:28:06 up 1 min, 1 user, load average: 0.87, 0.42, 0.15
-  RELEASE............: CentOS Linux release 7.8.2003 (Core)
-  KERNEL.............: 3.10.0-1127.8.2.el7.x86_64
-  DATE...............: Sun May 17 14:28:06 CEST 2020
-  USERS..............: Currently 1 user(s) logged on
-  CURRENT USER.......: sysadmin
-  PROCESSES..........: 186 running
+  /dev/loop0                       59M   59M     0 100% /mnt/VBoxGuestAdditionsISO
+  tmpfs                           100M     0  100M   0% /run/user/0
+  SYSTEM UPTIME......: 12:58:05 up 1 min, 2 users, load average: 1.04, 0.31, 0.11
+  RELEASE............: CentOS Linux 7 (Core)
+  KERNEL.............: 3.10.0-1160.6.1.el7.x86_64
+  DATE...............: Fri Dec 11 12:58:05 CET 2020
+  USERS..............: Currently 2 user(s) logged on
+  CURRENT USER.......: adminuser
+  PROCESSES..........: 143 running
   CPU DETAILED INFO..:
   Architecture:          x86_64
   CPU op-mode(s):        32-bit, 64-bit
@@ -423,7 +448,7 @@ When build this image the following files in [Files for CentOS7Minimal Directory
   Model:                 142
   Model name:            Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
   Stepping:              10
-  CPU MHz:               1800.003
+  CPU MHz:               1800.000
   BogoMIPS:              3600.00
   Hypervisor vendor:     KVM
   Virtualization type:   full
@@ -558,40 +583,46 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 - Enter in a *Cygwin64 session*.
 
-- To get an image for *VMware ESXI* version `5.5` launch:
+- To get an image for *VMware ESXI* version `5.5, HW version 10` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx10.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.0` launch:
+- To get an image for *VMware ESXI* version `6.0, HW version 11` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx11.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.5` launch:
+- To get an image for *VMware ESXI* version `6.5, HW version 13` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx13.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.7` launch:
+- To get an image for *VMware ESXI* version `6.7, HW version 14` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx14.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.7 U2` or `6.8.x` or `6.9.x` launch:
+- To get an image for *VMware ESXI* version `6.7 U2, HW version 15` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx15.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `7.0.x` launch:
+- To get an image for *VMware ESXI* version `7.0  (7.0.0), HW version 17` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx17.ovf'
+```
+
+- To get an image for *VMware ESXI* version `7.0 U1 (7.0.1), HW version 18` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=18 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS7.9-2009-Minimal-20201204\CentOS7.9-2009-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS7.9-2009-Minimal-20201204-esx18.ovf'
 ```
 
 
@@ -722,30 +753,31 @@ When build this image the following files in [Files for CentOS8Minimal Directory
   HOSTNAME...........: centos
   INTERFACES.........:
   Interface         MAC Address       IP4 Address                                   IP6 Address
-  eth0              08:00:27:53:ac:d3 192.168.56.136/24                             fe80::a00:27ff:fe53:acd3/64
-  eth1              08:00:27:38:bf:8b 10.0.3.15/24                                  fe80::a00:27ff:fe38:bf8b/64
+  eth0              08:00:27:ad:bb:43 192.168.56.143/24                             fe80::a00:27ff:fead:bb43/64
+  eth1              08:00:27:de:2b:16 10.0.3.15/24                                  fe80::a00:27ff:fede:2b16/64
   CPU TOTAL..........: 1
   CPU ONLINE.........: 1
   MEMORY.............:
                 total        used        free      shared  buff/cache   available
-  Mem:          821Mi       107Mi       440Mi       5.0Mi       273Mi       583Mi
-  Swap:         2.0Gi          0B       2.0Gi
+  Mem:          818Mi       216Mi       159Mi        10Mi       442Mi       465Mi
+  Swap:         2.2Gi          0B       2.2Gi
   FILESYSTEMS........:
   Filesystem                  Size  Used Avail Use% Mounted on
-  devtmpfs                    397M     0  397M   0% /dev
-  tmpfs                       411M     0  411M   0% /dev/shm
-  tmpfs                       411M  5.5M  406M   2% /run
-  tmpfs                       411M     0  411M   0% /sys/fs/cgroup
-  /dev/mapper/cl_centos-root   17G  1.3G   16G   8% /
-  /dev/sda1                   976M   42M  868M   5% /boot
-  tmpfs                        83M     0   83M   0% /run/user/1000
-  SYSTEM UPTIME......: 14:31:33 up 0 min, 1 user, load average: 1.99, 0.70, 0.25
-  RELEASE............: CentOS Linux release 8.1.1911 (Core)
-  KERNEL.............: 4.18.0-147.8.1.el8_1.x86_64
-  DATE...............: Sun May 17 14:31:33 CEST 2020
-  USERS..............: Currently 1 user(s) logged on
-  CURRENT USER.......: sysadmin
-  PROCESSES..........: 184 running
+  devtmpfs                    395M     0  395M   0% /dev
+  tmpfs                       410M     0  410M   0% /dev/shm
+  tmpfs                       410M   11M  399M   3% /run
+  tmpfs                       410M     0  410M   0% /sys/fs/cgroup
+  /dev/mapper/cl_centos-root   37G  1.2G   36G   4% /
+  /dev/sda1                   976M   44M  866M   5% /boot
+  tmpfs                        82M     0   82M   0% /run/user/0
+  tmpfs                        82M     0   82M   0% /run/user/1000
+  SYSTEM UPTIME......: 13:04:25 up 1 min, 2 users, load average: 1.04, 0.38, 0.14
+  RELEASE............: CentOS Linux 8 (Core)
+  KERNEL.............: 4.18.0-193.28.1.el8_2.x86_64
+  DATE...............: Fri Dec 11 13:04:25 CET 2020
+  USERS..............: Currently 2 user(s) logged on
+  CURRENT USER.......: adminuser
+  PROCESSES..........: 138 running
   CPU DETAILED INFO..:
   Architecture:        x86_64
   CPU op-mode(s):      32-bit, 64-bit
@@ -761,7 +793,7 @@ When build this image the following files in [Files for CentOS8Minimal Directory
   Model:               142
   Model name:          Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz
   Stepping:            10
-  CPU MHz:             1800.003
+  CPU MHz:             1800.000
   BogoMIPS:            3600.00
   Hypervisor vendor:   KVM
   Virtualization type: full
@@ -896,40 +928,46 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 - Enter in a *Cygwin64 session*.
 
-- To get an image for *VMware ESXI* version `5.5` launch:
+- To get an image for *VMware ESXI* version `5.5, HW version 10` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx10.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.0` launch:
+- To get an image for *VMware ESXI* version `6.0, HW version 11` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx11.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.5` launch:
+- To get an image for *VMware ESXI* version `6.5, HW version 13` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx13.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.7` launch:
+- To get an image for *VMware ESXI* version `6.7, HW version 14` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx14.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.7 U2` or `6.8.x` or `6.9.x` launch:
+- To get an image for *VMware ESXI* version `6.7 U2, HW version 15` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx15.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `7.0.x` launch:
+- To get an image for *VMware ESXI* version `7.0  (7.0.0), HW version 17` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx17.ovf'
+```
+
+- To get an image for *VMware ESXI* version `7.0 U1 (7.0.1), HW version 18` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=18 --skipManifestCheck --skipManifestGeneration 'C:\VMware\CentOS8.2-2004-Minimal-20201204\CentOS8.2-2004-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\CentOS8.2-2004-Minimal-20201204-esx18.ovf'
 ```
 
 
@@ -1249,38 +1287,44 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 - Enter in a *Cygwin64 session*.
 
-- To get an image for *VMware ESXI* version `5.5` launch:
+- To get an image for *VMware ESXI* version `5.5, HW version 10` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=10 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx10.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.0` launch:
+- To get an image for *VMware ESXI* version `6.0, HW version 11` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=11 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx11.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.5` launch:
+- To get an image for *VMware ESXI* version `6.5, HW version 13` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=13 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx13.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.7` launch:
+- To get an image for *VMware ESXI* version `6.7, HW version 14` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=14 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx14.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `6.7 U2` or `6.8.x` or `6.9.x` launch:
+- To get an image for *VMware ESXI* version `6.7 U2, HW version 15` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=15 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx15.ovf'
 ```
 
-- To get an image for *VMware ESXI* version `7.0.x` launch:
+- To get an image for *VMware ESXI* version `7.0  (7.0.0), HW version 17` launch:
 
 ```
 '/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=17 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx17.ovf'
+```
+
+- To get an image for *VMware ESXI* version `7.0 U1 (7.0.1), HW version 18` launch:
+
+```
+'/cygdrive/c/Program Files (x86)/VMware/VMware Player/OVFTool/ovftool' --lax --sourceType=VMX --targetType=OVF --diskMode=thin --maxVirtualHardwareVersion=18 --skipManifestCheck --skipManifestGeneration 'C:\VMware\Ubuntu20.04.1-server-Minimal-20201204\Ubuntu20.04.1-server-Minimal-20201204.vmx' 'C:\cygwin64\home\'${USERNAME}'\automate-virtual-machine-linux-images\images\Ubuntu20.04.1-server-Minimal-20201204-esx18.ovf'
 ```
