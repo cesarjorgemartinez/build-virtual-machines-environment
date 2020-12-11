@@ -5,7 +5,7 @@
         "<enter><enter><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><wait> ",
         "vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel ",
         "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ",
-        "--- <wait>",
+        "--- ",
         "vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel",
         "<enter><wait200>"
       ],
