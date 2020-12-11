@@ -2,7 +2,7 @@
 autoinstall:
   version: 1
   refresh-installer:
-    # Uncomment to use channel edge to get the last installer
+    # Comment to use stable channel or uncomment to use channel edge to get the last installer
     # channel: edge
     update: yes
   locale: en_US.UTF-8
@@ -11,8 +11,8 @@ autoinstall:
     variant: winkeys
   identity:
     username: packer
-    password: '$6$aeYb8Jha$6HA.tG1O6Bv/zb9CN3yACLw3RngGuFWibj68ztdVFjXuWrBzVHMF15aBh9BxUL7yBm3yZjXYi9Hs1Dtps0riE0'
-    hostname: ubuntu
+    password: $6$aeYb8Jha$6HA.tG1O6Bv/zb9CN3yACLw3RngGuFWibj68ztdVFjXuWrBzVHMF15aBh9BxUL7yBm3yZjXYi9Hs1Dtps0riE0
+    hostname: ubuntu-server
   network:
     version: 2
     ethernets:
@@ -34,33 +34,23 @@ autoinstall:
       eth5:
         dhcp4: true
         dhcp6: true
-  network:
-    network:
-      version: 2
-      ethernets:
-        eth0:
-          dhcp4: true
-          dhcp6: true
-        eth1:
-          dhcp4: true
-          dhcp6: true
-        eth2:
-          dhcp4: true
-          dhcp6: true
-        eth3:
-          dhcp4: true
-          dhcp6: true
-        eth4:
-          dhcp4: true
-          dhcp6: true
-        eth5:
-          dhcp4: true
-          dhcp6: true
+  user-data:
+    disable_root: true
+    username: packer
+    password: $6$aeYb8Jha$6HA.tG1O6Bv/zb9CN3yACLw3RngGuFWibj68ztdVFjXuWrBzVHMF15aBh9BxUL7yBm3yZjXYi9Hs1Dtps0riE0
+    hostname: ubuntu-server
+    preserve_hostname: false
+    timezone: Europe/Madrid
+    users:
+      - name: packer
+        passwd: $6$aeYb8Jha$6HA.tG1O6Bv/zb9CN3yACLw3RngGuFWibj68ztdVFjXuWrBzVHMF15aBh9BxUL7yBm3yZjXYi9Hs1Dtps0riE0
+        groups: [adm, cdrom, dip, lxd, plugdev, sudo]
+        lock-passwd: false
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
   ssh:
     install-server: true
     allow-pw: true
-  user-data:
-    disable_root: true
   storage:
     config:
     - {ptable: gpt, path: /dev/sda, wipe: superblock, preserve: false, name: '', grub_device: true, type: disk, id: disk-sda}
@@ -82,9 +72,11 @@ autoinstall:
     - sed -r -i -e 's/(ignore_loglevel)/\1 console=ttyS0 console=tty0/g' /target/etc/default/grub
 
 runcmd:
-  - timedatectl set-timezone "Europe/Madrid"
-  - timedatectl set-local-rtc false
+  - /usr/bin/timedatectl set-timezone "Europe/Madrid"
+  - /usr/bin/timedatectl set-local-rtc false
   - /usr/sbin/locale-gen en_US.UTF-8
   - /usr/sbin/locale-gen es_ES.UTF-8
   - /usr/bin/localectl set-locale en_US.UTF-8
+  - /usr/sbin/useradd -m -U -d /home/packer -c "packer" -G adm,cdrom,dip,lxd,plugdev,sudo -s /bin/bash packer
+  - '\echo "packer:packer" | /usr/sbin/chpasswd packer'
 
