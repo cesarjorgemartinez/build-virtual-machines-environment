@@ -753,31 +753,32 @@ When build this image the following files in [Files for CentOS8Minimal Directory
   HOSTNAME...........: centos
   INTERFACES.........:
   Interface         MAC Address       IP4 Address                                   IP6 Address
-  eth0              08:00:27:ad:bb:43 192.168.56.143/24                             fe80::a00:27ff:fead:bb43/64
-  eth1              08:00:27:de:2b:16 10.0.3.15/24                                  fe80::a00:27ff:fede:2b16/64
+  eth0              08:00:27:a2:dc:4b 192.168.56.144/24                             fe80::a00:27ff:fea2:dc4b/64
+  eth1              08:00:27:26:de:52 10.0.3.15/24                                  fe80::a00:27ff:fe26:de52/64
   CPU TOTAL..........: 1
   CPU ONLINE.........: 1
   MEMORY.............:
                 total        used        free      shared  buff/cache   available
-  Mem:          818Mi       216Mi       159Mi        10Mi       442Mi       465Mi
-  Swap:         2.2Gi          0B       2.2Gi
+  Mem:          808Mi       133Mi       434Mi       4.0Mi       240Mi       544Mi
+  Swap:         2.1Gi        10Mi       2.1Gi
   FILESYSTEMS........:
   Filesystem                  Size  Used Avail Use% Mounted on
-  devtmpfs                    395M     0  395M   0% /dev
-  tmpfs                       410M     0  410M   0% /dev/shm
-  tmpfs                       410M   11M  399M   3% /run
-  tmpfs                       410M     0  410M   0% /sys/fs/cgroup
-  /dev/mapper/cl_centos-root   37G  1.2G   36G   4% /
-  /dev/sda1                   976M   44M  866M   5% /boot
-  tmpfs                        82M     0   82M   0% /run/user/0
-  tmpfs                        82M     0   82M   0% /run/user/1000
-  SYSTEM UPTIME......: 13:04:25 up 1 min, 2 users, load average: 1.04, 0.38, 0.14
-  RELEASE............: CentOS Linux 8 (Core)
-  KERNEL.............: 4.18.0-193.28.1.el8_2.x86_64
-  DATE...............: Fri Dec 11 13:04:25 CET 2020
+  devtmpfs                    390M     0  390M   0% /dev
+  tmpfs                       405M     0  405M   0% /dev/shm
+  tmpfs                       405M   11M  394M   3% /run
+  tmpfs                       405M     0  405M   0% /sys/fs/cgroup
+  /dev/mapper/cl_centos-root   37G  1.4G   36G   4% /
+  /dev/sda1                  1014M   81M  934M   8% /boot
+  tmpfs                        81M     0   81M   0% /run/user/0
+  tmpfs                        81M     0   81M   0% /run/user/1000
+  /dev/loop0                   59M   59M     0 100% /mnt/VBoxGuestAdditionsISO
+  SYSTEM UPTIME......: 16:17:26 up 2 min, 2 users, load average: 1.89, 0.91, 0.36
+  RELEASE............: CentOS Linux 8
+  KERNEL.............: 4.18.0-240.1.1.el8_3.x86_64
+  DATE...............: Fri Dec 11 16:17:26 CET 2020
   USERS..............: Currently 2 user(s) logged on
   CURRENT USER.......: adminuser
-  PROCESSES..........: 138 running
+  PROCESSES..........: 149 running
   CPU DETAILED INFO..:
   Architecture:        x86_64
   CPU op-mode(s):      32-bit, 64-bit
