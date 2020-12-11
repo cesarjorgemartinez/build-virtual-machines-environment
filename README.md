@@ -974,7 +974,7 @@ Then you have an image imported into *VMware Workstation Player*. Here you need 
 
 # 7. Build Ubuntu 20 Minimal image
 
-This section explains howto build this *Virtual Machine Image*.
+This section explains howto build this *Virtual Machine Image* [Build Ubuntu 20 Minimal image](build-Ubuntu-20-Minimal-image.md "Build Ubuntu 20 Minimal image").
 
 
 ## 7.1. Download and install Packer
