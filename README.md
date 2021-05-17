@@ -141,7 +141,7 @@ You need to do the following tasks:
 - Launch this:
 ```bash
 curl -O https://cygwin.com/setup-x86_64.exe
-./setup-x86_64.exe -q --upgrade-also --packages="bash,python2,python2-devel,python2-setuptools,python2-crypto,python2-paramiko,python2-boto,python2-certifi,python2-pip,python2-nacl,python3,python38,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip,sshpass,jq,expect"
+./setup-x86_64.exe -q --upgrade-also --packages="bash,python2,python2-devel,python2-setuptools,python2-crypto,python2-paramiko,python2-boto,python2-certifi,python2-pip,python2-nacl,python3,python3-devel,python38,python38-devel,openssl,openssh,openssl-devel,libffi-devel,gcc-g++,git,nc,nc6,libsodium-common,libsodium-devel,dialog,figlet,rsync,gettext,autoconf,automake,binutils,cygport,gcc-core,make,lynx,zip,sshpass,jq,expect,procps-ng"
 ```
 
 
