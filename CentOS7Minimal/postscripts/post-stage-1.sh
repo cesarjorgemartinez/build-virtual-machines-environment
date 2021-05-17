@@ -41,7 +41,7 @@ find /usr/share/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs 
 
 echo "INFO: Remove default locales in /usr/lib/locale/locale-archive except en_US and es_ES"
 localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r sudo localedef --delete-from-archive
-cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
+/bin/cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
 build-locale-archive
 
 echo "INFO: Clean yum and rpm caches"
