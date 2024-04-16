@@ -3,13 +3,14 @@
 set -o pipefail
 set -o errtrace
 
+# The variable ON_ERROR only takes exit for exit inmediately or return for only inform the error presence
+ON_ERROR=exit
 RESULT=0
 trap catch_errors ERR
 function catch_errors() {
   RESULT=$?
   echo "ERROR: Command ${BASH_COMMAND} line ${LINENO} failed with code ${RESULT}"
-  # Only for exit inmediately
-  return ${RESULT}
+  ${ON_ERROR} ${RESULT}
 }
 
 if git status &> /dev/null
@@ -29,10 +30,17 @@ function help ()
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
   echo "Usage: ./${PROGNAME}"
   echo "Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
+  echo "  --help Shows this help"
+  echo "  --help all Print also detailed information and examples if provided"
   echo "  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used"
   echo "  --no-interactive Disable interactive questions"
   echo "  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used (\"\$@\")"
   echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
+  if [[ "${HELPALL}" == "true" ]]
+  then
+    echo "Detailed information:"
+    echo "  TODO1"
+  fi
   exit 10
 }
 
@@ -77,6 +85,7 @@ Include config.auto' > $HOME/.ssh/config.generic
 while [ $# -gt 0 ] ; do
   case "${1}" in
     --help)
+      [[ $# -eq 2 && "${2}" == "all" ]] && HELPALL=true
       help
       ;;
     --debug)
@@ -106,9 +115,9 @@ done
 echo "INFO: Download https://cygwin.com/setup-x86_64.exe and install basic packages"
 if [[ "$(type -p curl)" == "/usr/bin/curl" ]]
 then
-  (cd && /usr/bin/curl -O https://cygwin.com/setup-x86_64.exe)
+  (cd && /usr/bin/curl -L -O https://cygwin.com/setup-x86_64.exe)
 else
-  (cd && curl -O --ssl-no-revoke https://cygwin.com/setup-x86_64.exe)
+  (cd && curl -L -O --ssl-no-revoke https://cygwin.com/setup-x86_64.exe)
 fi
 chmod 755 $HOME/setup-x86_64.exe
 
@@ -191,6 +200,26 @@ echo "${LIST_CYGWIN_BASIC_PACKAGES}"
 $HOME/setup-x86_64.exe -q --wait --upgrade-also --packages=${LIST_CYGWIN_BASIC_PACKAGES}
 
 
+echo "INFO: Configure Mintty terminal and PS1 variable"
+if [[ "${OSTYPE}" == 'cygwin' ]]
+then
+  echo 'Term=xterm-256color
+Font=Cascadia Mono
+ScrollbackLines=10000000
+CursorType=block
+CursorBlinks=no
+ThemeFile=flat-ui
+Columns=110
+Rows=30
+FontHeight=10
+' > /etc/minttyrc
+  sed -i 's/^PS1=.*$/PS1='\''\\[\\e]0;\\w\\a\\]\\[\\e[32m\\]\\u@\\h:\\[\\e[33m\\]\\w\\[\\e[0m\\]\\$ '\''/g' /etc/bash.bashrc
+  export TERM=xterm-256color
+else
+  :
+fi
+
+
 echo "INFO: Install yq tool"
 /usr/bin/curl -L -o /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_windows_amd64.exe && chmod +x /usr/bin/yq
 
@@ -260,11 +289,14 @@ source $HOME/usersettingsbashrc.sh
 # Apply SSH client settings
 set_sshclient
 
+
 echo "INFO: Settings for vim edit tool"
 echo '" Disable visual mode
 set mouse-=a
 " Automatically use 2 spaces instead of tab
 set autoindent expandtab tabstop=2 shiftwidth=2
+" Set in terminal title the edited file
+set title
 ' > ~/.vimrc
 
 
@@ -306,6 +338,4 @@ done
 
 echo "INFO: It is recommended to log out of the terminal and open a new session to update the environment variables"
 echo "INFO: Or manually load the settings file: source \$HOME/usersettingsbashrc.sh"
-[[ "${RESULT}" != "0" ]] && echo "ERROR: Some errors exists. Error code ${RESULT}"
-exit ${RESULT}
 

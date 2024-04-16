@@ -3,13 +3,14 @@
 set -o pipefail
 set -o errtrace
 
+# The variable ON_ERROR only takes exit for exit inmediately or return for only inform the error presence
+ON_ERROR=return
 RESULT=0
 trap catch_errors ERR
 function catch_errors() {
   RESULT=$?
   echo "ERROR: Command ${BASH_COMMAND} line ${LINENO} failed with code ${RESULT}"
-  # Only for exit inmediately
-  return ${RESULT}
+  ${ON_ERROR} ${RESULT}
 }
 
 if git status &> /dev/null
@@ -27,14 +28,21 @@ function help ()
   echo "Configure Git client using global scope"
   echo "==========================================================================="
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
-  echo "Usage: ./${PROGNAME} --git-username "User name" --git-useremail useremail@domain"
+  echo "Usage: ./${PROGNAME} --git-username \"User name\" --git-useremail useremail@domain"
   echo "  --git-username The user name for Git client. Use double or single quotes to enclose"
   echo "  --git-useremail The user email for Git client"
-  echo "Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
+  echo "Common options: ./${PROGNAME} [--help [all]] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
+  echo "  --help Shows this help"
+  echo "  --help all Print also detailed information and examples if provided"
   echo "  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used"
   echo "  --no-interactive Disable interactive questions"
   echo "  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used (\"\$@\")"
   echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
+  if [[ "${HELPALL}" == "true" ]]
+  then
+    echo "Examples:"
+    echo "  ./${PROGNAME} --git-username \"Mrs. Alice\" --git-useremail alice@yourdomain.org"
+  fi
   exit 10
 }
 
@@ -56,6 +64,7 @@ while [ $# -gt 0 ] ; do
       shift
       ;;
     --help)
+      [[ $# -eq 2 && "${2}" == "all" ]] && HELPALL=true
       help
       ;;
     --debug)

@@ -3,13 +3,14 @@
 set -o pipefail
 set -o errtrace
 
+# The variable ON_ERROR only takes exit for exit inmediately or return for only inform the error presence
+ON_ERROR=exit
 RESULT=0
 trap catch_errors ERR
 function catch_errors() {
   RESULT=$?
   echo "ERROR: Command ${BASH_COMMAND} line ${LINENO} failed with code ${RESULT}"
-  # Only for exit inmediately
-  return ${RESULT}
+  ${ON_ERROR} ${RESULT}
 }
 
 if git status &> /dev/null
@@ -44,6 +45,8 @@ function help ()
   echo "Usage: ./${PROGNAME} --config-sshkey filename-privatekey [--add-sshagent | --delete-sshagent] [--add-sshconfig 'host list' | --delete-sshconfig]"
   echo "Usage: ./${PROGNAME} --delete-sshkey filename-privatekey | --show-sshkey filename-privatekey"
   echo "Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
+  echo "  --help Shows this help"
+  echo "  --help all Print also detailed information and examples if provided"
   echo "  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used"
   echo "  --no-interactive Disable interactive questions"
   echo "  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used (\"\$@\")"
@@ -54,6 +57,13 @@ function help ()
   echo "  or create SSH keys to use for Github users accessing to GitHub web user configuration:"
   echo "  Settings -> SSH and GPG keys -> New SSH key"
   echo "  Then in title one descriptive and identificative string, Key type as Authetication Key and in Key paste your SSH RSA public key"
+  if [[ "${HELPALL}" == "true" ]]
+  then
+    echo "Detailed information:"
+    echo "  TODO"
+    echo "Examples:"
+    echo "  TODO"
+  fi
   exit 10
 }
 
@@ -275,6 +285,7 @@ while [ $# -gt 0 ] ; do
       parmlist[--delete-sshconfig]=""
       ;;
     --help)
+      [[ $# -eq 2 && "${2}" == "all" ]] && HELPALL=true
       help
       ;;
     --debug)
@@ -502,6 +513,3 @@ else
   help "ERROR: Internal error"
 fi
 
-
-[[ "${RESULT}" != "0" ]] && echo "ERROR: Some errors exists. Error code ${RESULT}"
-exit ${RESULT}

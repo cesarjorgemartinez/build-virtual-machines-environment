@@ -79,7 +79,6 @@ hs_err_pid*
 # Specific folders
 images/
 isos/
-qemuinstaller/
 # for each Operating System build then replicate it
 CentOS7Minimal/logs/
 CentOS7Minimal/output-virtualbox-iso/
