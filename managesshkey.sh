@@ -327,25 +327,32 @@ elif [[ -v parmlist[--show-sshclient] ]]
 then
   [[ ${#parmlist[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
   echo "INFO: Show SSH client settings"
-  TOOL_CHECKS_LIST=(openssl openssh)
+  ON_ERROR=return
+  TOOL_CHECKS_LIST=(openssl openssh sshpass)
   for mytool in "${TOOL_CHECKS_LIST[@]}"
   do
     case ${mytool} in
       openssl)
         echo "--- CHECK version ${mytool}"
         ${mytool} version
-        echo "--- CHECK path ${mytool}: $(which ${mytool})"
+        echo "--- CHECK paths ${mytool}"
+        type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
+        [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
       ;;
       openssh)
         othercommand=ssh
         echo "--- CHECK version ${mytool} (${othercommand})"
         ${othercommand} -V
-        echo "--- CHECK path ${mytool} (${othercommand}): $(which ${othercommand})"
+        echo "--- CHECK paths ${mytool} (${othercommand})"
+        type -aP ${othercommand} || echo "WARN: ${mytool} (${othercommand}) not found on the path"
+        [[ "$(type -aP ${othercommand} | head -1)" != "/usr/bin/${othercommand}" ]] && echo "WARN: ${mytool} (${othercommand}) on the first match PATH correspond to other software"
       ;;
-      *)
+      sshpass)
         echo "--- CHECK version ${mytool}"
-        ${mytool} --version
-        echo "--- CHECK path ${mytool}: $(which ${mytool})"
+        ${mytool} -V
+        echo "--- CHECK paths ${mytool}"
+        type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
+        [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
       ;;
     esac
   done
@@ -512,4 +519,8 @@ then
 else
   help "ERROR: Internal error"
 fi
+
+
+[[ "${RESULT}" != "0" ]] && echo "ERROR: Some errors exists. Error code ${RESULT}"
+exit ${RESULT}
 

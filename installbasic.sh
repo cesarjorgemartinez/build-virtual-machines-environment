@@ -38,7 +38,7 @@ function help ()
   echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
   if [[ "${HELPALL}" == "true" ]]
   then
-    echo "Detailed information:"
+    echo "Description:"
     echo "  TODO1"
   fi
   exit 10
@@ -263,6 +263,7 @@ PATH=$(echo $PATH | tr ':' '\n' | grep -v "/cygdrive/.*/Git/cmd" | paste -sd:)
 # Disable Windows Curl installations
 PATH=$(echo $PATH | tr ':' '\n' | grep -v "/cygdrive/.*/curl" | paste -sd:)
 addpath /usr/sbin
+addpath "/cygdrive/c/Program Files/qemu"
 export PATH
 # Start and configure SSH and GPG agents
 # Workaround to fix error if gpg-agent is already started "Error: Failed to start gpg-agent"
@@ -300,37 +301,39 @@ set title
 ' > ~/.vimrc
 
 
-TOOL_CHECKS_LIST=(
-curl
-wget
-git
-python
-python3
-pip3
-jq
-yq
-openssl
-openssh
-)
-
+ON_ERROR=return
+TOOL_CHECKS_LIST=(curl wget git python python3 pip3 jq yq openssl openssh sshpass)
 for mytool in "${TOOL_CHECKS_LIST[@]}"
 do
   case ${mytool} in
     openssl)
       echo "--- CHECK version ${mytool}"
       ${mytool} version
-      echo "--- CHECK path ${mytool}: $(which ${mytool})"
+      echo "--- CHECK paths ${mytool}"
+      type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
+      [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
     ;;
     openssh)
       othercommand=ssh
       echo "--- CHECK version ${mytool} (${othercommand})"
       ${othercommand} -V
-      echo "--- CHECK path ${mytool} (${othercommand}): $(which ${othercommand})"
+      echo "--- CHECK paths ${mytool} (${othercommand})"
+      type -aP ${othercommand} || echo "WARN: ${mytool} (${othercommand}) not found on the path"
+      [[ "$(type -aP ${othercommand} | head -1)" != "/usr/bin/${othercommand}" ]] && echo "WARN: ${mytool} (${othercommand}) on the first match PATH correspond to other software"
+    ;;
+    sshpass)
+      echo "--- CHECK version ${mytool}"
+      ${mytool} -V
+      echo "--- CHECK paths ${mytool}"
+      type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
+      [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
     ;;
     *)
       echo "--- CHECK version ${mytool}"
       ${mytool} --version
-      echo "--- CHECK path ${mytool}: $(which ${mytool})"
+      echo "--- CHECK paths ${mytool}"
+      type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
+      [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
     ;;
   esac
 done
@@ -338,4 +341,8 @@ done
 
 echo "INFO: It is recommended to log out of the terminal and open a new session to update the environment variables"
 echo "INFO: Or manually load the settings file: source \$HOME/usersettingsbashrc.sh"
+
+
+[[ "${RESULT}" != "0" ]] && echo "ERROR: Some errors exists. Error code ${RESULT}"
+exit ${RESULT}
 
