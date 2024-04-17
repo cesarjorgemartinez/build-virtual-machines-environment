@@ -22,6 +22,9 @@ fi
 PROGNAME="$(basename ${0})"
 cd ${SCRIPT_BASEDIR}
 
+# Global variables
+SSHCONFIGAUTO_HEADERCOMMENT='# Please do not modify this file because it is managed automatically'
+
 function help ()
 {
   echo "==========================================================================="
@@ -44,8 +47,6 @@ function help ()
   exit 10
 }
 
-sshconfigauto_headercomment='# Please do not modify this file because it is managed automatically'
-
 function set_sshclient ()
 {
   echo "INFO: Apply SSH client settings"
@@ -66,9 +67,9 @@ Include config.auto' > $HOME/.ssh/config.generic
   sed -i 's/\t/  /g' $HOME/.ssh/config.auto
   if [[ -s "$HOME/.ssh/config.auto" ]]
   then
-    sed -i "1 i${sshconfigauto_headercomment}" $HOME/.ssh/config.auto
+    sed -i "1 i${SSHCONFIGAUTO_HEADERCOMMENT}" $HOME/.ssh/config.auto
   else
-    echo "${sshconfigauto_headercomment}" > $HOME/.ssh/config.auto
+    echo "${SSHCONFIGAUTO_HEADERCOMMENT}" > $HOME/.ssh/config.auto
   fi
   if [[ -s $HOME/.ssh/config ]]
   then
