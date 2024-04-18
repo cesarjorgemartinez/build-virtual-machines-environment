@@ -34,6 +34,8 @@ Columns=110
 Rows=30
 FontHeight=10
 '
+# The result of apply this PS1_SETTINGS is the following:
+# PS1='\[\e]0;\w\a\]\[\e[32m\]\u@\h:\[\e[33m\]\w\[\e[0m\]\$ '
 PS1_SETTINGS=$(cat << 'MYENDPS1'
 '\\[\\e]0;\\w\\a\\]\\[\\e[32m\\]\\u@\\h:\\[\\e[33m\\]\\w\\[\\e[0m\\]\\$ '
 MYENDPS1
@@ -187,8 +189,21 @@ function help ()
   echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
   if [[ "${HELPALL}" == "true" ]]
   then
-    echo "Description:"
-    echo "  TODO1"
+    echo "Tasks:"
+    echo "  - Download and execute the Cygwin setup tool"
+    echo "  - Install or update the packages defined with CYGWIN_BASIC_PACKAGES variable"
+    echo "  - Apply settings for Mintty terminal for better use of terminals defined by MINTTY_SETTINGS variable"
+    echo "  - Apply settings for PS1 for better visualization of command line terminal defined by PS1_SETTINGS variable"
+    echo "  - Install or update the yq tool"
+    echo "  - Apply settings for bashrc to get advantage for common tasks using the file \$HOME/usersettingsbashrc.sh:"
+    echo "    - Function addpath to PATH variable"
+    echo "    - Function confirmquestion to use interactive questions"
+    echo "    - Disable PATHs for some Windows software that can interfere with Cygwin software at present Python, Git and Curl"
+    echo "    - Start keychain tool to manage SSH and GPG2 keys in a convenient secure manner"
+    echo "  - Apply basic SSH client settings defined by SSHCONFIGGENERIC and SSHCONFIGAUTO_HEADERCOMMENT variables"
+    echo "  - Apply basic vim tool settings for better use and visualization defined by VIM_SETTINGS"
+    echo "  - Define color variables using TERM as xterm-256color to use in scripts in the form _color_BLUE and others"
+    echo "  - Execute tests for common and basic commands getting its versions and PATH lookups defined by TOOL_CHECKS_LIST variable"
   fi
   exit 10
 }
