@@ -22,6 +22,10 @@ fi
 PROGNAME="$(basename ${0})"
 cd ${SCRIPT_BASEDIR}
 
+
+# Global variables
+
+
 function help ()
 {
   echo "==========================================================================="

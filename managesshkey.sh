@@ -22,8 +22,19 @@ fi
 PROGNAME="$(basename ${0})"
 cd ${SCRIPT_BASEDIR}
 
+
 # Global variables
+TOOL_CHECKS_LIST=(openssl openssh sshpass keychain)
+SSHCONFIGGENERIC='StrictHostKeyChecking no
+UserKnownHostsFile /dev/null
+ControlMaster yes
+ControlPersist 600s
+Host *
+  ServerAliveInterval 60
+  ServerAliveCountMax 5
+Include config.auto'
 SSHCONFIGAUTO_HEADERCOMMENT='# Please do not modify this file because it is managed automatically'
+
 
 function help ()
 {
@@ -75,14 +86,7 @@ function set_sshclient ()
   echo "INFO: Apply SSH client settings"
   mkdir -p $HOME/.ssh
   chmod 700 $HOME/.ssh
-  echo 'StrictHostKeyChecking no
-UserKnownHostsFile /dev/null
-ControlMaster yes
-ControlPersist 600s
-Host *
-  ServerAliveInterval 60
-  ServerAliveCountMax 5
-Include config.auto' > $HOME/.ssh/config.generic
+  echo "${SSHCONFIGGENERIC}" > $HOME/.ssh/config.generic
   truncate -s 0 $HOME/.ssh/known_hosts
   touch $HOME/.ssh/authorized_keys
   touch $HOME/.ssh/config.auto
@@ -329,7 +333,6 @@ then
   [[ ${#parmlist[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
   echo "INFO: Show SSH client settings"
   ON_ERROR=return
-  TOOL_CHECKS_LIST=(openssl openssh sshpass)
   for mytool in "${TOOL_CHECKS_LIST[@]}"
   do
     case ${mytool} in
@@ -337,23 +340,46 @@ then
         echo "--- CHECK version ${mytool}"
         ${mytool} version
         echo "--- CHECK paths ${mytool}"
-        type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
-        [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+        if type -ap ${mytool}
+        then
+          [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+        else
+          echo "WARN: ${mytool} not found on the path"
+        fi
       ;;
       openssh)
         othercommand=ssh
         echo "--- CHECK version ${mytool} (${othercommand})"
         ${othercommand} -V
         echo "--- CHECK paths ${mytool} (${othercommand})"
-        type -aP ${othercommand} || echo "WARN: ${mytool} (${othercommand}) not found on the path"
-        [[ "$(type -aP ${othercommand} | head -1)" != "/usr/bin/${othercommand}" ]] && echo "WARN: ${mytool} (${othercommand}) on the first match PATH correspond to other software"
+        if type -ap ${othercommand}
+        then
+          [[ "$(type -p ${othercommand})" != "/usr/bin/${othercommand}" ]] && echo "WARN: ${mytool} (${othercommand}) on the first match PATH correspond to other software"
+        else
+          echo "WARN: ${mytool} (${othercommand}) not found on the path"
+        fi
       ;;
       sshpass)
         echo "--- CHECK version ${mytool}"
         ${mytool} -V
         echo "--- CHECK paths ${mytool}"
-        type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
-        [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+        if type -ap ${mytool}
+        then
+          [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+        else
+          echo "WARN: ${mytool} not found on the path"
+        fi
+      ;;
+      keychain)
+        echo "--- CHECK version ${mytool}"
+        ${mytool} -V
+        echo "--- CHECK paths ${mytool}"
+        if type -ap ${mytool}
+        then
+          [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+        else
+          echo "WARN: ${mytool} not found on the path"
+        fi
       ;;
     esac
   done

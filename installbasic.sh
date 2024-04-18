@@ -22,108 +22,22 @@ fi
 PROGNAME="$(basename ${0})"
 cd ${SCRIPT_BASEDIR}
 
+
 # Global variables
-SSHCONFIGAUTO_HEADERCOMMENT='# Please do not modify this file because it is managed automatically'
-
-function help ()
-{
-  echo "==========================================================================="
-  echo "Install and configure a basic environment for Cygwin"
-  echo "==========================================================================="
-  if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
-  echo "Usage: ./${PROGNAME}"
-  echo "Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
-  echo "  --help Shows this help"
-  echo "  --help all Print also detailed information and examples if provided"
-  echo "  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used"
-  echo "  --no-interactive Disable interactive questions"
-  echo "  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used (\"\$@\")"
-  echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
-  if [[ "${HELPALL}" == "true" ]]
-  then
-    echo "Description:"
-    echo "  TODO1"
-  fi
-  exit 10
-}
-
-function set_sshclient ()
-{
-  echo "INFO: Apply SSH client settings"
-  mkdir -p $HOME/.ssh
-  chmod 700 $HOME/.ssh
-  echo 'StrictHostKeyChecking no
-UserKnownHostsFile /dev/null
-ControlMaster yes
-ControlPersist 600s
-Host *
-  ServerAliveInterval 60
-  ServerAliveCountMax 5
-Include config.auto' > $HOME/.ssh/config.generic
-  truncate -s 0 $HOME/.ssh/known_hosts
-  touch $HOME/.ssh/authorized_keys
-  touch $HOME/.ssh/config.auto
-  sed -r -i '/\s*#/d' $HOME/.ssh/config.auto
-  sed -i 's/\t/  /g' $HOME/.ssh/config.auto
-  if [[ -s "$HOME/.ssh/config.auto" ]]
-  then
-    sed -i "1 i${SSHCONFIGAUTO_HEADERCOMMENT}" $HOME/.ssh/config.auto
-  else
-    echo "${SSHCONFIGAUTO_HEADERCOMMENT}" > $HOME/.ssh/config.auto
-  fi
-  if [[ -s $HOME/.ssh/config ]]
-  then
-    diff -u --color=auto $HOME/.ssh/config $HOME/.ssh/config.generic || confirmquestion "WARN: The file $HOME/.ssh/config will be overwritten" && cp -p $HOME/.ssh/config.generic $HOME/.ssh/config
-  else
-    cp -p $HOME/.ssh/config.generic $HOME/.ssh/config
-  fi
-  chmod 600 $HOME/.ssh/* || true
-}
-
-# Execute without required arguments
-# if [ "$#" == "0" ]; then help; fi
-
-while [ $# -gt 0 ] ; do
-  case "${1}" in
-    --help)
-      [[ $# -eq 2 && "${2}" == "all" ]] && HELPALL=true
-      help
-      ;;
-    --debug)
-      [[ "${DEBUG}" != "" ]] && help "ERROR: Repeated parameters"
-      DEBUG=true
-      ;;
-    --no-interactive)
-      [[ "${NO_INTERACTIVE}" != "" ]] && help "ERROR: Repeated parameters"
-      NO_INTERACTIVE=true
-      ;;
-    --)
-      # End of options and arguments of the program. Then all others are transferred to the wrapper content if used ("$@")
-      shift
-      break
-      ;;
-    -*)
-      help "ERROR: Unknown option <${1}>"
-      ;;
-    *)
-      help "ERROR: Unknown argument <${1}>"
-      ;;
-  esac
-  shift
-done
-
-
-echo "INFO: Download https://cygwin.com/setup-x86_64.exe and install basic packages"
-if [[ "$(type -p curl)" == "/usr/bin/curl" ]]
-then
-  (cd && /usr/bin/curl -L -O https://cygwin.com/setup-x86_64.exe)
-else
-  (cd && curl -L -O --ssl-no-revoke https://cygwin.com/setup-x86_64.exe)
-fi
-chmod 755 $HOME/setup-x86_64.exe
-
-
-echo "INFO: Install basic packages"
+MINTTY_SETTINGS='Term=xterm-256color
+Font=Cascadia Mono
+ScrollbackLines=10000000
+CursorType=block
+CursorBlinks=no
+ThemeFile=flat-ui
+Columns=110
+Rows=30
+FontHeight=10
+'
+PS1_SETTINGS=$(cat << 'MYENDPS1'
+'\\[\\e]0;\\w\\a\\]\\[\\e[32m\\]\\u@\\h:\\[\\e[33m\\]\\w\\[\\e[0m\\]\\$ '
+MYENDPS1
+)
 CYGWIN_BASIC_PACKAGES=(
 cygwin
 cygport
@@ -191,45 +105,26 @@ unzip
 gzip
 xz
 )
-
-
-echo "INFO: Packages to install or update"
-printf '%s\n' "${CYGWIN_BASIC_PACKAGES[@]}"
-echo "INFO: Comma separated list of packages to install or update"
-LIST_CYGWIN_BASIC_PACKAGES="$(IFS=,; echo "${CYGWIN_BASIC_PACKAGES[*]}")"
-echo "${LIST_CYGWIN_BASIC_PACKAGES}"
-$HOME/setup-x86_64.exe -q --wait --upgrade-also --packages=${LIST_CYGWIN_BASIC_PACKAGES}
-
-
-echo "INFO: Configure Mintty terminal and PS1 variable"
-if [[ "${OSTYPE}" == 'cygwin' ]]
-then
-  echo 'Term=xterm-256color
-Font=Cascadia Mono
-ScrollbackLines=10000000
-CursorType=block
-CursorBlinks=no
-ThemeFile=flat-ui
-Columns=110
-Rows=30
-FontHeight=10
-' > /etc/minttyrc
-  sed -i 's/^PS1=.*$/PS1='\''\\[\\e]0;\\w\\a\\]\\[\\e[32m\\]\\u@\\h:\\[\\e[33m\\]\\w\\[\\e[0m\\]\\$ '\''/g' /etc/bash.bashrc
-  export TERM=xterm-256color
-else
-  :
-fi
-
-
-echo "INFO: Install yq tool"
-/usr/bin/curl -L -o /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_windows_amd64.exe && chmod +x /usr/bin/yq
-
-
-echo "INFO: Manage settings \$HOME/.bashrc and PATH"
-echo "INFO: The file \$HOME/usersettingsbashrc.sh must be idempotent"
-grep -qxF '# User settings bashrc' $HOME/.bashrc || echo '# User settings bashrc' >> $HOME/.bashrc
-grep -qxF 'source $HOME/usersettingsbashrc.sh' $HOME/.bashrc || echo 'source $HOME/usersettingsbashrc.sh' >> $HOME/.bashrc
-cat << 'MYENDOFTEXT1' > $HOME/usersettingsbashrc.sh
+TOOL_CHECKS_LIST=(curl wget git python python3 pip3 jq yq openssl openssh sshpass keychain)
+SSHCONFIGGENERIC='StrictHostKeyChecking no
+UserKnownHostsFile /dev/null
+ControlMaster yes
+ControlPersist 600s
+Host *
+  ServerAliveInterval 60
+  ServerAliveCountMax 5
+Include config.auto'
+SSHCONFIGAUTO_HEADERCOMMENT='# Please do not modify this file because it is managed automatically'
+VIM_SETTINGS='" Disable visual mode
+set mouse-=a
+" Automatically use 2 spaces instead of tab
+set autoindent expandtab tabstop=2 shiftwidth=2
+" Set in terminal title the edited file
+set title
+'
+QEMU_CYGWINHOMEPATH="$(cygpath "${PROGRAMFILES}")/qemu"
+YQ_URL_DOWNLOAD='https://github.com/mikefarah/yq/releases/latest/download/yq_windows_amd64.exe'
+BASHRC_SETTINGS=$(cat << 'MYENDBASHRC'
 # Add to the beginning of environment variable PATH one path provided as first parameter
 function addpath()
 {
@@ -267,23 +162,134 @@ addpath /usr/sbin
 addpath "/cygdrive/c/Program Files/qemu"
 export PATH
 # Start and configure SSH and GPG agents
-# Workaround to fix error if gpg-agent is already started "Error: Failed to start gpg-agent"
-if pidof -q /usr/bin/gpg-agent
-then
-  if [[ -f $HOME/.keychain/$(hostname)-sh-gpg ]]
-  then
-    keychain -q --agents ssh 2>&1 | grep -v "Warning: Can't determine fingerprint" || true
-  else
-    gpgconf --kill gpg-agent
-    keychain -q --agents ssh,gpg 2>&1 | grep -v "Warning: Can't determine fingerprint" || true
-  fi
-else
-  keychain -q --agents ssh,gpg 2>&1 | grep -v "Warning: Can't determine fingerprint" || true
-fi
+keychain -q --quick --gpg2 --agents ssh,gpg
 source $HOME/.keychain/$(hostname)-sh
 source $HOME/.keychain/$(hostname)-sh-gpg
 export DISPLAY=:0
-MYENDOFTEXT1
+MYENDBASHRC
+)
+BASHRC_SETTINGS="$(echo "${BASHRC_SETTINGS}" | sed -r 's#\$\{QEMU_CYGWINHOMEPATH\}#'"${QEMU_CYGWINHOMEPATH}"'#g')"
+
+
+function help ()
+{
+  echo "==========================================================================="
+  echo "Install and configure a basic environment for Cygwin"
+  echo "==========================================================================="
+  if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
+  echo "Usage: ./${PROGNAME}"
+  echo "Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
+  echo "  --help Shows this help"
+  echo "  --help all Print also detailed information and examples if provided"
+  echo "  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used"
+  echo "  --no-interactive Disable interactive questions"
+  echo "  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used (\"\$@\")"
+  echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
+  if [[ "${HELPALL}" == "true" ]]
+  then
+    echo "Description:"
+    echo "  TODO1"
+  fi
+  exit 10
+}
+
+function set_sshclient ()
+{
+  echo "INFO: Apply SSH client settings"
+  mkdir -p $HOME/.ssh
+  chmod 700 $HOME/.ssh
+  echo "${SSHCONFIGGENERIC}" > $HOME/.ssh/config.generic
+  truncate -s 0 $HOME/.ssh/known_hosts
+  touch $HOME/.ssh/authorized_keys
+  touch $HOME/.ssh/config.auto
+  sed -r -i '/\s*#/d' $HOME/.ssh/config.auto
+  sed -i 's/\t/  /g' $HOME/.ssh/config.auto
+  if [[ -s "$HOME/.ssh/config.auto" ]]
+  then
+    sed -i "1 i${SSHCONFIGAUTO_HEADERCOMMENT}" $HOME/.ssh/config.auto
+  else
+    echo "${SSHCONFIGAUTO_HEADERCOMMENT}" > $HOME/.ssh/config.auto
+  fi
+  if [[ -s $HOME/.ssh/config ]]
+  then
+    diff -u --color=auto $HOME/.ssh/config $HOME/.ssh/config.generic || confirmquestion "WARN: The file $HOME/.ssh/config will be overwritten" && cp -p $HOME/.ssh/config.generic $HOME/.ssh/config
+  else
+    cp -p $HOME/.ssh/config.generic $HOME/.ssh/config
+  fi
+  chmod 600 $HOME/.ssh/* || true
+}
+
+# Execute without required arguments
+# if [ "$#" == "0" ]; then help; fi
+
+while [ $# -gt 0 ] ; do
+  case "${1}" in
+    --help)
+      [[ $# -eq 2 && "${2}" == "all" ]] && HELPALL=true
+      help
+      ;;
+    --debug)
+      [[ "${DEBUG}" != "" ]] && help "ERROR: Repeated parameters"
+      DEBUG=true
+      ;;
+    --no-interactive)
+      [[ "${NO_INTERACTIVE}" != "" ]] && help "ERROR: Repeated parameters"
+      NO_INTERACTIVE=true
+      ;;
+    --)
+      # End of options and arguments of the program. Then all others are transferred to the wrapper content if used ("$@")
+      shift
+      break
+      ;;
+    -*)
+      help "ERROR: Unknown option <${1}>"
+      ;;
+    *)
+      help "ERROR: Unknown argument <${1}>"
+      ;;
+  esac
+  shift
+done
+
+
+echo "INFO: Download https://cygwin.com/setup-x86_64.exe and install basic packages"
+if [[ "$(type -p curl)" == "/usr/bin/curl" ]]
+then
+  (cd && /usr/bin/curl -L -O https://cygwin.com/setup-x86_64.exe)
+else
+  (cd && curl -L -O --ssl-no-revoke https://cygwin.com/setup-x86_64.exe)
+fi
+chmod 755 $HOME/setup-x86_64.exe
+
+
+echo "INFO: Install basic packages to install or update"
+printf '%s\n' "${CYGWIN_BASIC_PACKAGES[@]}"
+echo "INFO: Comma separated list of packages to install or update"
+LIST_CYGWIN_BASIC_PACKAGES="$(IFS=,; echo "${CYGWIN_BASIC_PACKAGES[*]}")"
+echo "${LIST_CYGWIN_BASIC_PACKAGES}"
+$HOME/setup-x86_64.exe --quiet-mode --wait --upgrade-also --packages=${LIST_CYGWIN_BASIC_PACKAGES}
+
+
+echo "INFO: Configure Mintty terminal and PS1 variable"
+if [[ "${OSTYPE}" == 'cygwin' ]]
+then
+  echo "${MINTTY_SETTINGS}" > /etc/minttyrc
+  sed -i 's/^PS1=.*$/PS1='"${PS1_SETTINGS}"'/g' /etc/bash.bashrc
+  export TERM=xterm-256color
+else
+  :
+fi
+
+
+echo "INFO: Install yq tool"
+/usr/bin/curl -L -o /usr/bin/yq ${YQ_URL_DOWNLOAD} && chmod +x /usr/bin/yq
+
+
+echo "INFO: Manage settings \$HOME/.bashrc and PATH"
+echo "INFO: The file \$HOME/usersettingsbashrc.sh must be idempotent"
+grep -qxF '# User settings bashrc' $HOME/.bashrc || echo '# User settings bashrc' >> $HOME/.bashrc
+grep -qxF 'source $HOME/usersettingsbashrc.sh' $HOME/.bashrc || echo 'source $HOME/usersettingsbashrc.sh' >> $HOME/.bashrc
+echo "${BASHRC_SETTINGS}" > $HOME/usersettingsbashrc.sh
 
 echo "INFO: Load \$HOME/usersettingsbashrc.sh file"
 source $HOME/usersettingsbashrc.sh
@@ -293,17 +299,10 @@ set_sshclient
 
 
 echo "INFO: Settings for vim edit tool"
-echo '" Disable visual mode
-set mouse-=a
-" Automatically use 2 spaces instead of tab
-set autoindent expandtab tabstop=2 shiftwidth=2
-" Set in terminal title the edited file
-set title
-' > ~/.vimrc
+echo "${VIM_SETTINGS}" > ~/.vimrc
 
 
 ON_ERROR=return
-TOOL_CHECKS_LIST=(curl wget git python python3 pip3 jq yq openssl openssh sshpass)
 for mytool in "${TOOL_CHECKS_LIST[@]}"
 do
   case ${mytool} in
@@ -311,30 +310,57 @@ do
       echo "--- CHECK version ${mytool}"
       ${mytool} version
       echo "--- CHECK paths ${mytool}"
-      type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
-      [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+      if type -ap ${mytool}
+      then
+        [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+      else
+        echo "WARN: ${mytool} not found on the path"
+      fi
     ;;
     openssh)
       othercommand=ssh
       echo "--- CHECK version ${mytool} (${othercommand})"
       ${othercommand} -V
       echo "--- CHECK paths ${mytool} (${othercommand})"
-      type -aP ${othercommand} || echo "WARN: ${mytool} (${othercommand}) not found on the path"
-      [[ "$(type -aP ${othercommand} | head -1)" != "/usr/bin/${othercommand}" ]] && echo "WARN: ${mytool} (${othercommand}) on the first match PATH correspond to other software"
+      if type -ap ${othercommand}
+      then
+        [[ "$(type -p ${othercommand})" != "/usr/bin/${othercommand}" ]] && echo "WARN: ${mytool} (${othercommand}) on the first match PATH correspond to other software"
+      else
+        echo "WARN: ${mytool} (${othercommand}) not found on the path"
+      fi
     ;;
     sshpass)
       echo "--- CHECK version ${mytool}"
       ${mytool} -V
       echo "--- CHECK paths ${mytool}"
-      type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
-      [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+      if type -ap ${mytool}
+      then
+        [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+      else
+        echo "WARN: ${mytool} not found on the path"
+      fi
+    ;;
+    keychain)
+      echo "--- CHECK version ${mytool}"
+      ${mytool} -V
+      echo "--- CHECK paths ${mytool}"
+      if type -ap ${mytool}
+      then
+        [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+      else
+        echo "WARN: ${mytool} not found on the path"
+      fi
     ;;
     *)
       echo "--- CHECK version ${mytool}"
       ${mytool} --version
       echo "--- CHECK paths ${mytool}"
-      type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
-      [[ "$(type -aP ${mytool} | head -1)" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+      if type -ap ${mytool}
+      then
+        [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+      else
+        echo "WARN: ${mytool} not found on the path"
+      fi
     ;;
   esac
 done

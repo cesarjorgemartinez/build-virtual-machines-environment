@@ -24,8 +24,8 @@ cd ${SCRIPT_BASEDIR}
 
 
 # Global variables
+TOOL_CHECKS_LIST=(qemu-img)
 QEMU_CYGWINHOMEPATH="$(cygpath "${PROGRAMFILES}")/qemu"
-QEMU_WINDOWSHOMEPATH="$(cygpath -w "${PROGRAMFILES}")\qemu"
 
 
 function help ()
@@ -49,7 +49,6 @@ function help ()
     echo "Description:"
     echo "  Download the last version of the QEMU Binaries for Windows (64 bit) from https://qemu.weilnetz.de"
     echo "  The Cygwin home PATH is <${QEMU_CYGWINHOMEPATH}>"
-    echo "  The Windows home PATH is <${QEMU_WINDOWSHOMEPATH}>"
     echo "Examples:"
     echo "  For install:"
     echo "  ./${PROGNAME}"
@@ -113,7 +112,6 @@ then
   cygstart --wait --action=runas "$(echo "${QEMU_URL_DOWNLOAD}" | sed 's#.*/##g')" /S
   rm -f $(echo "${QEMU_URL_DOWNLOAD}" | sed 's#.*/##g')
   ON_ERROR=return
-  TOOL_CHECKS_LIST=(qemu-img)
   for mytool in "${TOOL_CHECKS_LIST[@]}"
   do
     case ${mytool} in
@@ -121,8 +119,12 @@ then
         echo "--- CHECK version ${mytool}"
         ${mytool} --version
         echo "--- CHECK paths ${mytool}"
-        type -aP ${mytool} || echo "WARN: ${mytool} not found on the path"
-        [[ "$(type -aP ${mytool} | head -1)" != "${QEMU_CYGWINHOMEPATH}/qemu-img" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+        if type -ap ${mytool}
+        then
+          [[ "$(type -p ${mytool})" != "${QEMU_CYGWINHOMEPATH}/qemu-img" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+        else
+          echo "WARN: ${mytool} not found on the path"
+        fi
       ;;
     esac
   done
