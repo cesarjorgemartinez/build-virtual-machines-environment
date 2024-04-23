@@ -38,45 +38,50 @@ SSHCONFIGAUTO_HEADERCOMMENT='# Please do not modify this file because it is mana
 
 function help ()
 {
-  echo "==========================================================================="
-  echo "Manage SSH RSA private and public keys"
-  echo "- Set basic SSH client settings"
-  echo "- Delete all SSH client settings"
-  echo "- Show SSH client information"
-  echo "- Delete all indentities from the agent"
-  echo "- Delete all from SSH config hosts $HOME/.ssh/config.auto"
-  echo "- Create a new SSH RSA key"
-  echo "- Import one SSH RSA key"
-  echo "- Add to or delete from SSH Agent Keychain"
-  echo "- Add to or delete from SSH config settings using $HOME/.ssh/config.auto"
-  echo "- Delete one SSH RSA key"
-  echo "- Show detailed information of one SSH RSA key"
-  echo "==========================================================================="
+  cat << ENDHELP1
+===========================================================================
+Manage SSH RSA private and public keys
+- Set basic SSH client settings
+- Delete all SSH client settings
+- Show SSH client information
+- Delete all indentities from the SSH agent
+- Delete all from SSH config hosts $HOME/.ssh/config.auto
+- Create a new SSH RSA key
+- Import one SSH RSA key
+- Add to or delete from SSH Agent Keychain
+- Add to or delete from SSH config settings using $HOME/.ssh/config.auto
+- Delete one SSH RSA key
+- Show detailed information of one SSH RSA key
+===========================================================================
+ENDHELP1
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
-  echo "Usage: ./${PROGNAME} --set-sshclient | --deleteall-sshclient --show-sshclient"
-  echo "Usage: ./${PROGNAME} --deleteall-sshagent | --deleteall-sshconfig"
-  echo "Usage: ./${PROGNAME} --create-sshkey filename-privatekey [--import] [--add-sshagent | --delete-sshagent] [--add-sshconfig 'host list' | --delete-sshconfig]"
-  echo "Usage: ./${PROGNAME} --config-sshkey filename-privatekey [--add-sshagent | --delete-sshagent] [--add-sshconfig 'host list' | --delete-sshconfig]"
-  echo "Usage: ./${PROGNAME} --delete-sshkey filename-privatekey | --show-sshkey filename-privatekey"
-  echo "Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
-  echo "  --help Shows this help"
-  echo "  --help all Print also detailed information and examples if provided"
-  echo "  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used"
-  echo "  --no-interactive Disable interactive questions"
-  echo "  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used (\"\$@\")"
-  echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
-  echo "More information:"
-  echo "This tool create the SSH keys as PEM RSA format or PKCS8 and length of 4096 bits"
-  echo "This tool can be used to create SSH keys for machines"
-  echo "  or create SSH keys to use for Github users accessing to GitHub web user configuration:"
-  echo "  Settings -> SSH and GPG keys -> New SSH key"
-  echo "  Then in title one descriptive and identificative string, Key type as Authetication Key and in Key paste your SSH RSA public key"
+  cat << ENDHELP2
+Usage: ./${PROGNAME} --set-sshclient | --deleteall-sshclient --show-sshclient
+Usage: ./${PROGNAME} --deleteall-sshagent | --deleteall-sshconfig
+Usage: ./${PROGNAME} --create-sshkey filename-privatekey [--import] [--add-sshagent | --delete-sshagent] [--add-sshconfig 'host list' | --delete-sshconfig]
+Usage: ./${PROGNAME} --config-sshkey filename-privatekey [--add-sshagent | --delete-sshagent] [--add-sshconfig 'host list' | --delete-sshconfig]
+Usage: ./${PROGNAME} --delete-sshkey filename-privatekey | --show-sshkey filename-privatekey
+Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]
+  --help Shows this help
+  --help all Print also detailed information and examples if provided
+  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used
+  --no-interactive Disable interactive questions
+  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used "\$@"
+  --options_for_wrapper_content... If used a wrapper one example is --debug
+ENDHELP2
   if [[ "${HELPALL}" == "true" ]]
   then
-    echo "Detailed information:"
-    echo "  TODO"
-    echo "Examples:"
-    echo "  TODO"
+    cat << ENDHELP3
+Detailed information:
+  This tool create the SSH keys as PEM RSA format or PKCS8 and length of 4096 bits
+  This tool can be used to create SSH keys for machines
+    or create SSH keys to use for Github users accessing to GitHub web user configuration:
+    Settings -> SSH and GPG keys -> New SSH key
+    Then in title one descriptive and identificative string, Key type as Authetication Key and in Key paste your SSH RSA public key
+  TODO
+Examples:
+  TODO
+ENDHELP3
   fi
   exit 10
 }

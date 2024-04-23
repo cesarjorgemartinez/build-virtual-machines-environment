@@ -22,6 +22,8 @@ fi
 PROGNAME="$(basename ${0})"
 cd ${SCRIPT_BASEDIR}
 
+[[ "${OSTYPE}" == 'cygwin' ]] && export TERM=xterm-256color
+
 
 # Global variables
 MINTTY_SETTINGS='Term=xterm-256color
@@ -36,76 +38,24 @@ FontHeight=10
 '
 # The result of apply this PS1_SETTINGS is the following:
 # PS1='\[\e]0;\w\a\]\[\e[32m\]\u@\h:\[\e[33m\]\w\[\e[0m\]\$ '
-PS1_SETTINGS=$(cat << 'MYENDPS1'
+PS1_SETTINGS=$(cat << 'ENDPS1'
 '\\[\\e]0;\\w\\a\\]\\[\\e[32m\\]\\u@\\h:\\[\\e[33m\\]\\w\\[\\e[0m\\]\\$ '
-MYENDPS1
+ENDPS1
 )
 CYGWIN_BASIC_PACKAGES=(
-cygwin
-cygport
-bash
-bash-completion
-pcre2
-dbus
-util-linux
-coreutils
-binutils
-diffutils
-diffstat
-colordiff
-kdiff3
-dos2unix
-procps-ng
-ca-certificates
-ca-certificates-letsencrypt
-gnutls
-gnupg
-gnupg2
-keychain
-curl
-wget
-lynx
-jq
-avahi
-avahi-tools
-vim
-vim-minimal
-vim-common
-nano
-tmux
-konsole
-openssl
-openssh
-sshpass
-gcc-core
-gcc-g++
-autoconf
-automake
-make
-cmake
-pkg-config
-pkgconf
-git
-gawk
-whois
-python3
-python3-devel
-python3-pip
-python3-setuptools
-python3-distlib
-nc
-nc6
-dialog
-figlet
-ncdu
-expect
-rsync
-gettext
-tar
-zip
-unzip
-gzip
-xz
+cygwin cygport
+bash bash-completion dbus
+util-linux coreutils binutils diffutils diffstat colordiff kdiff3 dos2unix procps-ng
+openssl openssh sshpass keychain ca-certificates ca-certificates-letsencrypt
+gnutls gnupg gnupg2
+curl wget lynx jq rsync nc nc6 whois
+avahi avahi-tools
+vim vim-minimal vim-common nano
+tmux expect konsole git ncdu
+gcc-core gcc-g++ autoconf automake make cmake pkg-config pkgconf
+gawk pcre2 gettext dialog figlet
+python3 python3-devel python3-pip python3-setuptools python3-distlib
+tar zip unzip gzip xz
 )
 TOOL_CHECKS_LIST=(curl wget git python python3 pip3 jq yq openssl openssh sshpass keychain)
 SSHCONFIGGENERIC='StrictHostKeyChecking no
@@ -119,14 +69,14 @@ Include config.auto'
 SSHCONFIGAUTO_HEADERCOMMENT='# Please do not modify this file because it is managed automatically'
 VIM_SETTINGS='" Disable visual mode
 set mouse-=a
-" Automatically use 2 spaces instead of tab
-set autoindent expandtab tabstop=2 shiftwidth=2
+" No autoindent but allow tabs with size 2
+set noautoindent noexpandtab tabstop=2 shiftwidth=2
 " Set in terminal title the edited file
 set title
 '
 QEMU_CYGWINHOMEPATH="$(cygpath "${PROGRAMFILES}")/qemu"
 YQ_URL_DOWNLOAD='https://github.com/mikefarah/yq/releases/latest/download/yq_windows_amd64.exe'
-BASHRC_SETTINGS=$(cat << 'MYENDBASHRC'
+BASHRC_SETTINGS=$(cat << 'ENDBASHRC'
 # Add to the beginning of environment variable PATH one path provided as first parameter
 function addpath()
 {
@@ -161,49 +111,56 @@ PATH=$(echo $PATH | tr ':' '\n' | grep -v "/cygdrive/.*/Git/cmd" | paste -sd:)
 # Disable Windows Curl installations
 PATH=$(echo $PATH | tr ':' '\n' | grep -v "/cygdrive/.*/curl" | paste -sd:)
 addpath /usr/sbin
-addpath "/cygdrive/c/Program Files/qemu"
+addpath "${QEMU_CYGWINHOMEPATH}"
 export PATH
 # Start and configure SSH and GPG agents
-keychain -q --quick --gpg2 --agents ssh,gpg
+[[ $(pidof /usr/bin/ssh-agent /usr/bin/gpg-agent | wc -w) -ne 2 ]] && keychain -q --quick --gpg2 --agents ssh,gpg
 source $HOME/.keychain/$(hostname)-sh
 source $HOME/.keychain/$(hostname)-sh-gpg
 export DISPLAY=:0
-MYENDBASHRC
+ENDBASHRC
 )
 BASHRC_SETTINGS="$(echo "${BASHRC_SETTINGS}" | sed -r 's#\$\{QEMU_CYGWINHOMEPATH\}#'"${QEMU_CYGWINHOMEPATH}"'#g')"
 
 
 function help ()
 {
-  echo "==========================================================================="
-  echo "Install and configure a basic environment for Cygwin"
-  echo "==========================================================================="
+  cat << ENDHELP1
+===========================================================================
+Install and configure a basic environment for Cygwin
+===========================================================================
+ENDHELP1
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
-  echo "Usage: ./${PROGNAME}"
-  echo "Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
-  echo "  --help Shows this help"
-  echo "  --help all Print also detailed information and examples if provided"
-  echo "  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used"
-  echo "  --no-interactive Disable interactive questions"
-  echo "  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used (\"\$@\")"
-  echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
+  cat << ENDHELP2
+Usage: ./${PROGNAME}
+Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]
+  --help Shows this help
+  --help all Print also detailed information and examples if provided
+  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used
+  --no-interactive Disable interactive questions
+  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used "\$@"
+  --options_for_wrapper_content... If used a wrapper one example is --debug
+ENDHELP2
   if [[ "${HELPALL}" == "true" ]]
   then
-    echo "Tasks:"
-    echo "  - Download and execute the Cygwin setup tool"
-    echo "  - Install or update the packages defined with CYGWIN_BASIC_PACKAGES variable"
-    echo "  - Apply settings for Mintty terminal for better use of terminals defined by MINTTY_SETTINGS variable"
-    echo "  - Apply settings for PS1 for better visualization of command line terminal defined by PS1_SETTINGS variable"
-    echo "  - Install or update the yq tool"
-    echo "  - Apply settings for bashrc to get advantage for common tasks using the file \$HOME/usersettingsbashrc.sh:"
-    echo "    - Function addpath to PATH variable"
-    echo "    - Function confirmquestion to use interactive questions"
-    echo "    - Disable PATHs for some Windows software that can interfere with Cygwin software at present Python, Git and Curl"
-    echo "    - Start keychain tool to manage SSH and GPG2 keys in a convenient secure manner"
-    echo "  - Apply basic SSH client settings defined by SSHCONFIGGENERIC and SSHCONFIGAUTO_HEADERCOMMENT variables"
-    echo "  - Apply basic vim tool settings for better use and visualization defined by VIM_SETTINGS"
-    echo "  - Define color variables using TERM as xterm-256color to use in scripts in the form _color_BLUE and others"
-    echo "  - Execute tests for common and basic commands getting its versions and PATH lookups defined by TOOL_CHECKS_LIST variable"
+    cat << ENDHELP3
+Tasks:
+  - Download and execute the Cygwin setup tool
+  - Install or update the packages defined with CYGWIN_BASIC_PACKAGES variable
+  - Apply settings for Mintty terminal for better use of terminals defined by MINTTY_SETTINGS variable
+  - Apply a workaround to update keychain package from 2.7.1 to 2.8.5 for SSH and GPG2 fix issues and support
+  - Apply settings for PS1 for better visualization of command line terminal defined by PS1_SETTINGS variable
+  - Install or update the yq tool
+  - Apply settings for bashrc to get advantage for common tasks using the file \$HOME/usersettingsbashrc.sh:
+    - Function addpath to PATH variable and add the paths /usr/sbin and "${QEMU_CYGWINHOMEPATH}"
+    - Function confirmquestion to use interactive questions
+    - Disable PATHs for some Windows software that can interfere with Cygwin software at present Python, Git and Curl
+    - Define color variables using TERM as xterm-256color to use in scripts
+    - Start keychain tool to manage SSH and GPG2 keys in a convenient secure manner
+  - Apply basic SSH client settings defined by SSHCONFIGGENERIC and SSHCONFIGAUTO_HEADERCOMMENT variables
+  - Apply basic vim tool settings for better use and visualization defined by VIM_SETTINGS
+  - Execute tests for common and basic commands getting its versions and PATH lookups defined by TOOL_CHECKS_LIST variable
+ENDHELP3
   fi
   exit 10
 }
@@ -278,19 +235,19 @@ chmod 755 $HOME/setup-x86_64.exe
 
 
 echo "INFO: Install basic packages to install or update"
-printf '%s\n' "${CYGWIN_BASIC_PACKAGES[@]}"
+printf '%s\n' "${CYGWIN_BASIC_PACKAGES[@]}" | pr -tT -a -S$'\t\t' --columns 3
 echo "INFO: Comma separated list of packages to install or update"
 LIST_CYGWIN_BASIC_PACKAGES="$(IFS=,; echo "${CYGWIN_BASIC_PACKAGES[*]}")"
 echo "${LIST_CYGWIN_BASIC_PACKAGES}"
 $HOME/setup-x86_64.exe --quiet-mode --wait --upgrade-also --packages=${LIST_CYGWIN_BASIC_PACKAGES}
 
 
-echo "INFO: Configure Mintty terminal and PS1 variable"
+echo "INFO: Configure Mintty terminal and PS1 variable and a workaround to use keychain 2.8.5 version"
 if [[ "${OSTYPE}" == 'cygwin' ]]
 then
   echo "${MINTTY_SETTINGS}" > /etc/minttyrc
   sed -i 's/^PS1=.*$/PS1='"${PS1_SETTINGS}"'/g' /etc/bash.bashrc
-  export TERM=xterm-256color
+  grep -xq 'version=2.8.5' /usr/bin/keychain || curl -o /usr/bin/keychain https://raw.githubusercontent.com/funtoo/keychain/2.8.5/keychain
 else
   :
 fi

@@ -28,24 +28,30 @@ cd ${SCRIPT_BASEDIR}
 
 function help ()
 {
-  echo "==========================================================================="
-  echo "Configure Git client using global scope"
-  echo "==========================================================================="
+  cat << ENDHELP1
+===========================================================================
+Configure Git client using global scope
+===========================================================================
+ENDHELP1
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
-  echo "Usage: ./${PROGNAME} --git-username \"User name\" --git-useremail useremail@domain"
-  echo "  --git-username The user name for Git client. Use double or single quotes to enclose"
-  echo "  --git-useremail The user email for Git client"
-  echo "Common options: ./${PROGNAME} [--help [all]] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
-  echo "  --help Shows this help"
-  echo "  --help all Print also detailed information and examples if provided"
-  echo "  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used"
-  echo "  --no-interactive Disable interactive questions"
-  echo "  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used (\"\$@\")"
-  echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
+  cat << ENDHELP2
+Usage: ./${PROGNAME} --git-username "User name" --git-useremail useremail@domain
+  --git-username The user name for Git client. Use double or single quotes to enclose
+  --git-useremail The user email for Git client
+Common options: ./${PROGNAME} [--help [all]] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]
+  --help Shows this help
+  --help all Print also detailed information and examples if provided
+  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used
+  --no-interactive Disable interactive questions
+  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used "\$@"
+  --options_for_wrapper_content... If used a wrapper one example is --debug
+ENDHELP2
   if [[ "${HELPALL}" == "true" ]]
   then
-    echo "Examples:"
-    echo "  ./${PROGNAME} --git-username \"Mrs. Alice\" --git-useremail alice@yourdomain.org"
+    cat << ENDHELP3
+Examples:
+  ./${PROGNAME} --git-username "Mrs. Alice" --git-useremail alice@yourdomain.org
+ENDHELP3
   fi
   exit 10
 }

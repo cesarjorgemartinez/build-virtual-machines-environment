@@ -30,30 +30,36 @@ QEMU_CYGWINHOMEPATH="$(cygpath "${PROGRAMFILES}")/qemu"
 
 function help ()
 {
-  echo "==========================================================================="
-  echo "Install or uninstall the QEMU Binaries for Windows (64 bit)"
-  echo "==========================================================================="
+  cat << ENDHELP1
+===========================================================================
+Install or uninstall the QEMU Binaries for Windows (64 bit)
+===========================================================================
+ENDHELP1
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
-  echo "Usage: ./${PROGNAME} [--uninstall]"
-  echo "  Without parameters install the QEMU Binaries for Windows (64 bit)"
-  echo "  --uninstall Using this optional parameter uninstall this software if installed"
-  echo "Common options: ./${PROGNAME} [--help [all]] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]"
-  echo "  --help Shows this help"
-  echo "  --help all Print also detailed information and examples if provided"
-  echo "  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used"
-  echo "  --no-interactive Disable interactive questions"
-  echo "  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used (\"\$@\")"
-  echo "  --options_for_wrapper_content... If used a wrapper one example is --debug"
+  cat << ENDHELP2
+Usage: ./${PROGNAME} [--uninstall]
+  Without parameters install the QEMU Binaries for Windows (64 bit)
+  --uninstall Using this optional parameter uninstall this software if installed
+Common options: ./${PROGNAME} [--help [all]] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]
+  --help Shows this help
+  --help all Print also detailed information and examples if provided
+  --debug Sets the DEBUG environment variable to debug the program itself (not the wrapper) if used
+  --no-interactive Disable interactive questions
+  -- End of options and arguments of the program. Then all others are transferred to the wrapper content if used "\$@"
+  --options_for_wrapper_content... If used a wrapper one example is --debug
+ENDHELP2
   if [[ "${HELPALL}" == "true" ]]
   then
-    echo "Description:"
-    echo "  Download the last version of the QEMU Binaries for Windows (64 bit) from https://qemu.weilnetz.de"
-    echo "  The Cygwin home PATH is <${QEMU_CYGWINHOMEPATH}>"
-    echo "Examples:"
-    echo "  For install:"
-    echo "  ./${PROGNAME}"
-    echo "  For uninstall:"
-    echo "  ./${PROGNAME} --uninstall"
+    cat << ENDHELP3
+Description:
+  Download the last version of the QEMU Binaries for Windows (64 bit) from https://qemu.weilnetz.de
+  The Cygwin home PATH is "${QEMU_CYGWINHOMEPATH}"
+Examples:
+  For install:
+  ./${PROGNAME}
+  For uninstall:
+  ./${PROGNAME} --uninstall
+ENDHELP3
   fi
   exit 10
 }
