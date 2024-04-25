@@ -36,7 +36,7 @@ Include config.auto'
 SSHCONFIGAUTO_HEADERCOMMENT='# Please do not modify this file because it is managed automatically'
 
 
-function help ()
+function help()
 {
   cat << ENDHELP1
 ===========================================================================
@@ -86,7 +86,7 @@ ENDHELP3
   exit 10
 }
 
-function set_sshclient ()
+function set_sshclient()
 {
   echo "INFO: Apply SSH client settings"
   mkdir -p $HOME/.ssh
@@ -112,7 +112,7 @@ function set_sshclient ()
   chmod 600 $HOME/.ssh/* || true
 }
 
-function show_sshkey ()
+function show_sshkey()
 {
   echo "INI: SSH RSA private key $HOME/.ssh/${1}"
   cat $HOME/.ssh/${1}
@@ -135,7 +135,7 @@ function show_sshkey ()
   echo "TODO: Manage sshconfig"
 }
 
-function add_sshhostslist ()
+function add_sshhostslist()
 {
   if [[ "${sshhostentry}" != "" ]]
   then
@@ -158,7 +158,7 @@ function add_sshhostslist ()
   fi
 }
 
-function print_sshhostslist ()
+function print_sshhostslist()
 {
   if [[ "${DEBUG}" == "true" ]]
   then
@@ -171,7 +171,7 @@ function print_sshhostslist ()
   fi
 }
 
-function parse_sshhostslist ()
+function parse_sshhostslist()
 {
   sshhostentry=""
   while IFS= read -r inputline
@@ -388,20 +388,20 @@ then
       ;;
     esac
   done
-  echo "INI: SSH Agent List"
-  ssh-add -L || true
-  echo "END: SSH Agent List"
+  echo -e "${_C_FCYAN}INI: SSH Agent List${_C_DEF}"
+  printf ${_C_FWHITE}; ssh-add -L || true; printf ${_C_DEF}
+  echo -e "${_C_FCYAN}END: SSH Agent List${_C_DEF}"
   if [[ -d $HOME/.ssh ]]
   then
-    echo "ls -dl \$HOME/.ssh"
-    ls -dl $HOME/.ssh
-    echo "ls -l \$HOME/.ssh"
-    ls -l $HOME/.ssh
-    [[ -f $HOME/.ssh/config ]] && (echo "INI \$HOME/.ssh/config"; cat $HOME/.ssh/config; echo "END \$HOME/.ssh/config") || echo "WARN: The file $HOME/.ssh/config does not exist or is not a file"
-    [[ -f $HOME/.ssh/config.generic ]] && (echo "INI \$HOME/.ssh/config.generic"; cat $HOME/.ssh/config.generic; echo "END \$HOME/.ssh/config.generic") || echo "WARN: The file $HOME/.ssh/config.generic does not exist or is not a file"
-    [[ -f $HOME/.ssh/config.auto ]] && (echo "INI \$HOME/.ssh/config.auto"; cat $HOME/.ssh/config.auto; echo "END \$HOME/.ssh/config.auto") || echo "WARN: The file $HOME/.ssh/config.auto does not exist or is not a file"
+    echo -e "${_C_FCYAN}ls -dl \$HOME/.ssh${_C_DEF}"
+    printf ${_C_FWHITE}; ls -dl $HOME/.ssh; printf ${_C_DEF}
+    echo -e "${_C_FCYAN}ls -l \$HOME/.ssh${_C_DEF}"
+    printf ${_C_FWHITE}; ls -l $HOME/.ssh; printf ${_C_DEF}
+    [[ -f "$HOME/.ssh/config" ]] && (echo -e "${_C_FCYAN}INI \$HOME/.ssh/config${_C_DEF}"; printf ${_C_FWHITE}; cat $HOME/.ssh/config; printf ${_C_DEF}; echo -e "${_C_FCYAN}END \$HOME/.ssh/config${_C_DEF}") || echo -e "${_C_FRED}WARN: The file $HOME/.ssh/config does not exist or is not a file${_C_DEF}"
+    [[ -f "$HOME/.ssh/config.generic" ]] && (echo -e "${_C_FCYAN}INI \$HOME/.ssh/config.generic${_C_DEF}"; printf ${_C_FWHITE}; cat $HOME/.ssh/config.generic; printf ${_C_DEF}; echo -e "${_C_FCYAN}END \$HOME/.ssh/config.generic${_C_DEF}") || echo -e "${_C_FRED}WARN: The file $HOME/.ssh/config.generic does not exist or is not a file${_C_DEF}"
+    [[ -f "$HOME/.ssh/config.auto" ]] && (echo -e "${_C_FCYAN}INI \$HOME/.ssh/config.auto${_C_DEF}"; printf ${_C_FWHITE}; cat $HOME/.ssh/config.auto; printf ${_C_DEF}; echo -e "${_C_FCYAN}END \$HOME/.ssh/config.auto${_C_DEF}") || echo -e "${_C_FRED}WARN: The file $HOME/.ssh/config.auto does not exist or is not a file${_C_DEF}"
   else
-    echo "WARN: The directory $HOME/.ssh does not exist or is not a directory"
+    echo -e "${_C_RED}WARN: The directory $HOME/.ssh does not exist or is not a directory${_C_DEF}"
   fi
 elif [[ -v parmlist[--deleteall-sshagent] ]]
 then
@@ -555,4 +555,3 @@ fi
 
 [[ "${RESULT}" != "0" ]] && echo "ERROR: Some errors exists. Error code ${RESULT}"
 exit ${RESULT}
-

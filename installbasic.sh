@@ -27,14 +27,19 @@ cd ${SCRIPT_BASEDIR}
 
 # Global variables
 MINTTY_SETTINGS='Term=xterm-256color
-Font=Cascadia Mono
+Font=Cascadia Code
+FontHeight=10
+FontSmoothing=full
+ThemeFile=xterm
+CopyOnSelect=no
 ScrollbackLines=10000000
 CursorType=block
 CursorBlinks=no
-ThemeFile=flat-ui
+BoldAsColour=no
+BoldAsFont=yes
+AllowBlinking=yes
 Columns=110
 Rows=30
-FontHeight=10
 '
 # The result of apply this PS1_SETTINGS is the following:
 # PS1='\[\e]0;\w\a\]\[\e[32m\]\u@\h:\[\e[33m\]\w\[\e[0m\]\$ '
@@ -76,7 +81,30 @@ set title
 '
 QEMU_CYGWINHOMEPATH="$(cygpath "${PROGRAMFILES}")/qemu"
 YQ_URL_DOWNLOAD='https://github.com/mikefarah/yq/releases/latest/download/yq_windows_amd64.exe'
-BASHRC_SETTINGS=$(cat << 'ENDBASHRC'
+CONSOLE_FORMAT=$(cat << 'ENDCONSOLEFORMAT'
+# Variables for text formatting of the form _C_<name>. _C_DEF reset to default effect and color
+# Prefixes F foreground B background (F|B)L light foreground or background
+_C_DEF='\e[0m'
+_C_BOLD='\e[1m'
+_C_DARK='\e[2m'
+_C_CURSIVE='\e[3m'
+_C_UNDERLINE='\e[4m'
+_C_BLINK='\e[5m'
+_C_BLINKFAST='\e[6m'
+_C_INVERT='\e[7m'
+_C_HIDDEN='\e[8m'
+_C_STRIKE='\e[9m'
+_C_FBLACK='\e[30m'   _C_FLBLACK='\e[90m'   _C_BBLACK='\e[40m'   _C_BLBLACK='\e[100m'
+_C_FRED='\e[31m'     _C_FLRED='\e[91m'     _C_BRED='\e[41m'     _C_BLRED='\e[101m'
+_C_FGREEN='\e[32m'   _C_FLGREEN='\e[92m'   _C_BGREEN='\e[42m'   _C_BLGREEN='\e[102m'
+_C_FYELLOW='\e[33m'  _C_FLYELLOW='\e[93m'  _C_BYELLOW='\e[43m'  _C_BLYELLOW='\e[103m'
+_C_FBLUE='\e[34m'    _C_FLBLUE='\e[94m'    _C_BBLUE='\e[44m'    _C_BLBLUE='\e[104m'
+_C_FMAGENTA='\e[35m' _C_FLMAGENTA='\e[95m' _C_BMAGENTA='\e[45m' _C_BLMAGENTA='\e[105m'
+_C_FCYAN='\e[36m'    _C_FLCYAN='\e[96m'    _C_BCYAN='\e[46m'    _C_BCYAN='\e[106m'
+_C_FWHITE='\e[37m'   _C_FLWHITE='\e[97m'   _C_BWHITE='\e[47m'   _C_BLWHITE='\e[107m'
+ENDCONSOLEFORMAT
+)
+BASHRC_SETTINGS=$(cat << 'ENDBASHRC1'
 # Add to the beginning of environment variable PATH one path provided as first parameter
 function addpath()
 {
@@ -104,6 +132,21 @@ function confirmquestion()
   done
 }
 export -f confirmquestion
+ENDBASHRC1
+)
+BASHRC_SETTINGS+=$'\n'$(cat << ENDBASHRC2
+set -o allexport
+${CONSOLE_FORMAT}
+set +o allexport
+ENDBASHRC2
+)
+BASHRC_SETTINGS+=$'\n'$(cat << 'ENDBASHRC3'
+# Text positioning function. Use example: XY 10 10 'Test'
+XY()
+{
+  printf "\e[${2};${1}H$3"
+}
+export -f XY
 # Disable Windows Python installations
 PATH=$(echo $PATH | tr ':' '\n' | grep -v "/cygdrive/.*/Python[23]" | paste -sd:)
 # Disable Windows Git installations
@@ -111,19 +154,24 @@ PATH=$(echo $PATH | tr ':' '\n' | grep -v "/cygdrive/.*/Git/cmd" | paste -sd:)
 # Disable Windows Curl installations
 PATH=$(echo $PATH | tr ':' '\n' | grep -v "/cygdrive/.*/curl" | paste -sd:)
 addpath /usr/sbin
+ENDBASHRC3
+)
+BASHRC_SETTINGS+=$'\n'$(cat << ENDBASHRC4
 addpath "${QEMU_CYGWINHOMEPATH}"
+ENDBASHRC4
+)
+BASHRC_SETTINGS+=$'\n'$(cat << 'ENDBASHRC5'
 export PATH
 # Start and configure SSH and GPG agents
-[[ $(pidof /usr/bin/ssh-agent /usr/bin/gpg-agent | wc -w) -ne 2 ]] && keychain -q --quick --gpg2 --agents ssh,gpg
+(ps -efa | fgrep -q -e /usr/bin/ssh-agent && ps -efa | fgrep -q -e /usr/bin/gpg-agent) || keychain -q --quick --gpg2 --agents ssh,gpg
 source $HOME/.keychain/$(hostname)-sh
 source $HOME/.keychain/$(hostname)-sh-gpg
 export DISPLAY=:0
-ENDBASHRC
+ENDBASHRC5
 )
-BASHRC_SETTINGS="$(echo "${BASHRC_SETTINGS}" | sed -r 's#\$\{QEMU_CYGWINHOMEPATH\}#'"${QEMU_CYGWINHOMEPATH}"'#g')"
 
 
-function help ()
+function help()
 {
   cat << ENDHELP1
 ===========================================================================
@@ -151,21 +199,30 @@ Tasks:
   - Apply a workaround to update keychain package from 2.7.1 to 2.8.5 for SSH and GPG2 fix issues and support
   - Apply settings for PS1 for better visualization of command line terminal defined by PS1_SETTINGS variable
   - Install or update the yq tool
-  - Apply settings for bashrc to get advantage for common tasks using the file \$HOME/usersettingsbashrc.sh:
+  - Apply settings for bashrc to get advantage for common tasks using the file \$HOME/custombashrc.sh:
     - Function addpath to PATH variable and add the paths /usr/sbin and "${QEMU_CYGWINHOMEPATH}"
     - Function confirmquestion to use interactive questions
     - Disable PATHs for some Windows software that can interfere with Cygwin software at present Python, Git and Curl
-    - Define color variables using TERM as xterm-256color to use in scripts
+    - Define termcap functions and variables using xterm-256color to use in scripts:
+      - Text positioning function. Use example: XY 10 10 'Test'
+      - Variables for text formatting of the form _C_<name>. Variable _C_DEF reset to default effect and color
+        Prefixes F foreground B background (F|B)L light foreground or background
+ENDHELP3
+  for item in $(env | grep "^_C_" | cut -d'=' -f1 | sort)
+  do
+    printf "${item} = ${!item}Colors and effects${_C_DEF}\n"
+  done | pr -T -o 8
+    cat << ENDHELP4
     - Start keychain tool to manage SSH and GPG2 keys in a convenient secure manner
   - Apply basic SSH client settings defined by SSHCONFIGGENERIC and SSHCONFIGAUTO_HEADERCOMMENT variables
   - Apply basic vim tool settings for better use and visualization defined by VIM_SETTINGS
   - Execute tests for common and basic commands getting its versions and PATH lookups defined by TOOL_CHECKS_LIST variable
-ENDHELP3
+ENDHELP4
   fi
   exit 10
 }
 
-function set_sshclient ()
+function set_sshclient()
 {
   echo "INFO: Apply SSH client settings"
   mkdir -p $HOME/.ssh
@@ -258,13 +315,13 @@ echo "INFO: Install yq tool"
 
 
 echo "INFO: Manage settings \$HOME/.bashrc and PATH"
-echo "INFO: The file \$HOME/usersettingsbashrc.sh must be idempotent"
+echo "INFO: The file \$HOME/custombashrc.sh must be idempotent"
 grep -qxF '# User settings bashrc' $HOME/.bashrc || echo '# User settings bashrc' >> $HOME/.bashrc
-grep -qxF 'source $HOME/usersettingsbashrc.sh' $HOME/.bashrc || echo 'source $HOME/usersettingsbashrc.sh' >> $HOME/.bashrc
-echo "${BASHRC_SETTINGS}" > $HOME/usersettingsbashrc.sh
+grep -qxF 'source $HOME/custombashrc.sh' $HOME/.bashrc || echo 'source $HOME/custombashrc.sh' >> $HOME/.bashrc
+echo "${BASHRC_SETTINGS}" > $HOME/custombashrc.sh
 
-echo "INFO: Load \$HOME/usersettingsbashrc.sh file"
-source $HOME/usersettingsbashrc.sh
+echo "INFO: Load \$HOME/custombashrc.sh file"
+source $HOME/custombashrc.sh
 
 # Apply SSH client settings
 set_sshclient
@@ -339,9 +396,8 @@ done
 
 
 echo "INFO: It is recommended to log out of the terminal and open a new session to update the environment variables"
-echo "INFO: Or manually load the settings file: source \$HOME/usersettingsbashrc.sh"
+echo "INFO: Or manually load the settings file: source \$HOME/custombashrc.sh"
 
 
 [[ "${RESULT}" != "0" ]] && echo "ERROR: Some errors exists. Error code ${RESULT}"
 exit ${RESULT}
-

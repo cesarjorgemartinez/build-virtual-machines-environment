@@ -28,7 +28,7 @@ TOOL_CHECKS_LIST=(qemu-img)
 QEMU_CYGWINHOMEPATH="$(cygpath "${PROGRAMFILES}")/qemu"
 
 
-function help ()
+function help()
 {
   cat << ENDHELP1
 ===========================================================================

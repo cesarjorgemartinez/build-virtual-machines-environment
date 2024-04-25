@@ -26,7 +26,7 @@ cd ${SCRIPT_BASEDIR}
 # Global variables
 
 
-function help ()
+function help()
 {
   cat << ENDHELP1
 ===========================================================================
