@@ -25,7 +25,7 @@ cd ${SCRIPT_BASEDIR}
 
 # Global variables
 TOOL_CHECKS_LIST=(openssl openssh sshpass keychain)
-SSHCONFIGGENERIC='StrictHostKeyChecking no
+SSHCONFBASE='StrictHostKeyChecking no
 UserKnownHostsFile /dev/null
 ControlMaster yes
 ControlPersist 600s
@@ -33,7 +33,118 @@ Host *
   ServerAliveInterval 60
   ServerAliveCountMax 5
 Include config.auto'
-SSHCONFIGAUTO_HEADERCOMMENT='# Please do not modify this file because it is managed automatically'
+SSHCONF_HEADER='# Please do not modify this file because it is managed automatically'
+
+
+# Associative array for manage the client parameters of this tool
+declare -A params=()
+
+# Array for manage SSH client settings host entries stored inside $HOME/.ssh/config.auto
+sshconf_list=()
+
+# Associative array that define all possible items of a SSH configuration block
+declare -A sshconf_templateitems=(
+[AddKeysToAgent]=""
+[AddressFamily]=""
+[BatchMode]=""
+[BindAddress]=""
+[BindInterface]=""
+[CanonicalDomains]=""
+[CanonicalizeFallbackLocal]=""
+[CanonicalizeHostname]=""
+[CanonicalizeMaxDots]=""
+[CanonicalizePermittedCNAMEs]=""
+[CASignatureAlgorithms]=""
+[CertificateFile]=""
+[CheckHostIP]=""
+[Ciphers]=""
+[ClearAllForwardings]=""
+[Compression]=""
+[ConnectionAttempts]=""
+[ConnectTimeout]=""
+[ControlMaster]=""
+[ControlPath]=""
+[ControlPersist]=""
+[DynamicForward]=""
+[EnableSSHKeysign]=""
+[EscapeChar]=""
+[ExitOnForwardFailure]=""
+[FingerprintHash]=""
+[ForkAfterAuthentication]=""
+[ForwardAgent]=""
+[ForwardX11]=""
+[ForwardX11Timeout]=""
+[ForwardX11Trusted]=""
+[GatewayPorts]=""
+[GlobalKnownHostsFile]=""
+[GSSAPIAuthentication]=""
+[GSSAPIClientIdentity]=""
+[GSSAPIDelegateCredentials]=""
+[GSSAPIKeyExchange]=""
+[GSSAPIRenewalForcesRekey]=""
+[GSSAPIServerIdentity]=""
+[GSSAPITrustDns]=""
+[GSSAPIKexAlgorithms]=""
+[HashKnownHosts]=""
+[HostbasedAcceptedAlgorithms]=""
+[HostbasedAuthentication]=""
+[HostKeyAlgorithms]=""
+[HostKeyAlias]=""
+[Hostname]=""
+[IdentitiesOnly]=""
+[IdentityAgent]=""
+[IdentityFile]=""
+[IgnoreUnknown]=""
+[Include]=""
+[IPQoS]=""
+[KbdInteractiveAuthentication]=""
+[KbdInteractiveDevices]=""
+[KexAlgorithms]=""
+[KnownHostsCommand]=""
+[LocalCommand]=""
+[LocalForward]=""
+[LogLevel]=""
+[LogVerbose]=""
+[MACs]=""
+[NoHostAuthenticationForLocalhost]=""
+[NumberOfPasswordPrompts]=""
+[PasswordAuthentication]=""
+[PermitLocalCommand]=""
+[PermitRemoteOpen]=""
+[PKCS11Provider]=""
+[Port]=""
+[PreferredAuthentications]=""
+[ProxyCommand]=""
+[ProxyJump]=""
+[ProxyUseFdpass]=""
+[PubkeyAcceptedAlgorithms]=""
+[PubkeyAuthentication]=""
+[RekeyLimit]=""
+[RemoteCommand]=""
+[RemoteForward]=""
+[RequestTTY]=""
+[RevokedHostKeys]=""
+[SecurityKeyProvider]=""
+[SendEnv]=""
+[ServerAliveCountMax]=""
+[ServerAliveInterval]=""
+[SessionType]=""
+[SetEnv]=""
+[StdinNull]=""
+[StreamLocalBindMask]=""
+[StreamLocalBindUnlink]=""
+[StrictHostKeyChecking]=""
+[SyslogFacility]=""
+[TCPKeepAlive]=""
+[Tunnel]=""
+[TunnelDevice]=""
+[UpdateHostKeys]=""
+[User]=""
+[UserKnownHostsFile]=""
+[VerifyHostKeyDNS]=""
+[VisualHostKey]=""
+[XAuthLocation]=""
+)
 
 
 function help()
@@ -57,9 +168,9 @@ ENDHELP1
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
   cat << ENDHELP2
 Usage: ./${PROGNAME} --set-sshclient | --deleteall-sshclient --show-sshclient
-Usage: ./${PROGNAME} --deleteall-sshagent | --deleteall-sshconfig
-Usage: ./${PROGNAME} --create-sshkey filename-privatekey [--import] [--add-sshagent | --delete-sshagent] [--add-sshconfig 'host list' | --delete-sshconfig]
-Usage: ./${PROGNAME} --config-sshkey filename-privatekey [--add-sshagent | --delete-sshagent] [--add-sshconfig 'host list' | --delete-sshconfig]
+Usage: ./${PROGNAME} --deleteall-sshagent | --deleteall-sshconf
+Usage: ./${PROGNAME} --create-sshkey filename-privatekey [--import] [--add-sshagent | --delete-sshagent] [--add-sshconf 'host list' | --delete-sshconf]
+Usage: ./${PROGNAME} --config-sshkey filename-privatekey [--add-sshagent | --delete-sshagent] [--add-sshconf 'host list' | --delete-sshconf]
 Usage: ./${PROGNAME} --delete-sshkey filename-privatekey | --show-sshkey filename-privatekey
 Common options: ./${PROGNAME} [--help] | <program_options_see_usage> [--debug] [--no-interactive] [--] [--options_for_wrapper_content...]
   --help Shows this help
@@ -91,7 +202,7 @@ function set_sshclient()
   echo "INFO: Apply SSH client settings"
   mkdir -p $HOME/.ssh
   chmod 700 $HOME/.ssh
-  echo "${SSHCONFIGGENERIC}" > $HOME/.ssh/config.generic
+  echo "${SSHCONFBASE}" > $HOME/.ssh/config.generic
   truncate -s 0 $HOME/.ssh/known_hosts
   touch $HOME/.ssh/authorized_keys
   touch $HOME/.ssh/config.auto
@@ -99,9 +210,9 @@ function set_sshclient()
   sed -i 's/\t/  /g' $HOME/.ssh/config.auto
   if [[ -s "$HOME/.ssh/config.auto" ]]
   then
-    sed -i "1 i${SSHCONFIGAUTO_HEADERCOMMENT}" $HOME/.ssh/config.auto
+    sed -i "1 i${SSHCONF_HEADER}" $HOME/.ssh/config.auto
   else
-    echo "${SSHCONFIGAUTO_HEADERCOMMENT}" > $HOME/.ssh/config.auto
+    echo "${SSHCONF_HEADER}" > $HOME/.ssh/config.auto
   fi
   if [[ -s $HOME/.ssh/config ]]
   then
@@ -114,66 +225,77 @@ function set_sshclient()
 
 function show_sshkey()
 {
-  echo "INI: SSH RSA private key $HOME/.ssh/${1}"
+  echo -e "${_C_FCYAN}INI: SSH RSA private key $HOME/.ssh/${1}${_C_DEF}"
   cat $HOME/.ssh/${1}
-  echo "END: SSH RSA private key $HOME/.ssh/${1}"
-  echo "INFO: SSH RSA public key $HOME/.ssh/${1}.pub"
+  echo -e "${_C_FCYAN}END: SSH RSA private key $HOME/.ssh/${1}${_C_DEF}"
+  echo -e "${_C_FCYAN}INFO: SSH RSA public key $HOME/.ssh/${1}.pub${_C_DEF}"
   cat $HOME/.ssh/${1}.pub
-  echo "INFO: Print PEM RSA public key"
+  echo -e "${_C_FCYAN}INFO: Print PEM RSA public key${_C_DEF}"
   openssl rsa -in $HOME/.ssh/${1} -pubout
-  echo "INFO: Print SHA256 fingerprint"
+  echo -e "${_C_FCYAN}INFO: Print SHA256 fingerprint${_C_DEF}"
   ssh-keygen -l -E sha256 -f $HOME/.ssh/${1}.pub
-  echo "INFO: Print MD5 fingerprint"
+  echo -e "${_C_FCYAN}INFO: Print MD5 fingerprint${_C_DEF}"
   ssh-keygen -l -E md5 -f $HOME/.ssh/${1}.pub
   chmod 600 $HOME/.ssh/* || true
   if ssh-add -T $HOME/.ssh/${1} &>/dev/null
   then
-    echo "INFO: The key is added to SSH Agent"
+    echo -e "${_C_FCYAN}INFO: The key is added to SSH Agent${_C_DEF}"
   else
-    echo "INFO: The key is not added to SSH Agent"
+    echo -e "${_C_FCYAN}INFO: The key is not added to SSH Agent${_C_DEF}"
   fi
-  echo "TODO: Manage sshconfig"
+  echo -e "${_C_BRED}TODO: Manage sshconf${_C_DEF}"
 }
 
-function add_sshhostslist()
+
+
+
+
+
+
+
+
+
+
+
+function add_sshconf_list()
 {
-  if [[ "${sshhostentry}" != "" ]]
+  if [[ "${sshconf_block}" != "" ]]
   then
-    if [[ $(echo "${sshhostentry}" | wc -l) -gt 1 ]]
+    if [[ $(echo "${sshconf_block}" | wc -l) -gt 1 ]]
     then
-      sshhoststring="$(echo "${sshhostentry}" | grep -Po '^Host\s+\K([^\s].*)' || true)"
+      sshhoststring="$(echo "${sshconf_block}" | grep -Po '^Host\s+\K([^\s].*)' || true)"
       if [[ "${sshhoststring}" != "" ]]
       then
-        sshidfile="$(echo "${sshhostentry}" | grep -Po '^\s+IdentityFile\s+\K(.*)' || true)"
+        sshidfile="$(echo "${sshconf_block}" | grep -Po '^\s+IdentityFile\s+\K(.*)' || true)"
         if [[ "${sshidfile}" != "" ]]
         then
           if [[ -f "${sshidfile/\~/$HOME}" ]]
           then
-            sshhostslist+=("${sshhostentry}")
+            sshconf_list+=("${sshconf_block}")
           fi
         fi
       fi
     fi
-    sshhostentry=""
+    sshconf_block=""
   fi
 }
 
-function print_sshhostslist()
+function print_sshconf_list()
 {
   if [[ "${DEBUG}" == "true" ]]
   then
-    echo "*** INI Show sshhostslist array"
-    for indexarr in "${!sshhostslist[@]}"
+    echo "*** INI Show sshconf_list array"
+    for indexarr in "${!sshconf_list[@]}"
     do
-      printf "Number %s\n%s\n" "${indexarr}" "${sshhostslist[${indexarr}]}"
+      printf "Number %s\n%s\n" "${indexarr}" "${sshconf_list[${indexarr}]}"
     done
-    echo "*** END Show sshhostslist array"
+    echo "*** END Show sshconf_list array"
   fi
 }
 
-function parse_sshhostslist()
+function parse_sshconf_list()
 {
-  sshhostentry=""
+  sshconf_block=""
   while IFS= read -r inputline
   do
     # Discard empty, space or comment lines
@@ -182,35 +304,32 @@ function parse_sshhostslist()
     then
       # Begin of processing a new SSH Host entry
       [[ "${DEBUG}" == "true" ]] && echo "New Host entry <${inputline}>"
-      # Add to sshhostslist if this entry is good
-      add_sshhostslist
-      if [[ "${sshhostentry}" != "" ]]
+      # Add to sshconf_list if this entry is good
+      add_sshconf_list
+      if [[ "${sshconf_block}" != "" ]]
       then
-        sshhostentry+=$'\n'"${inputline}"
+        sshconf_block+=$'\n'"${inputline}"
       else
-        sshhostentry+="${inputline}"
+        sshconf_block+="${inputline}"
       fi
     elif [[ "$(echo "${inputline}" | sed -r -n '/^\s+[^\s].*$/p')" != "" ]]
     then
       # Process of one SSH Host item
       [[ "${DEBUG}" == "true" ]] && echo "Host item <${inputline}>"
-      [[ "${sshhostentry}" != "" ]] && sshhostentry+=$'\n'"${inputline}" || continue
+      [[ "${sshconf_block}" != "" ]] && sshconf_block+=$'\n'"${inputline}" || continue
     else
       # Process others not contemplated
       [[ "${DEBUG}" == "true" ]] && echo "Not contemplated <${inputline}>"
-      # If the entry is still in process then add to sshhostslist if this entry is good
-      [[ "${sshhostentry}" != "" ]] && add_sshhostslist
+      # If the entry is still in process then add to sshconf_list if this entry is good
+      [[ "${sshconf_block}" != "" ]] && add_sshconf_list
       continue
     fi
   done < $HOME/.ssh/config.auto
-  # For the last entry still in process then add to sshhostslist if this entry is good
-  add_sshhostslist
-  # Print sshhostslist array for debug only
-  print_sshhostslist
+  # For the last entry still in process then add to sshconf_list if this entry is good
+  add_sshconf_list
+  # Print sshconf_list array for debug only
+  print_sshconf_list
 }
-
-# Associative array for manage the client parameters of this tool
-declare -A parmlist=()
 
 # Execute with required arguments
 if [ "$#" == "0" ]; then help; fi
@@ -218,81 +337,81 @@ if [ "$#" == "0" ]; then help; fi
 while [ $# -gt 0 ] ; do
   case "${1}" in
     --set-sshclient)
-      [[ -v parmlist[--set-sshclient] ]] && help "ERROR: Repeated parameters"
-      parmlist[--set-sshclient]=""
+      [[ -v params[--set-sshclient] ]] && help "ERROR: Repeated parameters"
+      params[--set-sshclient]=""
       ;;
     --deleteall-sshclient)
-      [[ -v parmlist[--deleteall-sshclient] ]] && help "ERROR: Repeated parameters"
-      parmlist[--deleteall-sshclient]=""
+      [[ -v params[--deleteall-sshclient] ]] && help "ERROR: Repeated parameters"
+      params[--deleteall-sshclient]=""
       ;;
     --show-sshclient)
-      [[ -v parmlist[--show-sshclient] ]] && help "ERROR: Repeated parameters"
-      parmlist[--show-sshclient]=""
+      [[ -v params[--show-sshclient] ]] && help "ERROR: Repeated parameters"
+      params[--show-sshclient]=""
       ;;
     --deleteall-sshagent)
-      [[ -v parmlist[--deleteall-sshagent] ]] && help "ERROR: Repeated parameters"
-      parmlist[--deleteall-sshagent]=""
+      [[ -v params[--deleteall-sshagent] ]] && help "ERROR: Repeated parameters"
+      params[--deleteall-sshagent]=""
       ;;
-    --deleteall-sshconfig)
-      [[ -v parmlist[--deleteall-sshconfig] ]] && help "ERROR: Repeated parameters"
-      parmlist[--deleteall-sshconfig]=""
+    --deleteall-sshconf)
+      [[ -v params[--deleteall-sshconf] ]] && help "ERROR: Repeated parameters"
+      params[--deleteall-sshconf]=""
       ;;
     --delete-sshkey)
-      [[ -v parmlist[--delete-sshkey] ]] && help "ERROR: Repeated parameters"
+      [[ -v params[--delete-sshkey] ]] && help "ERROR: Repeated parameters"
       [[ "${2}" == "" || "${2}" =~ ^--.*$ ]] && help "ERROR: Missing argument --delete-sshkey"
-      parmlist[--delete-sshkey]="${2}"
+      params[--delete-sshkey]="${2}"
       shift
       ;;
     --show-sshkey)
-      [[ -v parmlist[--show-sshkey] ]] && help "ERROR: Repeated parameters"
+      [[ -v params[--show-sshkey] ]] && help "ERROR: Repeated parameters"
       [[ "${2}" == "" || "${2}" =~ ^--.*$ ]] && help "ERROR: Missing argument --show-sshkey"
-      parmlist[--show-sshkey]="${2}"
+      params[--show-sshkey]="${2}"
       shift
       ;;
     --create-sshkey)
-      [[ -v parmlist[--create-sshkey] ]] && help "ERROR: Repeated parameters"
-      [[ -v parmlist[--config-sshkey] ]] && help "ERROR: Mixed parameters"
+      [[ -v params[--create-sshkey] ]] && help "ERROR: Repeated parameters"
+      [[ -v params[--config-sshkey] ]] && help "ERROR: Mixed parameters"
       [[ "${2}" == "" || "${2}" =~ ^--.*$ ]] && help "ERROR: Missing argument --create-sshkey"
-      parmlist[--create-sshkey]="${2}"
+      params[--create-sshkey]="${2}"
       shift
       ;;
     --import)
-      [[ -v parmlist[--import] ]] && help "ERROR: Repeated parameters"
-      [[ ! -v parmlist[--create-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey"
-      parmlist[--import]=""
+      [[ -v params[--import] ]] && help "ERROR: Repeated parameters"
+      [[ ! -v params[--create-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey"
+      params[--import]=""
       ;;
     --config-sshkey)
-      [[ -v parmlist[--config-sshkey] ]] && help "ERROR: Repeated parameters"
-      [[ -v parmlist[--create-sshkey] ]] && help "ERROR: Mixed parameters"
+      [[ -v params[--config-sshkey] ]] && help "ERROR: Repeated parameters"
+      [[ -v params[--create-sshkey] ]] && help "ERROR: Mixed parameters"
       [[ "${2}" == "" || "${2}" =~ ^--.*$ ]] && help "ERROR: Missing argument --config-sshkey"
-      parmlist[--config-sshkey]="${2}"
+      params[--config-sshkey]="${2}"
       shift
       ;;
     --add-sshagent)
-      [[ -v parmlist[--add-sshagent] ]] && help "ERROR: Repeated parameters"
-      [[ ! -v parmlist[--create-sshkey] && ! -v parmlist[--config-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey or --config-sshkey"
-      [[ -v parmlist[--delete-sshagent] ]] && help "ERROR: Mixed parameters"
-      parmlist[--add-sshagent]=""
+      [[ -v params[--add-sshagent] ]] && help "ERROR: Repeated parameters"
+      [[ ! -v params[--create-sshkey] && ! -v params[--config-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey or --config-sshkey"
+      [[ -v params[--delete-sshagent] ]] && help "ERROR: Mixed parameters"
+      params[--add-sshagent]=""
       ;;
     --delete-sshagent)
-      [[ -v parmlist[--delete-sshagent] ]] && help "ERROR: Repeated parameters"
-      [[ ! -v parmlist[--create-sshkey] && ! -v parmlist[--config-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey or --config-sshkey"
-      [[ -v parmlist[--add-sshagent] ]] && help "ERROR: Mixed parameters"
-      parmlist[--delete-sshagent]=""
+      [[ -v params[--delete-sshagent] ]] && help "ERROR: Repeated parameters"
+      [[ ! -v params[--create-sshkey] && ! -v params[--config-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey or --config-sshkey"
+      [[ -v params[--add-sshagent] ]] && help "ERROR: Mixed parameters"
+      params[--delete-sshagent]=""
       ;;
-    --add-sshconfig)
-      [[ -v parmlist[--add-sshconfig] ]] && help "ERROR: Repeated parameters"
-      [[ ! -v parmlist[--create-sshkey] && ! -v parmlist[--config-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey or --config-sshkey"
-      [[ -v parmlist[--delete-sshconfig] ]] && help "ERROR: Mixed parameters"
-      [[ "${2}" == "" || "${2}" =~ ^--.*$ ]] && help "ERROR: Missing argument --add-sshconfig"
-      parmlist[--add-sshconfig]="${2}"
+    --add-sshconf)
+      [[ -v params[--add-sshconf] ]] && help "ERROR: Repeated parameters"
+      [[ ! -v params[--create-sshkey] && ! -v params[--config-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey or --config-sshkey"
+      [[ -v params[--delete-sshconf] ]] && help "ERROR: Mixed parameters"
+      [[ "${2}" == "" || "${2}" =~ ^--.*$ ]] && help "ERROR: Missing argument --add-sshconf"
+      params[--add-sshconf]="${2}"
       shift
       ;;
-    --delete-sshconfig)
-      [[ -v parmlist[--delete-sshconfig] ]] && help "ERROR: Repeated parameters"
-      [[ ! -v parmlist[--create-sshkey] && ! -v parmlist[--config-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey or --config-sshkey"
-      [[ -v parmlist[--add-sshconfig] ]] && help "ERROR: Mixed parameters"
-      parmlist[--delete-sshconfig]=""
+    --delete-sshconf)
+      [[ -v params[--delete-sshconf] ]] && help "ERROR: Repeated parameters"
+      [[ ! -v params[--create-sshkey] && ! -v params[--config-sshkey] ]] && help "ERROR: This parameter only work with --create-sshkey or --config-sshkey"
+      [[ -v params[--add-sshconf] ]] && help "ERROR: Mixed parameters"
+      params[--delete-sshconf]=""
       ;;
     --help)
       [[ $# -eq 2 && "${2}" == "all" ]] && HELPALL=true
@@ -321,232 +440,249 @@ while [ $# -gt 0 ] ; do
   shift
 done
 
-# Array for manage SSH client settings host entries stored inside $HOME/.ssh/config.auto
-sshhostslist=()
 
-if [[ -v parmlist[--set-sshclient] ]]
+if [[ -v params[--set-sshclient] ]]
 then
-  [[ ${#parmlist[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
+  [[ ${#params[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
   # Apply SSH client settings
   set_sshclient
-elif [[ -v parmlist[--deleteall-sshclient] ]]
+elif [[ -v params[--deleteall-sshclient] ]]
 then
-  [[ ${#parmlist[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
+  [[ ${#params[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
   [[ -d $HOME/.ssh ]] && confirmquestion "WARN: The directory $HOME/.ssh will be deleted" && (rm -rf $HOME/.ssh; ssh-add -D) || :
-elif [[ -v parmlist[--show-sshclient] ]]
+elif [[ -v params[--show-sshclient] ]]
 then
-  [[ ${#parmlist[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
+  [[ ${#params[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
   echo "INFO: Show SSH client settings"
   ON_ERROR=return
   for mytool in "${TOOL_CHECKS_LIST[@]}"
   do
     case ${mytool} in
       openssl)
-        echo "--- CHECK version ${mytool}"
+        echo -e "${_C_FCYAN}--- CHECK version ${mytool}${_C_DEF}"
         ${mytool} version
-        echo "--- CHECK paths ${mytool}"
+        echo -e "${_C_FCYAN}--- CHECK paths ${mytool}${_C_DEF}"
         if type -ap ${mytool}
         then
-          [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+          [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo -e "${_C_FRED}WARN: ${mytool} on the first match PATH correspond to other software${_C_DEF}"
         else
-          echo "WARN: ${mytool} not found on the path"
+          echo -e "${_C_FRED}WARN: ${mytool} not found on the path${_C_DEF}"
         fi
       ;;
       openssh)
         othercommand=ssh
-        echo "--- CHECK version ${mytool} (${othercommand})"
+        echo -e "${_C_FCYAN}--- CHECK version ${mytool} (${othercommand})${_C_DEF}"
         ${othercommand} -V
-        echo "--- CHECK paths ${mytool} (${othercommand})"
+        echo -e "${_C_FCYAN}--- CHECK paths ${mytool} (${othercommand})${_C_DEF}"
         if type -ap ${othercommand}
         then
-          [[ "$(type -p ${othercommand})" != "/usr/bin/${othercommand}" ]] && echo "WARN: ${mytool} (${othercommand}) on the first match PATH correspond to other software"
+          [[ "$(type -p ${othercommand})" != "/usr/bin/${othercommand}" ]] && echo -e "${_C_FRED}WARN: ${mytool} (${othercommand}) on the first match PATH correspond to other software${_C_DEF}"
         else
-          echo "WARN: ${mytool} (${othercommand}) not found on the path"
+          echo -e "${_C_FRED}WARN: ${mytool} (${othercommand}) not found on the path${_C_DEF}"
         fi
       ;;
       sshpass)
-        echo "--- CHECK version ${mytool}"
+        echo -e "${_C_FCYAN}--- CHECK version ${mytool}${_C_DEF}"
         ${mytool} -V
-        echo "--- CHECK paths ${mytool}"
+        echo -e "${_C_FCYAN}--- CHECK paths ${mytool}${_C_DEF}"
         if type -ap ${mytool}
         then
-          [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+          [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo -e "${_C_FRED}WARN: ${mytool} on the first match PATH correspond to other software${_C_DEF}"
         else
-          echo "WARN: ${mytool} not found on the path"
+          echo -e "${_C_FRED}WARN: ${mytool} not found on the path${_C_DEF}"
         fi
       ;;
       keychain)
-        echo "--- CHECK version ${mytool}"
+        echo -e "${_C_FCYAN}--- CHECK version ${mytool}${_C_FCYAN}"
         ${mytool} -V
-        echo "--- CHECK paths ${mytool}"
+        echo -e "${_C_FCYAN}--- CHECK paths ${mytool}${_C_FCYAN}"
         if type -ap ${mytool}
         then
-          [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo "WARN: ${mytool} on the first match PATH correspond to other software"
+          [[ "$(type -p ${mytool})" != "/usr/bin/${mytool}" ]] && echo -e "${_C_FRED}WARN: ${mytool} on the first match PATH correspond to other software${_C_DEF}"
         else
-          echo "WARN: ${mytool} not found on the path"
+          echo -e "${_C_FRED}WARN: ${mytool} not found on the path${_C_DEF}"
         fi
       ;;
     esac
   done
   echo -e "${_C_FCYAN}INI: SSH Agent List${_C_DEF}"
-  printf ${_C_FWHITE}; ssh-add -L || true; printf ${_C_DEF}
+  ssh-add -L || true
   echo -e "${_C_FCYAN}END: SSH Agent List${_C_DEF}"
   if [[ -d $HOME/.ssh ]]
   then
     echo -e "${_C_FCYAN}ls -dl \$HOME/.ssh${_C_DEF}"
-    printf ${_C_FWHITE}; ls -dl $HOME/.ssh; printf ${_C_DEF}
+    ls -dl $HOME/.ssh
     echo -e "${_C_FCYAN}ls -l \$HOME/.ssh${_C_DEF}"
-    printf ${_C_FWHITE}; ls -l $HOME/.ssh; printf ${_C_DEF}
-    [[ -f "$HOME/.ssh/config" ]] && (echo -e "${_C_FCYAN}INI \$HOME/.ssh/config${_C_DEF}"; printf ${_C_FWHITE}; cat $HOME/.ssh/config; printf ${_C_DEF}; echo -e "${_C_FCYAN}END \$HOME/.ssh/config${_C_DEF}") || echo -e "${_C_FRED}WARN: The file $HOME/.ssh/config does not exist or is not a file${_C_DEF}"
-    [[ -f "$HOME/.ssh/config.generic" ]] && (echo -e "${_C_FCYAN}INI \$HOME/.ssh/config.generic${_C_DEF}"; printf ${_C_FWHITE}; cat $HOME/.ssh/config.generic; printf ${_C_DEF}; echo -e "${_C_FCYAN}END \$HOME/.ssh/config.generic${_C_DEF}") || echo -e "${_C_FRED}WARN: The file $HOME/.ssh/config.generic does not exist or is not a file${_C_DEF}"
-    [[ -f "$HOME/.ssh/config.auto" ]] && (echo -e "${_C_FCYAN}INI \$HOME/.ssh/config.auto${_C_DEF}"; printf ${_C_FWHITE}; cat $HOME/.ssh/config.auto; printf ${_C_DEF}; echo -e "${_C_FCYAN}END \$HOME/.ssh/config.auto${_C_DEF}") || echo -e "${_C_FRED}WARN: The file $HOME/.ssh/config.auto does not exist or is not a file${_C_DEF}"
+    ls -l $HOME/.ssh
+    [[ -f "$HOME/.ssh/config" ]] && (echo -e "${_C_FCYAN}INI \$HOME/.ssh/config${_C_DEF}"; cat $HOME/.ssh/config; echo -e "${_C_FCYAN}END \$HOME/.ssh/config${_C_DEF}") || echo -e "${_C_FRED}WARN: The file $HOME/.ssh/config does not exist or is not a file${_C_DEF}"
+    [[ -f "$HOME/.ssh/config.generic" ]] && (echo -e "${_C_FCYAN}INI \$HOME/.ssh/config.generic${_C_DEF}"; cat $HOME/.ssh/config.generic; echo -e "${_C_FCYAN}END \$HOME/.ssh/config.generic${_C_DEF}") || echo -e "${_C_FRED}WARN: The file $HOME/.ssh/config.generic does not exist or is not a file${_C_DEF}"
+    [[ -f "$HOME/.ssh/config.auto" ]] && (echo -e "${_C_FCYAN}INI \$HOME/.ssh/config.auto${_C_DEF}"; cat $HOME/.ssh/config.auto; echo -e "${_C_FCYAN}END \$HOME/.ssh/config.auto${_C_DEF}") || echo -e "${_C_FRED}WARN: The file $HOME/.ssh/config.auto does not exist or is not a file${_C_DEF}"
   else
     echo -e "${_C_RED}WARN: The directory $HOME/.ssh does not exist or is not a directory${_C_DEF}"
   fi
-elif [[ -v parmlist[--deleteall-sshagent] ]]
+elif [[ -v params[--deleteall-sshagent] ]]
 then
-  [[ ${#parmlist[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
+  [[ ${#params[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
   confirmquestion "WARN: Delete all identities from the agent" && ssh-add -D || :
-elif [[ -v parmlist[--deleteall-sshconfig] ]]
+elif [[ -v params[--deleteall-sshconf] ]]
 then
-  [[ ${#parmlist[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
+  [[ ${#params[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
   confirmquestion "WARN: Delete $HOME/.ssh/config.auto file" && rm -f $HOME/.ssh/config.auto || :
   # Apply SSH client settings
   set_sshclient
-elif [[ -v parmlist[--delete-sshkey] ]]
+elif [[ -v params[--delete-sshkey] ]]
 then
-  [[ ${#parmlist[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
+  [[ ${#params[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
   # Basic verification of parameter values
-  echo "${parmlist[--delete-sshkey]}" | grep -Pxq '\w+|\w+((-|_)?\w+)+' || help "ERROR: The argument filename-privatekey must be a valid value"
+  echo "${params[--delete-sshkey]}" | grep -Pxq '\w+|\w+((-|_)?\w+)+' || help "ERROR: The argument filename-privatekey must be a valid value"
   # Apply SSH client settings
   set_sshclient
   ACTION=false
-  [[ -f "$HOME/.ssh/${parmlist[--delete-sshkey]}" ]] && confirmquestion "WARN: All the data of the SSH private key $HOME/.ssh/${parmlist[--delete-sshkey]} will be deleted" && ACTION=true || ACTION=false
+  # The file utility has a bug https://bugs.astron.com/view.php?id=443 and can't detect needed file types
+  if [[ -f "$HOME/.ssh/${params[--delete-sshkey]}" ]]
+  then
+    confirmquestion "WARN: All the data of the SSH private key $HOME/.ssh/${params[--delete-sshkey]} will be deleted" && ACTION=true || ACTION=false
+  else
+    # If the SSH private key is not found then try to delete all rests if exist
+    ACTION=true
+  fi
   if [[ "${ACTION}" == "true" ]]
   then
-    echo "INFO: Delete $HOME/.ssh/${parmlist[--delete-sshkey]} from SSH Agent if exist"
-    ssh-add -d $HOME/.ssh/${parmlist[--delete-sshkey]} 2>/dev/null || true
-    ssh-add -d $HOME/.ssh/${parmlist[--delete-sshkey]}.pub 2>/dev/null || true
+    echo "INFO: Delete $HOME/.ssh/${params[--delete-sshkey]} from SSH Agent if exist"
+    ssh-add -d $HOME/.ssh/${params[--delete-sshkey]} 2>/dev/null || true
+    ssh-add -d $HOME/.ssh/${params[--delete-sshkey]}.pub 2>/dev/null || true
     while IFS= read -r inputline
     do
       [[ "${DEBUG}" == "true" ]] && echo "WARN: Delete possibly orphaned key from SSH Agent"
       [[ "${DEBUG}" == "true" ]] && echo "${inputline}"
       echo "${inputline}" | ssh-add -d -
-    done < <(ssh-add -L | grep "/${parmlist[--delete-sshkey]}$" || true)
-    echo "TODO: Manage sshconfig"
-    echo "INFO: Delete SSH PEM RSA private key $HOME/.ssh/${parmlist[--delete-sshkey]} and public key $HOME/.ssh/${parmlist[--delete-sshkey]}.pub"
-    rm -f $HOME/.ssh/${parmlist[--delete-sshkey]}
-    rm -f $HOME/.ssh/${parmlist[--delete-sshkey]}.pub
+    done < <(ssh-add -L | grep "/${params[--delete-sshkey]}$" || true)
+    echo -e "${_C_BRED}TODO: Manage sshconf${_C_DEF}"
+    echo "INFO: Delete SSH PEM RSA private key $HOME/.ssh/${params[--delete-sshkey]} and public key $HOME/.ssh/${params[--delete-sshkey]}.pub"
+    rm -f $HOME/.ssh/${params[--delete-sshkey]}
+    rm -f $HOME/.ssh/${params[--delete-sshkey]}.pub
   else
     :
   fi
-elif [[ -v parmlist[--show-sshkey] ]]
+elif [[ -v params[--show-sshkey] ]]
 then
-  [[ ${#parmlist[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
+  [[ ${#params[@]} -ne 1 ]] && help "ERROR: Mixed parameters"
   # Basic verification of parameter values
-  echo "${parmlist[--show-sshkey]}" | grep -Pxq '\w+|\w+((-|_)?\w+)+' || help "ERROR: The argument filename-privatekey must be a valid value"
+  echo "${params[--show-sshkey]}" | grep -Pxq '\w+|\w+((-|_)?\w+)+' || help "ERROR: The argument filename-privatekey must be a valid value"
   # Apply SSH client settings
   set_sshclient
-  show_sshkey ${parmlist[--show-sshkey]}
-elif [[ -v parmlist[--create-sshkey] ]]
+  ON_ERROR=return
+  show_sshkey "${params[--show-sshkey]}"
+
+
+
+
+
+elif [[ -v params[--create-sshkey] ]]
 then
   # Basic verification of parameter values
-  echo "${parmlist[--create-sshkey]}" | grep -Pxq '\w+|\w+((-|_)?\w+)+' || help "ERROR: The argument filename-privatekey must be a valid value"
-  if [[ -v parmlist[--add-sshconfig] ]]
+  echo "${params[--create-sshkey]}" | grep -Pxq '\w+|\w+((-|_)?\w+)+' || help "ERROR: The argument filename-privatekey must be a valid value"
+  if [[ -v params[--add-sshconf] ]]
   then
-    echo "${parmlist[--add-sshconfig]}" | grep -Pxq '[^\s,]+(,[^\s,]+)*' || help "ERROR: The SSH config hosts are not valid"
+    echo "${params[--add-sshconf]}" | grep -Pxq '[^\s,]+(,[^\s,]+)*' || help "ERROR: The SSH config hosts are not valid"
   else
     :
   fi
   # Apply SSH client settings
   set_sshclient
   ACTION=false
-  if [[ -f "$HOME/.ssh/${parmlist[--create-sshkey]}" ]]
+  if [[ -f "$HOME/.ssh/${params[--create-sshkey]}" ]]
   then
-    confirmquestion "WARN: The file $HOME/.ssh/${parmlist[--create-sshkey]} will be overwritten" && ACTION=true || ACTION=false
+    confirmquestion "WARN: The file $HOME/.ssh/${params[--create-sshkey]} will be overwritten" && ACTION=true || ACTION=false
   else
     ACTION=true
   fi
   if [[ "${ACTION}" == "true" ]]
   then
-    if [[ -v parmlist[--import] ]]
+    if [[ -v params[--import] ]]
     then
-      echo "INFO: Copy and paste the SSH PEM RSA private key and press enter to end to store in $HOME/.ssh/${parmlist[--create-sshkey]}"
-      truncate -s 0 $HOME/.ssh/${parmlist[--create-sshkey]}
-      chmod 600 $HOME/.ssh/${parmlist[--create-sshkey]}
+      echo "INFO: Copy and paste the SSH PEM RSA private key and press enter to end to store in $HOME/.ssh/${params[--create-sshkey]}"
+      truncate -s 0 $HOME/.ssh/${params[--create-sshkey]}
+      chmod 600 $HOME/.ssh/${params[--create-sshkey]}
       while IFS= read -r inputline
       do
         [ -z "${inputline}" ] && break
-        printf "%s\n" "${inputline}" >> $HOME/.ssh/${parmlist[--create-sshkey]}
+        printf "%s\n" "${inputline}" >> $HOME/.ssh/${params[--create-sshkey]}
       done < /dev/stdin
-      echo "INFO: Create the SSH RSA public key $HOME/.ssh/${parmlist[--create-sshkey]}.pub from the provided private key $HOME/.ssh/${parmlist[--create-sshkey]}"
-      ssh-keygen -y -f $HOME/.ssh/${parmlist[--create-sshkey]} > $HOME/.ssh/${parmlist[--create-sshkey]}.pub
-      chmod 600 $HOME/.ssh/${parmlist[--create-sshkey]}.pub
+      echo "INFO: Create the SSH RSA public key $HOME/.ssh/${params[--create-sshkey]}.pub from the provided private key $HOME/.ssh/${params[--create-sshkey]}"
+      ssh-keygen -y -f $HOME/.ssh/${params[--create-sshkey]} > $HOME/.ssh/${params[--create-sshkey]}.pub
+      chmod 600 $HOME/.ssh/${params[--create-sshkey]}.pub
     else
-      echo "INFO: Create SSH PEM RSA private key $HOME/.ssh/${parmlist[--create-sshkey]} and public key $HOME/.ssh/${parmlist[--create-sshkey]}.pub"
-      ssh-keygen -b 4096 -t rsa -m PKCS8 -N "" -C "my@${parmlist[--create-sshkey]}" -f $HOME/.ssh/${parmlist[--create-sshkey]} <<< $'y'
+      echo "INFO: Create SSH PEM RSA private key $HOME/.ssh/${params[--create-sshkey]} and public key $HOME/.ssh/${params[--create-sshkey]}.pub"
+      ssh-keygen -b 4096 -t rsa -m PKCS8 -N "" -C "my@${params[--create-sshkey]}" -f $HOME/.ssh/${params[--create-sshkey]} <<< $'y'
     fi
-    chmod 600 $HOME/.ssh/${parmlist[--create-sshkey]} $HOME/.ssh/${parmlist[--create-sshkey]}.pub
+    chmod 600 $HOME/.ssh/${params[--create-sshkey]} $HOME/.ssh/${params[--create-sshkey]}.pub
   fi
-  if [[ -v parmlist[--add-sshagent] ]]
+  if [[ -v params[--add-sshagent] ]]
   then
-    echo "INFO: Add $HOME/.ssh/${parmlist[--create-sshkey]} to SSH Agent"
-    ssh-add $HOME/.ssh/${parmlist[--create-sshkey]}
+    echo "INFO: Add $HOME/.ssh/${params[--create-sshkey]} to SSH Agent"
+    ssh-add $HOME/.ssh/${params[--create-sshkey]}
   fi
-  if [[ -v parmlist[--delete-sshagent] ]]
+  if [[ -v params[--delete-sshagent] ]]
   then
-    echo "INFO: Delete $HOME/.ssh/${parmlist[--create-sshkey]} from SSH Agent"
-    ssh-add -d $HOME/.ssh/${parmlist[--create-sshkey]} || true
+    echo "INFO: Delete $HOME/.ssh/${params[--create-sshkey]} from SSH Agent"
+    ssh-add -d $HOME/.ssh/${params[--create-sshkey]} || true
   fi
-  if [[ -v parmlist[--delete-sshconfig] ]]
+  if [[ -v params[--delete-sshconf] ]]
   then
-    echo "TODO: Manage sshconfig"
+    echo -e "${_C_BRED}TODO: Manage sshconf${_C_DEF}"
   fi
-  if [[ -v parmlist[--add-sshconfig] ]]
+  if [[ -v params[--add-sshconf] ]]
   then
-    echo "TODO: Manage sshconfig"
-#    echo "INFO: Add $HOME/.ssh/${parmlist[--create-sshkey]} to SSH client settings Host in $HOME/.ssh/config.auto"
-#    printf "Host %s\n  IdentityFile %s\n  IdentitiesOnly yes\n  ForwardAgent yes\n" "${ADDTO_SSHCONFIG}" "~/.ssh/${parmlist[--create-sshkey]}" >> $HOME/.ssh/config.auto
+    echo -e "${_C_BRED}TODO: Manage sshconf${_C_DEF}"
+#    echo "INFO: Add $HOME/.ssh/${params[--create-sshkey]} to SSH client settings Host in $HOME/.ssh/config.auto"
+#    printf "Host %s\n  IdentityFile %s\n  IdentitiesOnly yes\n  ForwardAgent yes\n" "${ADDTO_sshconf}" "~/.ssh/${params[--create-sshkey]}" >> $HOME/.ssh/config.auto
   fi
-elif [[ -v parmlist[--config-sshkey] ]]
+
+
+
+
+
+
+elif [[ -v params[--config-sshkey] ]]
 then
   # Basic verification of parameter values
-  echo "${parmlist[--config-sshkey]}" | grep -Pxq '\w+|\w+((-|_)?\w+)+' || help "ERROR: The argument filename-privatekey must be a valid value"
-  if [[ -v parmlist[--add-sshconfig] ]]
+  echo "${params[--config-sshkey]}" | grep -Pxq '\w+|\w+((-|_)?\w+)+' || help "ERROR: The argument filename-privatekey must be a valid value"
+  if [[ -v params[--add-sshconf] ]]
   then
-    echo "${parmlist[--add-sshconfig]}" | grep -Pxq '[a-zA-Z\d]+(-[a-zA-Z\d]+)*(\.[a-zA-Z\d]+(-[a-zA-Z\d]+)*)*(\s+[a-zA-Z\d]+(-[a-zA-Z\d]+)*(\.[a-zA-Z\d]+(-[a-zA-Z\d]+)*)*)*' || help "ERROR: The SSH config hosts are not valid"
+    echo "${params[--add-sshconf]}" | grep -Pxq '[a-zA-Z\d]+(-[a-zA-Z\d]+)*(\.[a-zA-Z\d]+(-[a-zA-Z\d]+)*)*(\s+[a-zA-Z\d]+(-[a-zA-Z\d]+)*(\.[a-zA-Z\d]+(-[a-zA-Z\d]+)*)*)*' || help "ERROR: The SSH config hosts are not valid"
   else
     :
   fi
   # Apply SSH client settings
   set_sshclient
-  if [[ -v parmlist[--add-sshagent] ]]
+  if [[ -v params[--add-sshagent] ]]
   then
-    echo "INFO: Add $HOME/.ssh/${parmlist[--config-sshkey]} to SSH Agent"
-    ssh-add $HOME/.ssh/${parmlist[--config-sshkey]}
+    echo "INFO: Add $HOME/.ssh/${params[--config-sshkey]} to SSH Agent"
+    ssh-add $HOME/.ssh/${params[--config-sshkey]}
   fi
-  if [[ -v parmlist[--delete-sshagent] ]]
+  if [[ -v params[--delete-sshagent] ]]
   then
-    echo "INFO: Delete $HOME/.ssh/${parmlist[--config-sshkey]} from SSH Agent"
-    ssh-add -d $HOME/.ssh/${parmlist[--config-sshkey]} || true
+    echo "INFO: Delete $HOME/.ssh/${params[--config-sshkey]} from SSH Agent"
+    ssh-add -d $HOME/.ssh/${params[--config-sshkey]} || true
   fi
-  if [[ -v parmlist[--delete-sshconfig] ]]
+  if [[ -v params[--delete-sshconf] ]]
   then
-    echo "TODO: Manage sshconfig"
+    echo -e "${_C_BRED}TODO: Manage sshconf${_C_DEF}"
   fi
-  if [[ -v parmlist[--add-sshconfig] ]]
+  if [[ -v params[--add-sshconf] ]]
   then
-    echo "TODO: Manage sshconfig"
-    parse_sshhostslist
+    echo -e "${_C_BRED}TODO: Manage sshconf${_C_DEF}"
+    parse_sshconf_list
 
-    for indexarr in "${!sshhostslist[@]}"
+    for indexarr in "${!sshconf_list[@]}"
     do
-      printf "Number %s\n%s\n" "${indexarr}" "${sshhostslist[${indexarr}]}"
+      printf "Number %s\n%s\n" "${indexarr}" "${sshconf_list[${indexarr}]}"
     done
 
-    echo "INFO: Add $HOME/.ssh/${parmlist[--config-sshkey]} to SSH client settings Host $HOME/.ssh/config.auto"
-    printf "Host %s\n  IdentityFile %s\n  IdentitiesOnly yes\n  ForwardAgent yes\n" "${parmlist[--add-sshconfig]}" "~/.ssh/${parmlist[--config-sshkey]}" >> $HOME/.ssh/config.auto
-#    printf "Host %s\n  IdentityFile %s\n  IdentitiesOnly yes\n  ForwardAgent yes\n" "${ADDTO_SSHCONFIG}" "~/.ssh/${parmlist[--config-sshkey]}" >> $HOME/.ssh/config.auto
+    echo "INFO: Add $HOME/.ssh/${params[--config-sshkey]} to SSH client settings Host $HOME/.ssh/config.auto"
+    printf "Host %s\n  IdentityFile %s\n  IdentitiesOnly yes\n  ForwardAgent yes\n" "${params[--add-sshconf]}" "~/.ssh/${params[--config-sshkey]}" >> $HOME/.ssh/config.auto
+#    printf "Host %s\n  IdentityFile %s\n  IdentitiesOnly yes\n  ForwardAgent yes\n" "${ADDTO_sshconf}" "~/.ssh/${params[--config-sshkey]}" >> $HOME/.ssh/config.auto
   fi
 else
   help "ERROR: Internal error"

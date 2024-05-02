@@ -27,10 +27,12 @@ cd ${SCRIPT_BASEDIR}
 
 # Global variables
 MINTTY_SETTINGS='Term=xterm-256color
-Font=Cascadia Code
+# Best fonts are no ambiguous width as Cascadia Mono. For check launch echo "!=" and must be the output equal to !=
+Font=Cascadia Mono
 FontHeight=10
 FontSmoothing=full
-ThemeFile=xterm
+# Best confortable themes: luminous rosipov windows10
+ThemeFile=luminous
 CopyOnSelect=no
 ScrollbackLines=10000000
 CursorType=block
@@ -63,7 +65,7 @@ python3 python3-devel python3-pip python3-setuptools python3-distlib
 tar zip unzip gzip xz
 )
 TOOL_CHECKS_LIST=(curl wget git python python3 pip3 jq yq openssl openssh sshpass keychain)
-SSHCONFIGGENERIC='StrictHostKeyChecking no
+SSHCONFBASE='StrictHostKeyChecking no
 UserKnownHostsFile /dev/null
 ControlMaster yes
 ControlPersist 600s
@@ -71,7 +73,7 @@ Host *
   ServerAliveInterval 60
   ServerAliveCountMax 5
 Include config.auto'
-SSHCONFIGAUTO_HEADERCOMMENT='# Please do not modify this file because it is managed automatically'
+SSHCONF_HEADER='# Please do not modify this file because it is managed automatically'
 VIM_SETTINGS='" Disable visual mode
 set mouse-=a
 " No autoindent but allow tabs with size 2
@@ -158,6 +160,7 @@ ENDBASHRC3
 )
 BASHRC_SETTINGS+=$'\n'$(cat << ENDBASHRC4
 addpath "${QEMU_CYGWINHOMEPATH}"
+addpath "\${VBOX_MSI_INSTALL_PATH}"
 ENDBASHRC4
 )
 BASHRC_SETTINGS+=$'\n'$(cat << 'ENDBASHRC5'
@@ -214,7 +217,7 @@ ENDHELP3
   done | pr -T -o 8
     cat << ENDHELP4
     - Start keychain tool to manage SSH and GPG2 keys in a convenient secure manner
-  - Apply basic SSH client settings defined by SSHCONFIGGENERIC and SSHCONFIGAUTO_HEADERCOMMENT variables
+  - Apply basic SSH client settings defined by SSHCONFBASE and SSHCONF_HEADER variables
   - Apply basic vim tool settings for better use and visualization defined by VIM_SETTINGS
   - Execute tests for common and basic commands getting its versions and PATH lookups defined by TOOL_CHECKS_LIST variable
 ENDHELP4
@@ -227,7 +230,7 @@ function set_sshclient()
   echo "INFO: Apply SSH client settings"
   mkdir -p $HOME/.ssh
   chmod 700 $HOME/.ssh
-  echo "${SSHCONFIGGENERIC}" > $HOME/.ssh/config.generic
+  echo "${SSHCONFBASE}" > $HOME/.ssh/config.generic
   truncate -s 0 $HOME/.ssh/known_hosts
   touch $HOME/.ssh/authorized_keys
   touch $HOME/.ssh/config.auto
@@ -235,9 +238,9 @@ function set_sshclient()
   sed -i 's/\t/  /g' $HOME/.ssh/config.auto
   if [[ -s "$HOME/.ssh/config.auto" ]]
   then
-    sed -i "1 i${SSHCONFIGAUTO_HEADERCOMMENT}" $HOME/.ssh/config.auto
+    sed -i "1 i${SSHCONF_HEADER}" $HOME/.ssh/config.auto
   else
-    echo "${SSHCONFIGAUTO_HEADERCOMMENT}" > $HOME/.ssh/config.auto
+    echo "${SSHCONF_HEADER}" > $HOME/.ssh/config.auto
   fi
   if [[ -s $HOME/.ssh/config ]]
   then

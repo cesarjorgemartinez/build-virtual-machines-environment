@@ -86,7 +86,7 @@ echo "**************************************************************************
 echo
 
 echo "INFO: Show environment variables"
-env | egrep '^PACKER_|^SO_|^VBOXPATH=|^QEMUPATH=|^PATH=' | sort
+env | egrep '^PACKER_|^SO_|^PATH=' | sort
 
 if [ "${PACKER_MACHINEREADABLEOUTPUT,,}" == "true" ]
 then
@@ -103,10 +103,10 @@ mkdir -p ${HOME_BASEDIR}/logs
 export PACKER_LOG_PATH="logs/packerlog.txt"
 
 echo "INFO: Obtain SO_ISOCHECKSUMIMAGE from ${SO_ISOURLSHA256SUM}"
-export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOIMAGENAME}" ${PARENT_HOME_BASEDIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $1}')"
+export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOIMAGENAME}" ${SO_ARTIFACT_DIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $1}')"
 
 echo "INFO: Validate JSON with Packer"
-packer-software/packer.exe ${MACHINEREADABLEPARAMETER} validate json/virtual-machine.json
+./packer.exe ${MACHINEREADABLEPARAMETER} validate json/virtual-machine.json
 
 if [ "${PACKER_DEBUG,,}" == "true" ]
 then
@@ -115,47 +115,33 @@ then
 fi
 
 echo "INFO: Run the build with Packer"
-packer-software/packer.exe build ${PACKERDEBUG} ${MACHINEREADABLEPARAMETER} -force \
+./packer.exe build ${PACKERDEBUG} ${MACHINEREADABLEPARAMETER} -force \
 -var so_adminuser=${SO_ADMINUSER} \
 -var so_adminpass=${SO_ADMINPASS} \
 -var so_defaultclouduser=${SO_DEFAULTCLOUDUSER} \
 json/virtual-machine.json
 
 echo "INFO: Remove references of -disk001 in generated packer files in <${HOME_BASEDIR}/output-virtualbox-iso>"
-if [ -f ${HOME_BASEDIR}/output-virtualbox-iso/${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}-disk001.vmdk ]
+if [ -f ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}-disk001.vmdk ]
 then
-  mv ${HOME_BASEDIR}/output-virtualbox-iso/${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}-disk001.vmdk \
-    ${HOME_BASEDIR}/output-virtualbox-iso/${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.vmdk
+  mv ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}-disk001.vmdk ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.vmdk
 fi
-if [ -f ${HOME_BASEDIR}/output-virtualbox-iso/${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.ovf ]
+if [ -f ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.ovf ]
 then
-  sed -i -e 's/-disk001//g' ${HOME_BASEDIR}/output-virtualbox-iso/${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-${SO_BUILDDATE}.ovf
+  sed -i -e 's/-disk001//g' ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.ovf ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.mf
 fi
 
-echo "INFO: Remove all images named as <${PARENT_HOME_BASEDIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}.*${SO_IMAGETYPE}*>"
-mkdir -p ${PARENT_HOME_BASEDIR}/images
-rm -rf ${PARENT_HOME_BASEDIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}.*${SO_IMAGETYPE}*
-echo "INFO: Move vmdk and ovf files from <${HOME_BASEDIR}/output-virtualbox-iso> to <${PARENT_HOME_BASEDIR}/images>"
-find ${HOME_BASEDIR}/output-virtualbox-iso -maxdepth 1 -type f | xargs -r -I '{}' mv {} ${PARENT_HOME_BASEDIR}/images
+echo "INFO: Remove all images named as <${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}.*${SO_IMAGETYPE}*>"
+mkdir -p ${SO_ARTIFACT_DIR}/images
+rm -rf ${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}.*${SO_IMAGETYPE}*
+echo "INFO: Move vmdk and ovf files from <${HOME_BASEDIR}/output-virtualbox-iso> to <${SO_ARTIFACT_DIR}/images>"
+find ${HOME_BASEDIR}/output-virtualbox-iso -maxdepth 1 -type f | xargs -r -I '{}' mv {} ${SO_ARTIFACT_DIR}/images
 
-cd ${PARENT_HOME_BASEDIR}/images
-
-echo "INFO: Get vmdk file inside <${PARENT_HOME_BASEDIR}/images>"
-SEARCHFILE=".*${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-[0-9]*.vmdk"
-VMDK_FILENAME="$(find * -type f -regex "${SEARCHFILE}" 2>/dev/null || true)"
-
-if [ "${VMDK_FILENAME}" == "" ]
+if [ -f ${SO_ARTIFACT_DIR}/images/${SO_VMFULLNAME}.vmdk ]
 then
-  echo "ERROR: Can not find any vmdk file"
-  exit 1
+  echo "INFO: Convert vmdk format <${SO_ARTIFACT_DIR}/images/${SO_VMFULLNAME}.vmdk> to qcow2 format <${SO_ARTIFACT_DIR}/images/${SO_VMFULLNAME}.qcow2>"
+  qemu-img.exe convert -c -f vmdk -O qcow2 $(cygpath -w ${SO_ARTIFACT_DIR}/images/${SO_VMFULLNAME}.vmdk) $(cygpath -w ${SO_ARTIFACT_DIR}/images/${SO_VMFULLNAME}.qcow2)
+else
+  echo "ERROR: Disk file <${SO_ARTIFACT_DIR}/images/${SO_VMFULLNAME}.vmdk> not found"
 fi
-ONLYNAME_IMAGE="$(basename -s .vmdk ${VMDK_FILENAME})"
-
-echo "INFO: VMDK file to convert <${VMDK_FILENAME}>"
-echo "INFO: Image name to convert <${ONLYNAME_IMAGE}>"
-
-echo "INFO: Convert vmdk file to qcow2"
-qemu-img.exe convert -c -f vmdk ${ONLYNAME_IMAGE}.vmdk -O qcow2 ${ONLYNAME_IMAGE}.qcow2
-
-cd ${HOME_BASEDIR}
 

@@ -16,12 +16,12 @@ set -e
 source ${HOME_BASEDIR}/conf/virtual-machine.conf
 
 echo "INFO: Show environment variables"
-env | egrep '^PACKER_|^SO_|^VBOXPATH=|^QEMUPATH=|^PATH=' | sort
+env | egrep '^PACKER_|^SO_|^PATH=' | sort
 
-mkdir -p ${PARENT_HOME_BASEDIR}/images
-cd ${PARENT_HOME_BASEDIR}/images
+mkdir -p ${SO_ARTIFACT_DIR}/images
+cd ${SO_ARTIFACT_DIR}/images
 
-echo "INFO: Get qcow2 file inside <${PARENT_HOME_BASEDIR}/images>"
+echo "INFO: Get qcow2 file inside <${SO_ARTIFACT_DIR}/images>"
 SEARCHFILE=".*${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-[0-9]*.qcow2"
 QCOW2_FILENAME="$(find * -type f -regex "${SEARCHFILE}" 2>/dev/null || true)"
 

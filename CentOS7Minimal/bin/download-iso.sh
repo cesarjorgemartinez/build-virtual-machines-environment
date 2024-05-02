@@ -16,22 +16,16 @@ set -e
 source ${HOME_BASEDIR}/conf/virtual-machine.conf
 
 echo "INFO: show environment variables"
-env | egrep '^PACKER_|^SO_|^VBOXPATH=|^QEMUPATH=|^PATH=' | sort
+env | egrep '^PACKER_|^SO_|^PATH=' | sort
 
-mkdir -p ${PARENT_HOME_BASEDIR}/isos
-cd ${PARENT_HOME_BASEDIR}/isos
+mkdir -p ${SO_ARTIFACT_DIR}/isos
+cd ${SO_ARTIFACT_DIR}/isos
 
-echo "INFO: Get <${SO_ISOURLIMAGE}> into <${PARENT_HOME_BASEDIR}/isos> if already is not downloaded"
-if [ ! -f ${SO_ISOIMAGENAME} ]
-then
-  curl -L -O ${SO_ISOURLIMAGE}
-fi
+echo "INFO: Get <${SO_ISOURLIMAGE}> into <${SO_ARTIFACT_DIR}/isos> if already is not downloaded"
+curl -C - -L -O ${SO_ISOURLIMAGE}
 
-echo "INFO: Get <${SO_ISOURLSHA256SUM}> into  <${PARENT_HOME_BASEDIR}/isos> if already is not downloaded"
-if [ ! -f ${SO_ISOSHA256SUMNAME} ]
-then
-  curl -L -o ${SO_ISOSHA256SUMNAME} ${SO_ISOURLSHA256SUM}
-fi
+echo "INFO: Get <${SO_ISOURLSHA256SUM}> into  <${SO_ARTIFACT_DIR}/isos> if already is not downloaded"
+curl -C - -L -o ${SO_ISOSHA256SUMNAME} ${SO_ISOURLSHA256SUM}
 
 cd ${HOME_BASEDIR}
 
