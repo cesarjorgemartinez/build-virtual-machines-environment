@@ -22,7 +22,7 @@ mkdir -p ${SO_ARTIFACT_DIR}/isos
 cd ${SO_ARTIFACT_DIR}/isos
 
 echo "INFO: Get <${SO_ISOURLIMAGE}> into <${SO_ARTIFACT_DIR}/isos> if already is not downloaded"
-curl -C - -L -O "${SO_ISOURLIMAGE}"
+curl -C - -L -o ${SO_ISOIMAGENAME} "${SO_ISOURLIMAGE}"
 
 echo "INFO: Get <${SO_ISOURLSHA256SUM}> into  <${SO_ARTIFACT_DIR}/isos> if already is not downloaded"
 curl -C - -L -o ${SO_ISOSHA256SUMNAME} "${SO_ISOURLSHA256SUM}"
