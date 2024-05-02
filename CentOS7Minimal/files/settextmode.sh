@@ -37,7 +37,7 @@ if [ "$(echo "${MACHINETYPE}" | grep '^virtualbox$')" != "" ]
 then
   echo "INFO: Detected VM of type VirtualBox. Reinstalling the Guest Additions"
   sudo touch /opt/reinstallGuestAdditions.action
-  sudo /usr/local/bin/guest-vmtools.sh
+  sudo /usr/local/bin/guestvmtools.sh
 fi
 
 echo "INFO: You need to reboot your O.S. to apply the changes correctly"

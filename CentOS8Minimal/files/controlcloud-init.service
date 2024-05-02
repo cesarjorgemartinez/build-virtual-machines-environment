@@ -9,7 +9,7 @@ Conflicts=shutdown.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/control-cloud-init.sh
+ExecStart=/usr/local/bin/controlcloud-init.sh
 RemainAfterExit=yes
 TimeoutSec=0
 

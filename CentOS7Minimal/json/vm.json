@@ -3,7 +3,7 @@
     {
       "boot_command": [
         "<up><wait><tab><bs><bs><bs><bs><bs>console=ttyS0 console=tty0 ignore_loglevel ",
-        "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/kickstart-virtual-machine.cfg inst.text<wait5><enter><wait>"
+        "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/kickstartvm.cfg inst.text<wait5><enter><wait>"
       ],
       "boot_wait": "{{ user `so_boot_wait` }}",
       "cpus": 1,
@@ -53,38 +53,38 @@
   ],
   "provisioners": [
     {
-      "destination": "host-info.sh",
-      "source": "files/host-info.sh",
+      "destination": "hostinfo.sh",
+      "source": "files/hostinfo.sh",
       "type": "file"
     },
     {
-      "destination": "control-cloud-init.service",
-      "source": "files/control-cloud-init.service",
+      "destination": "controlcloud-init.service",
+      "source": "files/controlcloud-init.service",
       "type": "file"
     },
     {
-      "destination": "control-cloud-init.sh",
-      "source": "files/control-cloud-init.sh",
+      "destination": "controlcloud-init.sh",
+      "source": "files/controlcloud-init.sh",
       "type": "file"
     },
     {
-      "destination": "guest-vmtools.service",
-      "source": "files/guest-vmtools.service",
+      "destination": "guestvmtools.service",
+      "source": "files/guestvmtools.service",
       "type": "file"
     },
     {
-      "destination": "guest-vmtools.sh",
-      "source": "files/guest-vmtools.sh",
+      "destination": "guestvmtools.sh",
+      "source": "files/guestvmtools.sh",
       "type": "file"
     },
     {
-      "destination": "switch-to-graphical-user-interface.sh",
-      "source": "files/switch-to-graphical-user-interface.sh",
+      "destination": "setguimode.sh",
+      "source": "files/setguimode.sh",
       "type": "file"
     },
     {
-      "destination": "switch-to-text-user-interface.sh",
-      "source": "files/switch-to-text-user-interface.sh",
+      "destination": "settextmode.sh",
+      "source": "files/settextmode.sh",
       "type": "file"
     },
     {
@@ -95,7 +95,7 @@
       ],
       "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'",
       "scripts": [
-        "postscripts/post-stage-1.sh"
+        "postscripts/poststage1.sh"
       ],
       "type": "shell"
     }

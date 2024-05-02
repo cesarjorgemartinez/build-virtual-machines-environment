@@ -42,49 +42,49 @@ rm -rf /var/lib/dnf/*
 rm -rf /var/cache/*
 rpm --rebuilddb
 
-echo "INFO: Install host-info.sh script to /usr/local/bin/host-info.sh"
-mv host-info.sh /usr/local/bin
-chown root.root /usr/local/bin/host-info.sh
-chmod +x /usr/local/bin/host-info.sh
+echo "INFO: Install /usr/local/bin/hostinfo.sh"
+mv hostinfo.sh /usr/local/bin
+chown root.root /usr/local/bin/hostinfo.sh
+chmod +x /usr/local/bin/hostinfo.sh
 
-echo "INFO: Install control-cloud-init.sh script to /usr/local/bin/control-cloud-init.sh"
-mv control-cloud-init.sh /usr/local/bin
-chown root.root /usr/local/bin/control-cloud-init.sh
-chmod +x /usr/local/bin/control-cloud-init.sh
+echo "INFO: Install /usr/local/bin/controlcloud-init.sh"
+mv controlcloud-init.sh /usr/local/bin
+chown root.root /usr/local/bin/controlcloud-init.sh
+chmod +x /usr/local/bin/controlcloud-init.sh
 
-echo "INFO: Install Systemd Unit /etc/systemd/system/control-cloud-init.service"
-mv control-cloud-init.service /etc/systemd/system/control-cloud-init.service
-chown root.root /etc/systemd/system/control-cloud-init.service
-chmod 644 /etc/systemd/system/control-cloud-init.service
+echo "INFO: Install Systemd Unit /etc/systemd/system/controlcloud-init.service"
+mv controlcloud-init.service /etc/systemd/system/controlcloud-init.service
+chown root.root /etc/systemd/system/controlcloud-init.service
+chmod 644 /etc/systemd/system/controlcloud-init.service
 
-echo "INFO: Install guest-vmtools.sh script to /usr/local/bin/guest-vmtools.sh"
-mv guest-vmtools.sh /usr/local/bin
-chown root.root /usr/local/bin/guest-vmtools.sh
-chmod +x /usr/local/bin/guest-vmtools.sh
+echo "INFO: Install /usr/local/bin/guestvmtools.sh"
+mv guestvmtools.sh /usr/local/bin
+chown root.root /usr/local/bin/guestvmtools.sh
+chmod +x /usr/local/bin/guestvmtools.sh
 
-echo "INFO: Install Systemd Unit /etc/systemd/system/guest-vmtools.service"
-mv guest-vmtools.service /etc/systemd/system/guest-vmtools.service
-chown root.root /etc/systemd/system/guest-vmtools.service
-chmod 644 /etc/systemd/system/guest-vmtools.service
+echo "INFO: Install Systemd Unit /etc/systemd/system/guestvmtools.service"
+mv guestvmtools.service /etc/systemd/system/guestvmtools.service
+chown root.root /etc/systemd/system/guestvmtools.service
+chmod 644 /etc/systemd/system/guestvmtools.service
 
-echo "INFO: Install switch-to-graphical-user-interface.sh file to /usr/local/bin/switch-to-graphical-user-interface.sh"
-mv switch-to-graphical-user-interface.sh /usr/local/bin/switch-to-graphical-user-interface.sh
-chown root.root /usr/local/bin/switch-to-graphical-user-interface.sh
-chmod +x /usr/local/bin/switch-to-graphical-user-interface.sh
+echo "INFO: Install /usr/local/bin/setguimode.sh"
+mv setguimode.sh /usr/local/bin/setguimode.sh
+chown root.root /usr/local/bin/setguimode.sh
+chmod +x /usr/local/bin/setguimode.sh
 
-echo "INFO: Install switch-to-text-user-interface.sh file to /usr/local/bin/switch-to-text-user-interface.sh"
-mv switch-to-text-user-interface.sh /usr/local/bin/switch-to-text-user-interface.sh
-chown root.root /usr/local/bin/switch-to-text-user-interface.sh
-chmod +x /usr/local/bin/switch-to-text-user-interface.sh
+echo "INFO: Install /usr/local/bin/settextmode.sh"
+mv settextmode.sh /usr/local/bin/settextmode.sh
+chown root.root /usr/local/bin/settextmode.sh
+chmod +x /usr/local/bin/settextmode.sh
 
 echo "INFO: Reload systemd daemon"
 systemctl daemon-reload
 
-echo "INFO: Enable at boot control-cloud-init.service"
-systemctl enable control-cloud-init.service
+echo "INFO: Enable at boot controlcloud-init.service"
+systemctl enable controlcloud-init.service
 
-echo "INFO: Enable at boot guest-vmtools.service"
-systemctl enable guest-vmtools.service
+echo "INFO: Enable at boot guestvmtools.service"
+systemctl enable guestvmtools.service
 
 echo "INFO: Delete /etc/cloud/cloud-init.disabled"
 rm -f /etc/cloud/cloud-init.disabled

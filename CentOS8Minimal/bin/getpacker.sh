@@ -12,7 +12,7 @@ SCRIPT_BASEDIR="$(dirname $(readlink -f "${BASH_SOURCE[0]}"))"
 HOME_BASEDIR="$(dirname $(readlink -f "${SCRIPT_BASEDIR}"))"
 cd ${HOME_BASEDIR}
 set -e
-source ${HOME_BASEDIR}/conf/virtual-machine.conf
+source ${HOME_BASEDIR}/conf/vm.conf
 
 echo "INFO: show environment variables"
 env | egrep '^PACKER_|^SO_|^PATH=' | sort

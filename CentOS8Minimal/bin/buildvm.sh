@@ -14,7 +14,7 @@ PARENT_HOME_BASEDIR="$(dirname $(readlink -f "${HOME_BASEDIR}"))"
 PROGNAME="$(basename $0)"
 cd ${HOME_BASEDIR}
 set -e
-source ${HOME_BASEDIR}/conf/virtual-machine.conf
+source ${HOME_BASEDIR}/conf/vm.conf
 
 function help ()
 {
@@ -103,10 +103,10 @@ mkdir -p ${HOME_BASEDIR}/logs
 export PACKER_LOG_PATH="logs/packerlog.txt"
 
 echo "INFO: Obtain SO_ISOCHECKSUMIMAGE from ${SO_ISOURLSHA256SUM}"
-export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOIMAGENAME}" ${SO_ARTIFACT_DIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $1}')"
+export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOCHECKSUMTYPE^^}.*${SO_ISOIMAGENAME}" ${SO_ARTIFACT_DIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $4}')"
 
 echo "INFO: Validate JSON with Packer"
-./packer.exe ${MACHINEREADABLEPARAMETER} validate json/virtual-machine.json
+./packer.exe ${MACHINEREADABLEPARAMETER} validate json/vm.json
 
 if [ "${PACKER_DEBUG,,}" == "true" ]
 then
@@ -119,7 +119,7 @@ echo "INFO: Run the build with Packer"
 -var so_adminuser=${SO_ADMINUSER} \
 -var so_adminpass=${SO_ADMINPASS} \
 -var so_defaultclouduser=${SO_DEFAULTCLOUDUSER} \
-json/virtual-machine.json
+json/vm.json
 
 echo "INFO: Remove references of -disk001 in generated packer files in <${HOME_BASEDIR}/output-virtualbox-iso>"
 if [ -f ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}-disk001.vmdk ]
