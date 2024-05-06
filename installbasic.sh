@@ -60,9 +60,9 @@ avahi avahi-tools
 vim vim-minimal vim-common nano
 tmux expect konsole git ncdu
 gcc-core gcc-g++ autoconf automake make cmake pkg-config pkgconf
-gawk pcre2 gettext dialog figlet
+gawk pcre2 gettext dialog figlet btop
 python3 python3-devel python3-pip python3-setuptools python3-distlib
-tar zip unzip gzip xz
+tar zip unzip gzip xz pigz
 )
 TOOL_CHECKS_LIST=(curl wget git python python3 pip3 jq yq openssl openssh sshpass keychain)
 SSHCONFBASE='StrictHostKeyChecking no

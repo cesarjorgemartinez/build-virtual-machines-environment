@@ -103,7 +103,9 @@ mkdir -p ${HOME_BASEDIR}/logs
 export PACKER_LOG_PATH="logs/packerlog.txt"
 
 echo "INFO: Obtain SO_ISOCHECKSUMIMAGE from ${SO_ISOURLSHA256SUM}"
-export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOCHECKSUMTYPE^^}.*${SO_ISOIMAGENAME}" ${SO_ARTIFACT_DIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $4}')"
+# Use a workaround because SO_ISOIMAGENAME don't match the line of the checksum of ISO image
+# Example of line of the checksum: CentOS-Stream-9-20240429.0-x86_64-dvd1.iso
+export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOCHECKSUMTYPE^^}.*${SO_DISTRIBUTION}-${SO_NAMEVERSION}-${SO_MAJORVERSION}-.*-x86_64-${SO_ISOTYPE}\.iso" ${SO_ARTIFACT_DIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $4}')"
 
 echo "INFO: Validate JSON with Packer"
 ./packer.exe ${MACHINEREADABLEPARAMETER} validate json/vm.json
@@ -131,9 +133,9 @@ then
   sed -i -e 's/-disk001//g' ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.ovf ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.mf
 fi
 
-echo "INFO: Remove all images named as <${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}.*${SO_IMAGETYPE}*>"
+echo "INFO: Remove all images named as <${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}*${SO_IMAGETYPE}*>"
 mkdir -p ${SO_ARTIFACT_DIR}/images
-rm -rf ${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}.*${SO_IMAGETYPE}*
+rm -rf "${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}*${SO_IMAGETYPE}*"
 echo "INFO: Move vmdk and ovf files from <${HOME_BASEDIR}/output-virtualbox-iso> to <${SO_ARTIFACT_DIR}/images>"
 find ${HOME_BASEDIR}/output-virtualbox-iso -maxdepth 1 -type f | xargs -r -I '{}' mv {} ${SO_ARTIFACT_DIR}/images
 
