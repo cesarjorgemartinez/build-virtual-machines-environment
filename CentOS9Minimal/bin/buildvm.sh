@@ -135,7 +135,7 @@ fi
 
 echo "INFO: Remove all images named as <${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}*${SO_IMAGETYPE}*>"
 mkdir -p ${SO_ARTIFACT_DIR}/images
-rm -rf "${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}*${SO_IMAGETYPE}*"
+rm -rf ${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}*${SO_IMAGETYPE}*
 echo "INFO: Move vmdk and ovf files from <${HOME_BASEDIR}/output-virtualbox-iso> to <${SO_ARTIFACT_DIR}/images>"
 find ${HOME_BASEDIR}/output-virtualbox-iso -maxdepth 1 -type f | xargs -r -I '{}' mv {} ${SO_ARTIFACT_DIR}/images
 
