@@ -44,6 +44,9 @@ localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r s
 /bin/cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
 build-locale-archive
 
+echo "INFO: Remove unneeded locales in /usr/lib/locale folder except en_US* es_ES* C* and locale*"
+find /usr/lib/locale -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' ! -name 'C*' ! -name 'locale*' | xargs -r rm -r
+
 echo "INFO: Clean yum and rpm caches"
 yum clean all
 rm -rf /var/lib/yum/yumdb
@@ -139,10 +142,12 @@ if [ "x${swapuuid}" != "x" ]
 then
   # Whiteout the swap partition to reduce box size
   # Swap is disabled till reboot
-  swappart=$(readlink -f /dev/disk/by-uuid/$swapuuid)
+  swappart=$(readlink -f /dev/disk/by-uuid/${swapuuid})
   /sbin/swapoff "${swappart}"
   dd if=/dev/zero of="${swappart}" bs=4096k || echo "dd exit code $? is suppressed"
+  sync; sleep 1; sync
   /sbin/mkswap -U "${swapuuid}" "${swappart}"
+  sync; sleep 1; sync
 fi
 
 echo "INFO: Remove unneeded files"
@@ -153,7 +158,7 @@ rm -f /usr/share/mime/mime.cache
 echo "INFO: Force logs to rotate"
 /usr/sbin/logrotate -f /etc/logrotate.conf
 sleep 2
-sync
+sync; sleep 1; sync
 sleep 2
 
 echo "INFO: Clean logs and temporary files"
@@ -180,18 +185,21 @@ cat /dev/null > /home/${so_adminuser}/.bash_history
 chown ${so_adminuser}.${so_adminuser} /home/${so_adminuser}/.bash_history
 cat /dev/null > /root/.bash_history
 history -c
-sync
+sync; sleep 1; sync
 
 echo "INFO: Clean caches free xfs inodes and fill free space with zeroes..."
 echo 3 > /proc/sys/vm/drop_caches
+xfs_fsr -v /boot
+sync; sleep 1; sync
 dd if=/dev/zero of=/boot/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
+sync; sleep 1; sync
 rm -f /boot/bigemptyfile
-sync
+sync; sleep 1; sync
 xfs_fsr -v
-sync
+sync; sleep 1; sync
 dd if=/dev/zero of=/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
 rm -f /bigemptyfile
-sync
+sync; sleep 1; sync
 
 echo "INFO: Print to serial console a list of packages ordered by size" >> /dev/ttyS0
 rpm -qa --qf '%{archivesize} %{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort -rg >> /dev/ttyS0
@@ -222,5 +230,5 @@ cat /dev/null > /home/${so_adminuser}/.bash_history
 chown ${so_adminuser}.${so_adminuser} /home/${so_adminuser}/.bash_history
 cat /dev/null > /root/.bash_history
 history -c
-sync
+sync; sleep 1; sync
 
