@@ -19,7 +19,7 @@ source ${HOME_BASEDIR}/conf/vm.conf
 function help ()
 {
   echo "**************************************************************************"
-  echo "Build automated machine images © CJ"
+  echo "Build virtual machine image © CJ"
   echo "**************************************************************************"
   echo
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
@@ -81,7 +81,7 @@ if [ ${#args[@]} -ne 0 ]; then help "ERROR: Many arguments <${args[@]}>"; fi
 [[ "${SO_DEFAULTCLOUDUSER}" == "" ]] && help "ERROR: Missing argument of --defaultclouduser"
 
 echo "**************************************************************************"
-echo "Build automated machine images © CJ"
+echo "Build virtual machine image © CJ"
 echo "**************************************************************************"
 echo
 
@@ -103,9 +103,7 @@ mkdir -p ${HOME_BASEDIR}/logs
 export PACKER_LOG_PATH="logs/packerlog.txt"
 
 echo "INFO: Obtain SO_ISOCHECKSUMIMAGE from ${SO_ISOURLSHA256SUM}"
-# Use a workaround because SO_ISOIMAGENAME don't match the line of the checksum of ISO image
-# Example of line of the checksum: CentOS-Stream-9-20240429.0-x86_64-dvd1.iso
-export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOCHECKSUMTYPE^^}.*${SO_DISTRIBUTION}-${SO_NAMEVERSION}-${SO_MAJORVERSION}-.*-x86_64-${SO_ISOTYPE}\.iso" ${SO_ARTIFACT_DIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $4}')"
+export SO_ISOCHECKSUMIMAGE="$(grep -s "${SO_ISOCHECKSUMTYPE^^}.*${SO_ISOIMAGENAME}" ${SO_ARTIFACT_DIR}/isos/${SO_ISOSHA256SUMNAME} | awk '{print $4}')"
 
 echo "INFO: Validate JSON with Packer"
 ./packer.exe ${MACHINEREADABLEPARAMETER} validate json/vm.json

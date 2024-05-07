@@ -42,6 +42,7 @@ BoldAsFont=yes
 AllowBlinking=yes
 Columns=110
 Rows=30
+RewrapOnResize=yes
 '
 # The result of apply this PS1_SETTINGS is the following:
 # PS1='\[\e]0;\w\a\]\[\e[32m\]\u@\h:\[\e[33m\]\w\[\e[0m\]\$ '

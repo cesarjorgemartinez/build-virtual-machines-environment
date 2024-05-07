@@ -19,7 +19,7 @@ source ${HOME_BASEDIR}/conf/virtual-machine.conf
 function help ()
 {
   echo "**************************************************************************"
-  echo "Build automated machine images © CJ"
+  echo "Build virtual machine image © CJ"
   echo "**************************************************************************"
   echo
   if [ "$*" != "" ]; then echo -e "$*\n" >&2; fi
@@ -81,7 +81,7 @@ if [ ${#args[@]} -ne 0 ]; then help "ERROR: Many arguments <${args[@]}>"; fi
 [[ "${SO_DEFAULTCLOUDUSER}" == "" ]] && help "ERROR: Missing argument of --defaultclouduser"
 
 echo "**************************************************************************"
-echo "Build automated machine images © CJ"
+echo "Build virtual machine image © CJ"
 echo "**************************************************************************"
 echo
 

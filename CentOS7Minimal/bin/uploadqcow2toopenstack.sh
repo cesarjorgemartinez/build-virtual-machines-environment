@@ -22,7 +22,7 @@ mkdir -p ${SO_ARTIFACT_DIR}/images
 cd ${SO_ARTIFACT_DIR}/images
 
 echo "INFO: Get qcow2 file inside <${SO_ARTIFACT_DIR}/images>"
-SEARCHFILE=".*${SO_DISTRIBUTION}${SO_SHORTVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-[0-9]*.qcow2"
+SEARCHFILE=".*${SO_DISTRIBUTION}${SO_MAJORVERSION}\.${SO_MINORVERSION}-${SO_NAMEVERSION}-${SO_IMAGETYPE}-[0-9]*.qcow2"
 QCOW2_FILENAME="$(find * -type f -regex "${SEARCHFILE}" 2>/dev/null || true)"
 
 if [ "${QCOW2_FILENAME}" == "" ]

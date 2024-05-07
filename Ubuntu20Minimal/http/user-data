@@ -12,7 +12,7 @@ autoinstall:
   identity:
     username: packer
     password: $6$aeYb8Jha$6HA.tG1O6Bv/zb9CN3yACLw3RngGuFWibj68ztdVFjXuWrBzVHMF15aBh9BxUL7yBm3yZjXYi9Hs1Dtps0riE0
-    hostname: ubuntu-server
+    hostname: ubuntu20
   network:
     version: 2
     ethernets:
@@ -38,7 +38,7 @@ autoinstall:
     disable_root: true
     username: packer
     password: $6$aeYb8Jha$6HA.tG1O6Bv/zb9CN3yACLw3RngGuFWibj68ztdVFjXuWrBzVHMF15aBh9BxUL7yBm3yZjXYi9Hs1Dtps0riE0
-    hostname: ubuntu-server
+    hostname: ubuntu20
     preserve_hostname: false
     timezone: Europe/Madrid
     users:
