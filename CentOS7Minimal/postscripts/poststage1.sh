@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+echo "INI: Show /root/ks-post.log"
+cat /root/ks-post.log
+echo "END: Show /root/ks-post.log"
+
 echo "INFO: Stop auditd service. Not use systemctl to stop because not stop"
 service auditd stop
 
