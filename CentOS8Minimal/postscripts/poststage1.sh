@@ -62,7 +62,7 @@ chown root.root /usr/local/bin/controlcloud-init.sh
 chmod +x /usr/local/bin/controlcloud-init.sh
 
 echo "INFO: Install Systemd Unit /etc/systemd/system/controlcloud-init.service"
-mv controlcloud-init.service /etc/systemd/system/controlcloud-init.service
+mv controlcloud-init.service /etc/systemd/system
 chown root.root /etc/systemd/system/controlcloud-init.service
 chmod 644 /etc/systemd/system/controlcloud-init.service
 
@@ -72,17 +72,17 @@ chown root.root /usr/local/bin/guestvmtools.sh
 chmod +x /usr/local/bin/guestvmtools.sh
 
 echo "INFO: Install Systemd Unit /etc/systemd/system/guestvmtools.service"
-mv guestvmtools.service /etc/systemd/system/guestvmtools.service
+mv guestvmtools.service /etc/systemd/system
 chown root.root /etc/systemd/system/guestvmtools.service
 chmod 644 /etc/systemd/system/guestvmtools.service
 
 echo "INFO: Install /usr/local/bin/setguimode.sh"
-mv setguimode.sh /usr/local/bin/setguimode.sh
+mv setguimode.sh /usr/local/bin
 chown root.root /usr/local/bin/setguimode.sh
 chmod +x /usr/local/bin/setguimode.sh
 
 echo "INFO: Install /usr/local/bin/settextmode.sh"
-mv settextmode.sh /usr/local/bin/settextmode.sh
+mv settextmode.sh /usr/local/bin
 chown root.root /usr/local/bin/settextmode.sh
 chmod +x /usr/local/bin/settextmode.sh
 
@@ -106,7 +106,7 @@ cd /tmp
 userdel -f -r packer
 
 echo "INFO: Create the admin user ${so_adminuser}"
-adduser -m -U -d /home/${so_adminuser} -c "${so_adminuser}" -G wheel,adm,systemd-journal -s /bin/bash ${so_adminuser}
+useradd -m -U -d /home/${so_adminuser} -c "${so_adminuser}" -G wheel,adm,systemd-journal -s /bin/bash ${so_adminuser}
 echo "${so_adminuser}:${so_adminpass}" | chpasswd ${so_adminuser}
 
 echo "INFO: Add the admin user to /etc/sudoers file"

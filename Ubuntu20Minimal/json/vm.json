@@ -2,11 +2,11 @@
   "builders": [
     {
       "boot_command": [
-        "<enter><enter><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><wait> ",
-        "vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel ",
+        "<enter><enter><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><wait> ",
+        "console=tty0 console=ttyS0,115200n8 vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel ",
         "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ",
         "--- ",
-        "vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel",
+        "console=tty0 console=ttyS0,115200n8 vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel",
         "<enter><wait200>"
       ],
       "boot_wait": "{{ user `so_boot_wait` }}",
@@ -26,8 +26,9 @@
       "iso_checksum": "{{ user `iso_image_checksum_type` }}:{{ user `iso_image_checksum` }}",
       "iso_url": "{{ user `iso_image_url` }}",
       "keep_registered": false,
-      "memory": 1024,
+      "memory": "{{ user `so_guestmemorysize` }}",
       "output_directory": "output-virtualbox-iso",
+      "pause_before_connecting": "{{ user `packer_ssh_pause_before_connecting` }}",
       "sata_port_count": 12,
       "shutdown_command": "echo {{ user `so_adminpass` }} | sudo -S -i -u {{ user `so_adminuser` }} sudo -S shutdown -P now",
       "skip_export": false,
@@ -38,7 +39,13 @@
       "ssh_timeout": "{{ user `packer_ssh_timeout` }}",
       "ssh_username": "packer",
       "type": "virtualbox-iso",
+      "export_opts": [
+        "--ovf20",
+        "--manifest",
+        "--options=nomacs"
+      ],
       "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--nat-localhostreachable1", "on"],
         [ "modifyvm", "{{ .Name }}", "--uart1", "0x3F8", "4" ],
         [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs-{{ .Name }}.txt" ]
       ],
@@ -51,38 +58,38 @@
   ],
   "provisioners": [
     {
-      "destination": "host-info.sh",
-      "source": "files/host-info.sh",
+      "destination": "hostinfo.sh",
+      "source": "files/hostinfo.sh",
       "type": "file"
     },
     {
-      "destination": "control-cloud-init.service",
-      "source": "files/control-cloud-init.service",
+      "destination": "controlcloud-init.service",
+      "source": "files/controlcloud-init.service",
       "type": "file"
     },
     {
-      "destination": "control-cloud-init.sh",
-      "source": "files/control-cloud-init.sh",
+      "destination": "controlcloud-init.sh",
+      "source": "files/controlcloud-init.sh",
       "type": "file"
     },
     {
-      "destination": "guest-vmtools.service",
-      "source": "files/guest-vmtools.service",
+      "destination": "guestvmtools.service",
+      "source": "files/guestvmtools.service",
       "type": "file"
     },
     {
-      "destination": "guest-vmtools.sh",
-      "source": "files/guest-vmtools.sh",
+      "destination": "guestvmtools.sh",
+      "source": "files/guestvmtools.sh",
       "type": "file"
     },
     {
-      "destination": "switch-to-graphical-user-interface.sh",
-      "source": "files/switch-to-graphical-user-interface.sh",
+      "destination": "setguimode.sh",
+      "source": "files/setguimode.sh",
       "type": "file"
     },
     {
-      "destination": "switch-to-text-user-interface.sh",
-      "source": "files/switch-to-text-user-interface.sh",
+      "destination": "settextmode.sh",
+      "source": "files/settextmode.sh",
       "type": "file"
     },
     {
@@ -93,7 +100,7 @@
       ],
       "execute_command": "echo 'packer' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'",
       "scripts": [
-        "postscripts/post-stage-1.sh"
+        "postscripts/poststage1.sh"
       ],
       "type": "shell"
     }
@@ -102,13 +109,15 @@
     "guest_os_type": "{{ env `SO_GUESTOSTYPE` }}",
     "iso_image_checksum": "{{ env `SO_ISOCHECKSUMIMAGE` }}",
     "iso_image_checksum_type": "{{ env `SO_ISOCHECKSUMTYPE` }}",
-    "iso_image_url": "../isos/{{ env `SO_ISOIMAGENAME` }}",
+    "iso_image_url": "{{ env `SO_ARTIFACT_DIR_WIN` }}/isos/{{ env `SO_ISOIMAGENAME` }}",
     "packer_ssh_handshake_attempts": "{{ env `PACKER_SSH_HANDSHAKE_ATTEMPTS` }}",
+    "packer_ssh_pause_before_connecting": "{{ env `PACKER_SSH_PAUSE_BEFORE_CONNECTING` }}",
     "packer_ssh_timeout": "{{ env `PACKER_SSH_TIMEOUT` }}",
     "so_boot_wait": "{{ env `SO_BOOT_WAIT` }}",
     "so_distribution": "{{ env `SO_DISTRIBUTION` }}",
     "so_guestdisksize": "{{ env `SO_GUESTDISKSIZE` }}",
     "so_guesthddinterface": "{{ env `SO_GUESTHDDINTERFACE` }}",
+    "so_guestmemorysize": "{{ env `SO_GUESTMEMORYSIZE` }}",
     "so_imagetype": "{{ env `SO_IMAGETYPE` }}",
     "so_majorversion": "{{ env `SO_MAJORVERSION` }}",
     "vm_fullname": "{{ env `SO_VMFULLNAME` }}"

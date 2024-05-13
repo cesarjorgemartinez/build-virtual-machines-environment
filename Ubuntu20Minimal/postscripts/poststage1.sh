@@ -1,5 +1,32 @@
 #!/usr/bin/env bash
 
+echo "INFO: Current date"
+date
+
+echo "INI: Show /var/log/installer/curtin-install.log"
+cat /var/log/installer/curtin-install.log
+echo "END: Show /var/log/installer/curtin-install.log"
+
+echo "INFO: Clear out swap and disable until next reboot"
+set +e
+swapuuid=$(/sbin/blkid -o value -l -s UUID -t TYPE=swap)
+case "$?" in
+  2|0) ;;
+  *) exit 1 ;;
+esac
+set -e
+if [ "x${swapuuid}" != "x" ]
+then
+  # Whiteout the swap partition to reduce box size
+  # Swap is disabled till reboot
+  swappart=$(readlink -f /dev/disk/by-uuid/${swapuuid})
+  /sbin/swapoff "${swappart}"
+  dd if=/dev/zero of="${swappart}" bs=4096k || echo "dd exit code $? is suppressed"
+  sync; sleep 1; sync
+  /sbin/mkswap -U "${swapuuid}" "${swappart}"
+  sync; sleep 1; sync
+fi
+
 echo "INFO: Stop SystemD journal services"
 systemctl stop systemd-journald.service
 systemctl stop systemd-journal-flush.service
@@ -7,15 +34,20 @@ systemctl stop systemd-journald.socket
 systemctl stop systemd-journald-dev-log.socket
 systemctl stop systemd-journald-audit.socket
 
-echo "INFO: Current date"
-date
+echo "INFO: Assure that unattended-upgrades package is disabled to prevent Apt lock timeouts"
+systemctl disable unattended-upgrades.service
+systemctl stop unattended-upgrades.service
+systemctl mask unattended-upgrades.service
 
 export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=l
 
-echo "INFO: Update all packages"
-apt-get -y update --no-install-recommends
-echo "INFO: Upgrade all packages"
-apt-get -y full-upgrade --no-install-recommends
+echo "INFO: Update packages"
+apt-get update
+echo "INFO: Upgrade packages"
+apt-get -y --no-install-recommends -o DPkg::Lock::Timeout=120 upgrade
+echo "INFO: Dist-upgrade packages"
+apt-get -y --no-install-recommends -o DPkg::Lock::Timeout=120 dist-upgrade
 
 echo "INFO: Install utils"
 apt-get -y install --no-install-recommends virt-what net-tools acpid jq nmap ncat glances
@@ -28,10 +60,10 @@ systemctl enable acpid
 systemctl start acpid
 
 echo "INFO: Autoremove unused things"
-snap remove --purge lxd
-snap remove --purge core18
-snap remove --purge snapd
-apt-get -y purge -qq snapd squashfs-tools
+# snap remove --purge lxd
+# snap remove --purge core18
+# snap remove --purge snapd
+# apt-get -y purge -qq snapd squashfs-tools
 apt-get -y --purge -qq autoremove
 
 echo "INFO: Clean all caches"
@@ -49,71 +81,81 @@ find /usr/share/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs 
 find /var/cache/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs -r rm -r
 
 echo "INFO: Remove default locales in /usr/lib/locale/locale-archive except en_US and es_ES"
-localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r sudo localedef --delete-from-archive
-/bin/cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
-build-locale-archive
+# localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r sudo localedef --delete-from-archive
+# /bin/cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
+# build-locale-archive
 
 echo "INFO: Remove unneeded locales in /usr/lib/locale folder except en_US* es_ES* C* and locale*"
 find /usr/lib/locale -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' ! -name 'C*' ! -name 'locale*' | xargs -r rm -r
 
-echo "INFO: Install host-info.sh script to /usr/local/bin/host-info.sh"
-mv host-info.sh /usr/local/bin
-chown root.root /usr/local/bin/host-info.sh
-chmod +x /usr/local/bin/host-info.sh
+echo "INFO: Install /usr/local/bin/hostinfo.sh"
+mv hostinfo.sh /usr/local/bin
+chown root.root /usr/local/bin/hostinfo.sh
+chmod +x /usr/local/bin/hostinfo.sh
 
-echo "INFO: Install control-cloud-init.sh script to /usr/local/bin/control-cloud-init.sh"
-mv control-cloud-init.sh /usr/local/bin
-chown root.root /usr/local/bin/control-cloud-init.sh
-chmod +x /usr/local/bin/control-cloud-init.sh
+echo "INFO: Install /usr/local/bin/controlcloud-init.sh"
+mv controlcloud-init.sh /usr/local/bin
+chown root.root /usr/local/bin/controlcloud-init.sh
+chmod +x /usr/local/bin/controlcloud-init.sh
 
-echo "INFO: Install Systemd Unit /etc/systemd/system/control-cloud-init.service"
-mv control-cloud-init.service /etc/systemd/system/control-cloud-init.service
-chown root.root /etc/systemd/system/control-cloud-init.service
-chmod 644 /etc/systemd/system/control-cloud-init.service
+echo "INFO: Install Systemd Unit /etc/systemd/system/controlcloud-init.service"
+mv controlcloud-init.service /etc/systemd/system
+chown root.root /etc/systemd/system/controlcloud-init.service
+chmod 644 /etc/systemd/system/controlcloud-init.service
 
-echo "INFO: Install guest-vmtools.sh script to /usr/local/bin/guest-vmtools.sh"
-mv guest-vmtools.sh /usr/local/bin
-chown root.root /usr/local/bin/guest-vmtools.sh
-chmod +x /usr/local/bin/guest-vmtools.sh
+echo "INFO: Install /usr/local/bin/guestvmtools.sh"
+mv guestvmtools.sh /usr/local/bin
+chown root.root /usr/local/bin/guestvmtools.sh
+chmod +x /usr/local/bin/guestvmtools.sh
 
-echo "INFO: Install Systemd Unit /etc/systemd/system/guest-vmtools.service"
-mv guest-vmtools.service /etc/systemd/system/guest-vmtools.service
-chown root.root /etc/systemd/system/guest-vmtools.service
-chmod 644 /etc/systemd/system/guest-vmtools.service
+echo "INFO: Install Systemd Unit /etc/systemd/system/guestvmtools.service"
+mv guestvmtools.service /etc/systemd/system
+chown root.root /etc/systemd/system/guestvmtools.service
+chmod 644 /etc/systemd/system/guestvmtools.service
 
-echo "INFO: Install switch-to-graphical-user-interface.sh file to /usr/local/bin/switch-to-graphical-user-interface.sh"
-mv switch-to-graphical-user-interface.sh /usr/local/bin/switch-to-graphical-user-interface.sh
-chown root.root /usr/local/bin/switch-to-graphical-user-interface.sh
-chmod +x /usr/local/bin/switch-to-graphical-user-interface.sh
+echo "INFO: Install /usr/local/bin/setguimode.sh"
+mv setguimode.sh /usr/local/bin
+chown root.root /usr/local/bin/setguimode.sh
+chmod +x /usr/local/bin/setguimode.sh
 
-echo "INFO: Install switch-to-text-user-interface.sh file to /usr/local/bin/switch-to-text-user-interface.sh"
-mv switch-to-text-user-interface.sh /usr/local/bin/switch-to-text-user-interface.sh
-chown root.root /usr/local/bin/switch-to-text-user-interface.sh
-chmod +x /usr/local/bin/switch-to-text-user-interface.sh
+echo "INFO: Install /usr/local/bin/settextmode.sh"
+mv settextmode.sh /usr/local/bin
+chown root.root /usr/local/bin/settextmode.sh
+chmod +x /usr/local/bin/settextmode.sh
 
 echo "INFO: Reload systemd daemon"
 systemctl daemon-reload
 
-echo "INFO: Enable at boot control-cloud-init.service"
-systemctl enable control-cloud-init.service
+echo "INFO: Enable at boot controlcloud-init.service"
+systemctl enable controlcloud-init.service
 
-echo "INFO: Enable at boot guest-vmtools.service"
-systemctl enable guest-vmtools.service
+echo "INFO: Enable at boot guestvmtools.service"
+systemctl enable guestvmtools.service
 
 echo "INFO: Clear out machine id"
 /bin/cat /dev/null > /etc/machine-id
 
+set -x
+
+#    virtualbox-iso: INFO: Add the admin user to /etc/sudoers file
+#==> virtualbox-iso: + echo 'admin ALL=(ALL) NOPASSWD: ALL'
+#==> virtualbox-iso: + /usr/bin/sudo -i -u admin
+#==> virtualbox-iso: -bash: line 1: packer: command not found
+exit
+
 echo "INFO: Delete packer user"
+whoami
 cd /tmp
-userdel -f -r packer
+/usr/sbin/userdel -f -r packer
 
 echo "INFO: Create the admin user ${so_adminuser}"
-useradd -m -U -d /home/${so_adminuser} -c "${so_adminuser}" -G adm,cdrom,dip,lxd,plugdev,sudo -s /bin/bash ${so_adminuser}
+/usr/sbin/useradd -m -U -d /home/${so_adminuser} -c "${so_adminuser}" -G adm,cdrom,dip,lxd,plugdev,sudo,dialout -s /bin/bash ${so_adminuser}
+# useradd -m -U -d /home/${so_adminuser} -c "${so_adminuser}" -G adm,cdrom,dip,lxd,plugdev,sudo,dialout -s /bin/bash ${so_adminuser}
 echo "${so_adminuser}:${so_adminpass}" | chpasswd ${so_adminuser}
 
 echo "INFO: Add the admin user to /etc/sudoers file"
 echo "${so_adminuser} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-sudo -i -u ${so_adminuser}
+/usr/bin/sudo -i -u ${so_adminuser}
 
 echo "INFO: Configure sshd to enter with the admin user remotely"
 echo "#Match User ${so_adminuser}

@@ -7,7 +7,7 @@ autoinstall:
     update: yes
   locale: en_US.UTF-8
   keyboard:
-    layout: es,us
+    layout: es
     variant: winkeys
   identity:
     username: packer
@@ -36,47 +36,48 @@ autoinstall:
         dhcp6: true
   user-data:
     disable_root: true
-    username: packer
-    password: $6$aeYb8Jha$6HA.tG1O6Bv/zb9CN3yACLw3RngGuFWibj68ztdVFjXuWrBzVHMF15aBh9BxUL7yBm3yZjXYi9Hs1Dtps0riE0
     hostname: ubuntu20
     preserve_hostname: false
     timezone: Europe/Madrid
     users:
       - name: packer
         passwd: $6$aeYb8Jha$6HA.tG1O6Bv/zb9CN3yACLw3RngGuFWibj68ztdVFjXuWrBzVHMF15aBh9BxUL7yBm3yZjXYi9Hs1Dtps0riE0
-        groups: [adm, cdrom, dip, lxd, plugdev, sudo]
+        groups: [adm, cdrom, dip, lxd, plugdev, sudo, dialout]
         lock-passwd: false
         sudo: ALL=(ALL) NOPASSWD:ALL
         shell: /bin/bash
   ssh:
     install-server: true
     allow-pw: true
-  storage:
-    config:
-    - {ptable: gpt, path: /dev/sda, wipe: superblock, preserve: false, name: '', grub_device: true, type: disk, id: disk-sda}
-    - {device: disk-sda, size: 1048576, flag: bios_grub, number: 1, preserve: false, type: partition, id: partition-0}
-    - {device: disk-sda, size: 1073741824, wipe: superblock, flag: '', number: 2, preserve: false, type: partition, id: partition-1}
-    - {fstype: ext4, volume: partition-1, preserve: false, type: format, id: format-0}
-    - {device: disk-sda, size: -1, wipe: superblock, flag: '', number: 3, preserve: false, type: partition, id: partition-2}
-    - name: ubuntu-vg
-      devices: [partition-2]
-      preserve: false
-      type: lvm_volgroup
-      id: lvm_volgroup-0
-    - {name: ubuntu-lv, volgroup: lvm_volgroup-0, size: 100%, preserve: false, type: lvm_partition, id: lvm_partition-0}
-    - {fstype: xfs, volume: lvm_partition-0, preserve: false, type: format, id: format-1}
-    - {device: format-1, path: /, type: mount, id: mount-1}
-    - {device: format-0, path: /boot, type: mount, id: mount-0}
+#  storage:
+#    config:
+#    - {ptable: gpt, path: /dev/sda, wipe: superblock, preserve: false, name: '', grub_device: true, type: disk, id: disk-sda}
+#    - {device: disk-sda, size: 1048576, flag: bios_grub, number: 1, preserve: false, type: partition, id: partition-0}
+#    - {device: disk-sda, size: 1073741824, wipe: superblock, flag: '', number: 2, preserve: false, type: partition, id: partition-1}
+#    - {fstype: ext4, volume: partition-1, preserve: false, type: format, id: format-0}
+#    - {device: disk-sda, size: -1, wipe: superblock, flag: '', number: 3, preserve: false, type: partition, id: partition-2}
+#    - name: ubuntu-vg
+#      devices: [partition-2]
+#      preserve: false
+#      type: lvm_volgroup
+#      id: lvm_volgroup-0
+#    - {name: ubuntu-lv, volgroup: lvm_volgroup-0, size: 100%, preserve: false, type: lvm_partition, id: lvm_partition-0}
+#    - {fstype: xfs, volume: lvm_partition-0, preserve: false, type: format, id: format-1}
+#    - {device: format-1, path: /, type: mount, id: mount-1}
+#    - {device: format-0, path: /boot, type: mount, id: mount-0}
   late-commands:
     - sed -r -i -e 's/(GRUB_TIMEOUT=).*/\11/g' /target/etc/default/grub
-    - sed -r -i -e 's/(ignore_loglevel)/\1 console=ttyS0 console=tty0/g' /target/etc/default/grub
+    - sed -r -i -e 's/(ignore_loglevel)/\1 console=tty0 console=ttyS0,115200n8/g' /target/etc/default/grub
 
 runcmd:
   - /usr/bin/timedatectl set-timezone "Europe/Madrid"
   - /usr/bin/timedatectl set-local-rtc false
   - /usr/sbin/locale-gen en_US.UTF-8
   - /usr/sbin/locale-gen es_ES.UTF-8
+  - /usr/bin/localectl set-keymap es pc105 winkeys
   - /usr/bin/localectl set-locale en_US.UTF-8
-  - /usr/sbin/useradd -m -U -d /home/packer -c "packer" -G adm,cdrom,dip,lxd,plugdev,sudo -s /bin/bash packer
-  - '\echo "packer:packer" | /usr/sbin/chpasswd packer'
+#  - /usr/sbin/useradd -m -U -d /home/packer -c "packer" -G adm,cdrom,dip,lxd,plugdev,sudo,dialout -s /bin/bash packer
+#  - '\echo "packer:packer" | /usr/sbin/chpasswd packer'
+#  - /usr/bin/echo "INFO: Current date"
+  - /usr/bin/date
 
