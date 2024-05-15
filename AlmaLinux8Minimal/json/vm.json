@@ -43,7 +43,7 @@
       "vboxmanage": [
         ["modifyvm", "{{.Name}}", "--nat-localhostreachable1", "on"],
         [ "modifyvm", "{{ .Name }}", "--uart1", "0x3F8", "4" ],
-        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs-{{ .Name }}.txt" ]
+        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs.txt" ]
       ],
       "vboxmanage_post": [
         [ "modifyvm", "{{ .Name }}", "--uart1", "off" ],

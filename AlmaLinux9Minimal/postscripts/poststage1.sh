@@ -1,20 +1,37 @@
 #!/usr/bin/env bash
 
+echo "START_POSTSCRIPT_SECTION $(date '+%Y%m%d_%H%M%S')" >> /dev/ttyS0
+
 echo "INI: Show /root/ks-post.log"
 cat /root/ks-post.log
 echo "END: Show /root/ks-post.log"
 
-echo "INFO: Stop auditd service. Not use systemctl to stop because not stop"
+echo "INFO: Stop audit daemon"
 service auditd stop
 
-echo "INFO: Current date"
-date
+echo "INFO: Stop systemd journal sockets and services"
+systemctl stop systemd-journal*.socket
+systemctl stop systemd-journal*.service
 
-echo "INFO: Stop SystemD journal services"
-systemctl stop systemd-journald.service
-systemctl stop systemd-journal-flush.service
-systemctl stop systemd-journald.socket
-systemctl stop systemd-journald-dev-log.socket
+echo "INFO: Clear out swap and disable until next reboot"
+set +e
+swapuuid=$(/sbin/blkid -o value -l -s UUID -t TYPE=swap)
+case "$?" in
+  2|0) ;;
+  *) exit 1 ;;
+esac
+set -e
+if [ "x${swapuuid}" != "x" ]
+then
+  # Whiteout the swap partition to reduce box size
+  # Swap is disabled till reboot
+  swappart=$(readlink -f /dev/disk/by-uuid/${swapuuid})
+  /sbin/swapoff "${swappart}"
+  dd if=/dev/zero of="${swappart}" bs=4096k || echo "dd exit code $? is suppressed"
+  sync; sleep 1; sync
+  /sbin/mkswap -U "${swapuuid}" "${swappart}"
+  sync; sleep 1; sync
+fi
 
 echo "INFO: Stop sssd service"
 systemctl stop sssd
@@ -38,9 +55,9 @@ echo "INFO: Remove unneeded locales in /usr/share/man folder except es and man*"
 find /usr/share/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs -r rm -r
 
 echo "INFO: Remove default locales in /usr/lib/locale/locale-archive except en_US and es_ES"
-localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r sudo localedef --delete-from-archive
-/bin/cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
-build-locale-archive
+localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r localedef --delete-from-archive
+# /bin/cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
+# build-locale-archive
 
 echo "INFO: Remove unneeded locales in /usr/lib/locale folder except en_US* es_ES* C* and locale*"
 find /usr/lib/locale -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' ! -name 'C*' ! -name 'locale*' | xargs -r rm -r
@@ -111,7 +128,6 @@ echo "${so_adminuser}:${so_adminpass}" | chpasswd ${so_adminuser}
 
 echo "INFO: Add the admin user to /etc/sudoers file"
 echo "${so_adminuser} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-sudo -i -u ${so_adminuser}
 
 echo "INFO: Configure sshd to enter with the admin user remotely"
 echo "#Match User ${so_adminuser}
@@ -122,29 +138,9 @@ echo "INFO: Configure cloud-init. Set default ssh default_user from cloud-user t
 sed -r -i -e 's/^( +name:).+/\1 '${so_defaultclouduser}'/g' /etc/cloud/cloud.cfg
 
 echo "INFO: Clean data created by cloud-init and manage users"
-userdel -r cloud-user
+userdel -f -r cloud-user || true
 rm -f /etc/sudoers.d/90-cloud-init-users /etc/group- /etc/gshadow- /etc/passwd- /etc/shadow-
 rm -rf /var/lib/cloud
-
-echo "INFO: Clear out swap and disable until next reboot"
-set +e
-swapuuid=$(/sbin/blkid -o value -l -s UUID -t TYPE=swap)
-case "$?" in
-  2|0) ;;
-  *) exit 1 ;;
-esac
-set -e
-if [ "x${swapuuid}" != "x" ]
-then
-  # Whiteout the swap partition to reduce box size
-  # Swap is disabled till reboot
-  swappart=$(readlink -f /dev/disk/by-uuid/${swapuuid})
-  /sbin/swapoff "${swappart}"
-  dd if=/dev/zero of="${swappart}" bs=4096k || echo "dd exit code $? is suppressed"
-  sync; sleep 1; sync
-  /sbin/mkswap -U "${swapuuid}" "${swappart}"
-  sync; sleep 1; sync
-fi
 
 echo "INFO: Remove unneeded files"
 find / -type f -name "*.pyc" -delete || true
@@ -236,4 +232,6 @@ chown ${so_adminuser}.${so_adminuser} /home/${so_adminuser}/.bash_history
 cat /dev/null > /root/.bash_history
 history -c
 sync; sleep 1; sync
+
+echo "END_POSTSCRIPT_SECTION $(date '+%Y%m%d_%H%M%S')" >> /dev/ttyS0
 

@@ -3,10 +3,10 @@
     {
       "boot_command": [
         "<enter><enter><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><wait> ",
-        "console=tty0 console=ttyS0,115200n8 vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel ",
+        "console=tty0 console=ttyS0,115200n8 nomodeset vga=791 vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel ",
         "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ",
         "--- ",
-        "console=tty0 console=ttyS0,115200n8 vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel",
+        "console=tty0 console=ttyS0,115200n8 nomodeset vga=791 vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel",
         "<enter><wait200>"
       ],
       "boot_wait": "{{ user `so_boot_wait` }}",
@@ -47,7 +47,7 @@
       "vboxmanage": [
         ["modifyvm", "{{.Name}}", "--nat-localhostreachable1", "on"],
         [ "modifyvm", "{{ .Name }}", "--uart1", "0x3F8", "4" ],
-        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs-{{ .Name }}.txt" ]
+        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs.txt" ]
       ],
       "vboxmanage_post": [
         [ "modifyvm", "{{ .Name }}", "--uart1", "off" ],

@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 
-echo "INFO: Current date"
-date
+echo "START_POSTSCRIPT_SECTION $(date '+%Y%m%d_%H%M%S')" >> /dev/ttyS0
 
 echo "INI: Show /var/log/installer/curtin-install.log"
 cat /var/log/installer/curtin-install.log
 echo "END: Show /var/log/installer/curtin-install.log"
+
+echo "INFO: Stop audit daemon"
+systemctl stop systemd-journald-audit.socket
+
+echo "INFO: Stop systemd journal sockets and services"
+systemctl stop systemd-journal*.socket
+systemctl stop systemd-journal*.service
 
 echo "INFO: Clear out swap and disable until next reboot"
 set +e
@@ -27,13 +33,6 @@ then
   sync; sleep 1; sync
 fi
 
-echo "INFO: Stop SystemD journal services"
-systemctl stop systemd-journald.service
-systemctl stop systemd-journal-flush.service
-systemctl stop systemd-journald.socket
-systemctl stop systemd-journald-dev-log.socket
-systemctl stop systemd-journald-audit.socket
-
 echo "INFO: Assure that unattended-upgrades package is disabled to prevent Apt lock timeouts"
 systemctl disable unattended-upgrades.service
 systemctl stop unattended-upgrades.service
@@ -50,7 +49,7 @@ echo "INFO: Dist-upgrade packages"
 apt-get -y --no-install-recommends -o DPkg::Lock::Timeout=120 dist-upgrade
 
 echo "INFO: Install utils"
-apt-get -y install --no-install-recommends virt-what net-tools acpid jq nmap ncat glances
+apt-get -y install --no-install-recommends virt-what net-tools acpid jq nmap ncat
 
 echo "INFO: Remove ufw firewall"
 apt-get -y purge ufw
@@ -60,10 +59,7 @@ systemctl enable acpid
 systemctl start acpid
 
 echo "INFO: Autoremove unused things"
-# snap remove --purge lxd
-# snap remove --purge core18
-# snap remove --purge snapd
-# apt-get -y purge -qq snapd squashfs-tools
+snap remove --purge lxd
 apt-get -y --purge -qq autoremove
 
 echo "INFO: Clean all caches"
@@ -81,7 +77,7 @@ find /usr/share/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs 
 find /var/cache/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs -r rm -r
 
 echo "INFO: Remove default locales in /usr/lib/locale/locale-archive except en_US and es_ES"
-# localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r sudo localedef --delete-from-archive
+# localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r localedef --delete-from-archive
 # /bin/cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
 # build-locale-archive
 
@@ -135,27 +131,16 @@ systemctl enable guestvmtools.service
 echo "INFO: Clear out machine id"
 /bin/cat /dev/null > /etc/machine-id
 
-set -x
-
-#    virtualbox-iso: INFO: Add the admin user to /etc/sudoers file
-#==> virtualbox-iso: + echo 'admin ALL=(ALL) NOPASSWD: ALL'
-#==> virtualbox-iso: + /usr/bin/sudo -i -u admin
-#==> virtualbox-iso: -bash: line 1: packer: command not found
-exit
-
 echo "INFO: Delete packer user"
-whoami
 cd /tmp
 /usr/sbin/userdel -f -r packer
 
 echo "INFO: Create the admin user ${so_adminuser}"
 /usr/sbin/useradd -m -U -d /home/${so_adminuser} -c "${so_adminuser}" -G adm,cdrom,dip,lxd,plugdev,sudo,dialout -s /bin/bash ${so_adminuser}
-# useradd -m -U -d /home/${so_adminuser} -c "${so_adminuser}" -G adm,cdrom,dip,lxd,plugdev,sudo,dialout -s /bin/bash ${so_adminuser}
 echo "${so_adminuser}:${so_adminpass}" | chpasswd ${so_adminuser}
 
 echo "INFO: Add the admin user to /etc/sudoers file"
 echo "${so_adminuser} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-/usr/bin/sudo -i -u ${so_adminuser}
 
 echo "INFO: Configure sshd to enter with the admin user remotely"
 echo "#Match User ${so_adminuser}
@@ -166,6 +151,7 @@ echo "INFO: Configure cloud-init. Set default ssh default_user from cloud-user t
 sed -r -i -e 's/^( +name:).+/\1 '${so_defaultclouduser}'/g' /etc/cloud/cloud.cfg
 
 echo "INFO: Clean data created by cloud-init and manage users"
+userdel -f -r cloud-user || true
 rm -f /etc/group- /etc/gshadow- /etc/passwd- /etc/shadow-
 rm -rf /var/lib/cloud
 
@@ -266,4 +252,15 @@ chown ${so_adminuser}.${so_adminuser} /home/${so_adminuser}/.bash_history
 cat /dev/null > /root/.bash_history
 history -c
 sync; sleep 1; sync
+
+mount -n -o remount,ro /boot
+zerofree -v $(df --output=source /boot | tail -n+2)
+systemctl stop systemd-journal*.socket
+systemctl stop systemd-journal*.service
+swapoff -a
+echo "u" > /proc/sysrq-trigger
+mount -n -o remount,ro /
+zerofree -v $(df --output=source / | tail -n+2)
+
+echo "END_POSTSCRIPT_SECTION $(date '+%Y%m%d_%H%M%S')" >> /dev/ttyS0
 

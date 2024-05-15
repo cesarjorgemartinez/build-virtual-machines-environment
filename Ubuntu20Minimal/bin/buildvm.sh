@@ -129,6 +129,7 @@ fi
 if [ -f ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.ovf ]
 then
   sed -i -e 's/-disk001//g' ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.ovf ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.mf
+  sed -r -i 's/^(.+\.ovf\) = ).*/\1'$(sha256sum ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.ovf | cut -d' ' -f1)'/g' ${HOME_BASEDIR}/output-virtualbox-iso/${SO_VMFULLNAME}.mf
 fi
 
 echo "INFO: Remove all images named as <${SO_ARTIFACT_DIR}/images/${SO_DISTRIBUTION}${SO_MAJORVERSION}*${SO_IMAGETYPE}*>"
