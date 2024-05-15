@@ -2,8 +2,12 @@
   "builders": [
     {
       "boot_command": [
-        "<up><wait><tab><bs><bs><bs><bs><bs>console=tty0 console=ttyS0,115200n8 ignore_loglevel ",
-        "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/kickstartvm.cfg inst.text<wait5><enter><wait>"
+        "<enter><enter><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><wait> ",
+        "console=tty0 console=ttyS0,115200n8 nomodeset vga=791 vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel ",
+        "autoinstall ds=nocloud-net;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ",
+        "--- ",
+        "console=tty0 console=ttyS0,115200n8 nomodeset vga=791 vconsole.keymap=es net.ifnames=0 biosdevname=0 ignore_loglevel",
+        "<enter><wait200>"
       ],
       "boot_wait": "{{ user `so_boot_wait` }}",
       "cpus": 1,

@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-echo "INFO: Stop auditd service. Not use systemctl to stop because not stop"
+echo "START_POSTSCRIPT_SECTION $(date '+%Y%m%d_%H%M%S')" >> /dev/ttyS0
+
+echo "INI: Show /root/ks-post.log"
+cat /root/ks-post.log
+echo "END: Show /root/ks-post.log"
+
+echo "INFO: Stop audit daemon"
 service auditd stop
 
 # echo "INFO: Fix for timezone issues"
@@ -10,13 +16,29 @@ service auditd stop
 # rm -f /etc/adjtime
 # hwclock --systohc
 
-echo "INFO: Current date"
-date
+echo "INFO: Stop systemd journal sockets and services"
+systemctl stop systemd-journal*.socket
+systemctl stop systemd-journal*.service
 
-echo "INFO: Stop SystemD journal services"
-systemctl stop systemd-journald.service
-systemctl stop systemd-journal-flush.service
-systemctl stop systemd-journald.socket
+echo "INFO: Clear out swap and disable until next reboot"
+set +e
+swapuuid=$(/sbin/blkid -o value -l -s UUID -t TYPE=swap)
+case "$?" in
+        2|0) ;;
+        *) exit 1 ;;
+esac
+set -e
+if [ "x${swapuuid}" != "x" ]
+then
+  # Whiteout the swap partition to reduce box size
+  # Swap is disabled till reboot
+  swappart=$(readlink -f /dev/disk/by-uuid/${swapuuid})
+  /sbin/swapoff "${swappart}"
+  dd if=/dev/zero of="${swappart}" bs=4096k || echo "dd exit code $? is suppressed"
+  sync; sleep 1; sync
+  /sbin/mkswap -U "${swapuuid}" "${swappart}"
+  sync; sleep 1; sync
+fi
 
 echo "INFO: Package cleanups remove old kernels"
 package-cleanup -y -C --oldkernels --count=1
@@ -40,9 +62,12 @@ echo "INFO: Remove unneeded locales in /usr/share/man folder except es and man*"
 find /usr/share/man -mindepth 1 -maxdepth 1 ! -name 'es' ! -name 'man*' | xargs -r rm -r
 
 echo "INFO: Remove default locales in /usr/lib/locale/locale-archive except en_US and es_ES"
-localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r sudo localedef --delete-from-archive
+localedef --list-archive | { egrep -ve '[e]n_US|[e]s_ES' || true; } | xargs -r localedef --delete-from-archive
 /bin/cp -f /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive.tmpl
 build-locale-archive
+
+echo "INFO: Remove unneeded locales in /usr/lib/locale folder except en_US* es_ES* C* and locale*"
+find /usr/lib/locale -mindepth 1 -maxdepth 1 ! -name 'en_US*' ! -name 'es_ES*' ! -name 'C*' ! -name 'locale*' | xargs -r rm -r
 
 echo "INFO: Clean yum and rpm caches"
 yum clean all
@@ -63,7 +88,7 @@ chown root.root /usr/local/bin/controlcloud-init.sh
 chmod +x /usr/local/bin/controlcloud-init.sh
 
 echo "INFO: Install Systemd Unit /etc/systemd/system/controlcloud-init.service"
-mv controlcloud-init.service /etc/systemd/system/controlcloud-init.service
+mv controlcloud-init.service /etc/systemd/system
 chown root.root /etc/systemd/system/controlcloud-init.service
 chmod 644 /etc/systemd/system/controlcloud-init.service
 
@@ -73,17 +98,17 @@ chown root.root /usr/local/bin/guestvmtools.sh
 chmod +x /usr/local/bin/guestvmtools.sh
 
 echo "INFO: Install Systemd Unit /etc/systemd/system/guestvmtools.service"
-mv guestvmtools.service /etc/systemd/system/guestvmtools.service
+mv guestvmtools.service /etc/systemd/system
 chown root.root /etc/systemd/system/guestvmtools.service
 chmod 644 /etc/systemd/system/guestvmtools.service
 
 echo "INFO: Install /usr/local/bin/setguimode.sh"
-mv setguimode.sh /usr/local/bin/setguimode.sh
+mv setguimode.sh /usr/local/bin
 chown root.root /usr/local/bin/setguimode.sh
 chmod +x /usr/local/bin/setguimode.sh
 
 echo "INFO: Install /usr/local/bin/settextmode.sh"
-mv settextmode.sh /usr/local/bin/settextmode.sh
+mv settextmode.sh /usr/local/bin
 chown root.root /usr/local/bin/settextmode.sh
 chmod +x /usr/local/bin/settextmode.sh
 
@@ -107,12 +132,11 @@ cd /tmp
 userdel -f -r packer
 
 echo "INFO: Create the admin user ${so_adminuser}"
-adduser -m -U -d /home/${so_adminuser} -c "${so_adminuser}" -G wheel,adm,systemd-journal -s /bin/bash ${so_adminuser}
+useradd -m -U -d /home/${so_adminuser} -c "${so_adminuser}" -G wheel,adm,systemd-journal -s /bin/bash ${so_adminuser}
 echo "${so_adminuser}:${so_adminpass}" | chpasswd ${so_adminuser}
 
 echo "INFO: Add the admin user to /etc/sudoers file"
 echo "${so_adminuser} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-sudo -i -u ${so_adminuser}
 
 echo "INFO: Configure sshd to enter with the admin user remotely"
 echo "#Match User ${so_adminuser}
@@ -123,27 +147,9 @@ echo "INFO: Configure cloud-init. Set default ssh default_user from cloud-user t
 sed -r -i -e 's/^( +name:).+/\1 '${so_defaultclouduser}'/g' /etc/cloud/cloud.cfg
 
 echo "INFO: Clean data created by cloud-init and manage users"
-userdel -r cloud-user
+userdel -f -r cloud-user || true
 rm -f /etc/sudoers.d/90-cloud-init-users /etc/group- /etc/gshadow- /etc/passwd- /etc/shadow-
 rm -rf /var/lib/cloud
-
-echo "INFO: Clear out swap and disable until next reboot"
-set +e
-swapuuid=$(/sbin/blkid -o value -l -s UUID -t TYPE=swap)
-case "$?" in
-        2|0) ;;
-        *) exit 1 ;;
-esac
-set -e
-if [ "x${swapuuid}" != "x" ]
-then
-  # Whiteout the swap partition to reduce box size
-  # Swap is disabled till reboot
-  swappart=$(readlink -f /dev/disk/by-uuid/$swapuuid)
-  /sbin/swapoff "${swappart}"
-  dd if=/dev/zero of="${swappart}" bs=4096k || echo "dd exit code $? is suppressed"
-  /sbin/mkswap -U "${swapuuid}" "${swappart}"
-fi
 
 echo "INFO: Remove unneeded files"
 find / -type f -name "*.pyc" -delete || true
@@ -153,7 +159,7 @@ rm -f /usr/share/mime/mime.cache
 echo "INFO: Force logs to rotate"
 /usr/sbin/logrotate -f /etc/logrotate.conf
 sleep 2
-sync
+sync; sleep 1; sync
 sleep 2
 
 echo "INFO: Clean logs and temporary files"
@@ -180,18 +186,21 @@ cat /dev/null > /home/${so_adminuser}/.bash_history
 chown ${so_adminuser}.${so_adminuser} /home/${so_adminuser}/.bash_history
 cat /dev/null > /root/.bash_history
 history -c
-sync
+sync; sleep 1; sync
 
 echo "INFO: Clean caches free xfs inodes and fill free space with zeroes..."
 echo 3 > /proc/sys/vm/drop_caches
+xfs_fsr -v /boot
+sync; sleep 1; sync
 dd if=/dev/zero of=/boot/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
+sync; sleep 1; sync
 rm -f /boot/bigemptyfile
-sync
+sync; sleep 1; sync
 xfs_fsr -v
-sync
+sync; sleep 1; sync
 dd if=/dev/zero of=/bigemptyfile bs=4096k || echo "dd exit code $? is suppressed"
 rm -f /bigemptyfile
-sync
+sync; sleep 1; sync
 
 echo "INFO: Print to serial console a list of packages ordered by size" >> /dev/ttyS0
 rpm -qa --qf '%{archivesize} %{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' | sort -rg >> /dev/ttyS0
@@ -222,5 +231,7 @@ cat /dev/null > /home/${so_adminuser}/.bash_history
 chown ${so_adminuser}.${so_adminuser} /home/${so_adminuser}/.bash_history
 cat /dev/null > /root/.bash_history
 history -c
-sync
+sync; sleep 1; sync
+
+echo "END_POSTSCRIPT_SECTION $(date '+%Y%m%d_%H%M%S')" >> /dev/ttyS0
 
