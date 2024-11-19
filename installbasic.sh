@@ -81,6 +81,8 @@ set mouse-=a
 set noautoindent noexpandtab tabstop=2 shiftwidth=2
 " Set in terminal title the edited file
 set title
+" Sex syntax
+syntax on
 '
 QEMU_CYGWINHOMEPATH="$(cygpath "${PROGRAMFILES}")/qemu"
 YQ_URL_DOWNLOAD='https://github.com/mikefarah/yq/releases/latest/download/yq_windows_amd64.exe'
