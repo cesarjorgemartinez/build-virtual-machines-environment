@@ -1,0 +1,21 @@
+[Unit]
+Description=Control cloud-init to enable in OpenStack and disable in VMware or VirtualBox
+DefaultDependencies=no
+After=systemd-remount-fs.service
+Before=NetworkManager.service network.service network-pre.target
+Before=shutdown.target sysinit.target
+Before=cloud-config.service cloud-final.service cloud-init-local.service cloud-init.service cloud-config.target
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/controlcloud-init.sh
+RemainAfterExit=yes
+TimeoutSec=0
+
+# Output needs to appear in instance console output
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target
+

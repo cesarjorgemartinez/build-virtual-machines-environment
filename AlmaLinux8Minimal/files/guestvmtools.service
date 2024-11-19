@@ -6,7 +6,7 @@ Requires=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/guest-vmtools.sh
+ExecStart=/usr/local/bin/guestvmtools.sh
 RemainAfterExit=yes
 TimeoutSec=0
 

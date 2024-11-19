@@ -42,6 +42,7 @@ BoldAsFont=yes
 AllowBlinking=yes
 Columns=110
 Rows=30
+RewrapOnResize=yes
 '
 # The result of apply this PS1_SETTINGS is the following:
 # PS1='\[\e]0;\w\a\]\[\e[32m\]\u@\h:\[\e[33m\]\w\[\e[0m\]\$ '
@@ -80,6 +81,8 @@ set mouse-=a
 set noautoindent noexpandtab tabstop=2 shiftwidth=2
 " Set in terminal title the edited file
 set title
+" Sex syntax
+syntax on
 '
 QEMU_CYGWINHOMEPATH="$(cygpath "${PROGRAMFILES}")/qemu"
 YQ_URL_DOWNLOAD='https://github.com/mikefarah/yq/releases/latest/download/yq_windows_amd64.exe'

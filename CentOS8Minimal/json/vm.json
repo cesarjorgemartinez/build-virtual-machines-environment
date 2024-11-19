@@ -2,7 +2,7 @@
   "builders": [
     {
       "boot_command": [
-        "<up><wait><tab><bs><bs><bs><bs><bs>console=ttyS0 console=tty0 ignore_loglevel ",
+        "<up><wait><tab><bs><bs><bs><bs><bs>console=tty0 console=ttyS0,115200n8 ignore_loglevel ",
         "inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/kickstartvm.cfg inst.text<wait5><enter><wait>"
       ],
       "boot_wait": "{{ user `so_boot_wait` }}",
@@ -22,8 +22,9 @@
       "iso_checksum": "{{ user `iso_image_checksum_type` }}:{{ user `iso_image_checksum` }}",
       "iso_url": "{{ user `iso_image_url` }}",
       "keep_registered": false,
-      "memory": 1024,
+      "memory": "{{ user `so_guestmemorysize` }}",
       "output_directory": "output-virtualbox-iso",
+      "pause_before_connecting": "{{ user `packer_ssh_pause_before_connecting` }}",
       "sata_port_count": 12,
       "shutdown_command": "echo {{ user `so_adminpass` }} | sudo -S -i -u {{ user `so_adminuser` }} sudo -S shutdown -P now",
       "skip_export": false,
@@ -42,7 +43,7 @@
       "vboxmanage": [
         ["modifyvm", "{{.Name}}", "--nat-localhostreachable1", "on"],
         [ "modifyvm", "{{ .Name }}", "--uart1", "0x3F8", "4" ],
-        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs-{{ .Name }}.txt" ]
+        [ "modifyvm", "{{ .Name }}", "--uartmode1", "file", "{{ pwd }}/logs/systemlogs.txt" ]
       ],
       "vboxmanage_post": [
         [ "modifyvm", "{{ .Name }}", "--uart1", "off" ],
@@ -106,11 +107,13 @@
     "iso_image_checksum_type": "{{ env `SO_ISOCHECKSUMTYPE` }}",
     "iso_image_url": "{{ env `SO_ARTIFACT_DIR_WIN` }}/isos/{{ env `SO_ISOIMAGENAME` }}",
     "packer_ssh_handshake_attempts": "{{ env `PACKER_SSH_HANDSHAKE_ATTEMPTS` }}",
+    "packer_ssh_pause_before_connecting": "{{ env `PACKER_SSH_PAUSE_BEFORE_CONNECTING` }}",
     "packer_ssh_timeout": "{{ env `PACKER_SSH_TIMEOUT` }}",
     "so_boot_wait": "{{ env `SO_BOOT_WAIT` }}",
     "so_distribution": "{{ env `SO_DISTRIBUTION` }}",
     "so_guestdisksize": "{{ env `SO_GUESTDISKSIZE` }}",
     "so_guesthddinterface": "{{ env `SO_GUESTHDDINTERFACE` }}",
+    "so_guestmemorysize": "{{ env `SO_GUESTMEMORYSIZE` }}",
     "so_imagetype": "{{ env `SO_IMAGETYPE` }}",
     "so_majorversion": "{{ env `SO_MAJORVERSION` }}",
     "vm_fullname": "{{ env `SO_VMFULLNAME` }}"
